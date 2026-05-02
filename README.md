@@ -31,6 +31,6 @@ TEST-TIME PHASE
 ---------------
 Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Compare with Memory Bank -> Anomaly Score
 -> Normal-like sample? -> No  -> Output anomaly result 
-                       |
+                       
                        -> Yes -> Online Adapter Update -> Update Memory Bank -> Output updated result
             
