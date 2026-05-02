@@ -25,31 +25,11 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
 TRAIN PHASE
 ------------
 Normal Images -> YOLO Feature Extractor -> Online Adapter (initialized as identity) -> Memory Bank of Normal Features
-    ↓
-YOLO Feature Extractor
 
-    ↓
-Online Adapter (initialized as identity)
-
-    ↓
-Memory Bank of Normal Features
 
 TEST-TIME PHASE
 ---------------
-Incoming Image
-    ↓
-YOLO Feature Extractor
-    ↓
-Online Adapter
-    ↓
-Compare with Memory Bank
-    ↓
-Anomaly Score
-    ↓
-Normal-like sample?
-   ├─ No  → Output anomaly result
-   └─ Yes → Online Adapter Update
-                ↓
-            Update Memory Bank
-                ↓
-            Output updated result
+Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Compare with Memory Bank -> Anomaly Score
+-> Normal-like sample? -> No  -> Output anomaly result 
+                       -> Yes -> Online Adapter Update -> Update Memory Bank -> Output updated result
+            
