@@ -1,8 +1,8 @@
 # Online-Test-Time-Learning-Method-for-Industrial-Defect-Detection-
 Current manufacturing industries on defect detection not only require efficiency work but also able to learn new information with unknown defect detection. Here was introducing an online test-time learning method to support the need and a low-code platform developed for easy use.
 
-**Dataset** 
-
+DATASET
+--------
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
 - Total of 5354 images (Train: 3629; Test: 1725). About 70:30 ratio. 
 - Having 15 types material including
