@@ -25,10 +25,13 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
 TRAIN PHASE
 ------------
 Normal Images
+
     ↓
 YOLO Feature Extractor
+
     ↓
 Online Adapter (initialized as identity)
+
     ↓
 Memory Bank of Normal Features
 
