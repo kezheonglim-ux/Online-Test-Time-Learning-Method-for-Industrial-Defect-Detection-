@@ -30,7 +30,7 @@ Normal Images -> YOLO Feature Extractor -> Online Adapter (initialized as identi
 TEST-TIME PHASE
 ---------------
 Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Compare with Memory Bank -> Anomaly Score
--> Normal-like sample? -> No  -> Output anomaly result 
-                       
-                       -> Yes -> Online Adapter Update -> Update Memory Bank -> Output updated result
+-> Normal-like sample?
+-> No  -> Output anomaly result 
+-> Yes -> Online Adapter Update -> Update Memory Bank -> Output updated result
             
