@@ -22,15 +22,13 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
     - Bottle: 292
     - Toothbrush: 102
  
-**Code test flow**
-
-TRAIN PHASE
-------------
+CODE TEST FLOW
+---------------
+**TRAIN PHASE**
 Normal Images -> YOLO Feature Extractor -> Online Adapter (initialized as identity) -> Memory Bank of Normal Features
 
 
-TEST-TIME PHASE
----------------
+**TEST-TIME PHASE**
 Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Compare with Memory Bank -> Anomaly Score
 -> Normal-like sample?
 
