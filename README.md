@@ -1,5 +1,5 @@
 # Online-Test-Time-Learning-Method-for-Industrial-Defect-Detection-
-Current manufacturing industries on defect detection not only require efficiency work but also able to learn new information with unknown defect detection. Here was introducing an online test-time learning method to support the need and a low-code platform developed for easy use.
+Modern manufacturing requires defect detection systems that are efficient, adaptive and capable of identifying unknown defects. This research proposes an online test-time learning method using a YOLO26 nano classification model within an open-ended anomaly detection pipeline. A low-code platform is also developed to support easier implementation and practical use.
 
 DATASET
 --------
