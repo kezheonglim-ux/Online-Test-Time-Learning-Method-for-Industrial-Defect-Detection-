@@ -2,6 +2,7 @@
 Current manufacturing industries on defect detection not only require efficiency work but also able to learn new information with unknown defect detection. Here was introducing an online test-time learning method to support the need and a low-code platform developed for easy use.
 
 **Dataset** 
+
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
 - Total of 5354 images (Train: 3629; Test: 1725). About 70:30 ratio. 
 - Having 15 types material including
@@ -22,6 +23,7 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
     - Toothbrush: 102
  
 **Code test flow**
+
 TRAIN PHASE
 ------------
 Normal Images -> YOLO Feature Extractor -> Online Adapter (initialized as identity) -> Memory Bank of Normal Features
