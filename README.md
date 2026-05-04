@@ -44,3 +44,32 @@ Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Test Feature Embed
          -> No  -> Output anomaly result 
          -> Yes -> Online Adapter Update -> Add New Normal-like Feature to Memory Bank -> Updated Normal Representation -> Output Normal Result
             
+## Code Test Flow
+
+```mermaid
+flowchart TD
+
+    subgraph TRAIN[Train Phase]
+        A[Normal Images] --> B[YOLO Feature Extractor]
+        B --> C[Online Adapter<br/>Initialized as Identity]
+        C --> D[Memory Bank<br/>Normal Feature Storage]
+    end
+
+    subgraph TEST[Test-Time Phase]
+        E[Incoming Image] --> F[YOLO Feature Extractor]
+        F --> G[Online Adapter]
+        G --> H[Test Feature Embedding]
+        H --> I[Top-K Normal Reference Selection]
+        I --> J[Feature Comparison]
+        J --> K[Anomaly Score Calculation]
+        K --> L[Result Generation]
+    end
+
+    L --> M{Normal-like Sample?}
+
+    M -->|No| N[Output:<br/>Anomaly Result]
+    M -->|Yes| O[Update Online Adapter]
+    O --> P[Add Feature to Memory Bank]
+    P --> Q[Update Normal Representation]
+    Q --> R[Output:<br/>Normal Result]
+```
