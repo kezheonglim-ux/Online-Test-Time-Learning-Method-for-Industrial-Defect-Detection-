@@ -37,7 +37,6 @@ Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Test Feature Embed
 -> Generate Result
 
     - Image-Level Result: Normal / Anomaly
-    
     - Optional: Pixel-Level Anomaly Map
 
  -> Normal-like sample?
