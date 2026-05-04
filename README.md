@@ -32,9 +32,12 @@ Normal Images -> YOLO Feature Extractor -> Online Adapter (initialized as identi
 **TEST-TIME PHASE**
 
 Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Test Feature Embedding -> Select Top-K Normal Reference Features from Memory Bank
--> Compare Test Feature with Normal Reference Features -> Calculate Anomaly Score -> Generate Result
-                                                                                                - Image-Level Result: Normal / Anomaly
-                                                                                                - Optional: Pixel-Level Anomaly Map
+-> Compare Test Feature with Normal Reference Features -> Calculate Anomaly Score 
+-> Generate Result
+
+    - Image-Level Result: Normal / Anomaly
+    
+    - Optional: Pixel-Level Anomaly Map
 
  -> Normal-like sample?
 
