@@ -38,7 +38,7 @@ Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Test Feature Embed
 
  -> Normal-like sample?
 
-        -> No  -> Output anomaly result 
+         -> No  -> Output anomaly result 
 
-        -> Yes -> Online Adapter Update -> Add New Normal-like Feature to Memory Bank -> Updated Normal Representation -> Output Normal Result
+         -> Yes -> Online Adapter Update -> Add New Normal-like Feature to Memory Bank -> Updated Normal Representation -> Output Normal Result
             
