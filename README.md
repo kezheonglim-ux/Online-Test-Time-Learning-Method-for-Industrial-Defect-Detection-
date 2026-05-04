@@ -21,28 +21,7 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
     - Transistor: 313
     - Bottle: 292
     - Toothbrush: 102
- 
-CODE TEST FLOW
----------------
-**TRAIN PHASE**
 
-Normal Images -> YOLO Feature Extractor -> Online Adapter (initialized as identity) -> Memory Bank of Normal Features
-
-
-**TEST-TIME PHASE**
-
-Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Test Feature Embedding -> Select Top-K Normal Reference Features from Memory Bank
--> Compare Test Feature with Normal Reference Features -> Calculate Anomaly Score 
-
--> Generate Result
-
-    - Image-Level Result: Normal / Anomaly
-    - Optional: Pixel-Level Anomaly Map
-
- -> Normal-like sample?
-
-         -> No  -> Output anomaly result 
-         -> Yes -> Online Adapter Update -> Add New Normal-like Feature to Memory Bank -> Updated Normal Representation -> Output Normal Result
             
 ## Code Test Flow
 
@@ -73,3 +52,10 @@ flowchart TD
     P --> Q[Update Normal Representation]
     Q --> R[Output:<br/>Normal Result]
 ```
+### Explanation
+
+During the training phase, normal images are passed through the YOLO feature extractor and online adapter. The extracted normal features are stored in a memory bank.
+
+During the test-time phase, each incoming image is converted into a feature embedding and compared with the most similar normal reference features from the memory bank. An anomaly score is calculated to classify the image as normal or anomalous.
+
+If the sample is considered normal-like, the online adapter and memory bank are updated to improve future adaptation without full model retraining.
