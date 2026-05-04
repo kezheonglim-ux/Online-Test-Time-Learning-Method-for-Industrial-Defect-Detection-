@@ -33,6 +33,7 @@ Normal Images -> YOLO Feature Extractor -> Online Adapter (initialized as identi
 
 Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Test Feature Embedding -> Select Top-K Normal Reference Features from Memory Bank
 -> Compare Test Feature with Normal Reference Features -> Calculate Anomaly Score 
+
 -> Generate Result
 
     - Image-Level Result: Normal / Anomaly
@@ -42,6 +43,5 @@ Incoming Image -> YOLO Feature Extractor -> Online Adapter -> Test Feature Embed
  -> Normal-like sample?
 
          -> No  -> Output anomaly result 
-
          -> Yes -> Online Adapter Update -> Add New Normal-like Feature to Memory Bank -> Updated Normal Representation -> Output Normal Result
             
