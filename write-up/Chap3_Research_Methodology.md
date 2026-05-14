@@ -93,6 +93,7 @@ The experiment is carried out across all 15 MVTec AD categories. For each catego
 | Online update steps          | 1                                            | Limits the update amount for each accepted sample. |
 | Acceptance margin            | 0.95                                         | Allows updates only for samples clearly below<br>the anomaly threshold. |
 | Loss weights                 | Consistency = 1.0;<br>Anchor = 0.1           | Balances augmentation consistency and<br>closeness to normal references. |
+
 *Table 3.3: Main Experimental Parameters*
 
 ## 3.12 Evaluation Metrics and Analysis
