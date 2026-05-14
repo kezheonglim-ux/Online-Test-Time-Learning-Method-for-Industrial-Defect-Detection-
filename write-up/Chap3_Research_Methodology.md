@@ -10,8 +10,6 @@ The research is designed to test whether online test-time learning can improve o
 The experiment compares two settings. The first setting is the baseline method where test images are evaluated using the original feature representation without online adaptation. The second setting applies the proposed online test-time learning method where normal test samples are used to update the online adapter and expand the normal memory bank. The performance before and after adaptation is then compared using standard evaluation metrics.
 The main stages of the experimental design are summarized in Table 3.1.
 
-### Table 3.1: Research Design Stages
-
 | Stage | Purpose | Implementation in Current Code |
 |---|---|---|
 | Data preparation | Prepare a clean dataset structure for anomaly detection. | MVTec AD images are converted into RGB JPG format and resized to 224 × 224.<br><br>Normal training data are split into training and validation sets. |
@@ -25,8 +23,10 @@ The main stages of the experimental design are summarized in Table 3.1.
 ## 3.3 Overall System Architecture
 The proposed system is designed as a two-phase architecture. The first phase is the training or preparation phase where normal images are used to form the initial normal memory bank. The second phase is the online test-time phase where each incoming image is compared with the stored normal features to decide whether it is normal or anomalous.
 The system is modular. It consists of data input, feature extraction, online adapter, memory bank, anomaly scoring, online update and evaluation output. This modular structure is useful because the same workflow can later be transferred into a low-code platform. For example, data upload, feature extraction, threshold setting, test-time scoring and result dashboard can each be treated as separate workflow blocks.
- 
-Figure 3.1: Proposed open-ended online test-time learning workflow
+
+images/figure-3-1-workflow.png 
+![Figure 3.1: Proposed open-ended online test-time learning workflow](images/figure-3-1-workflow.png)
+**Figure 3.1: Proposed open-ended online test-time learning workflow**
 
 
 
