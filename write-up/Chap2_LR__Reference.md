@@ -76,7 +76,7 @@ Therefore, this research focuses on developing an online test-time learning meth
 In this sense, the study aims to bridge two gaps: the technical gap between static models and adaptive test-time learning and the practical gap between research algorithms and deployable industrial inspection systems.
 
 # Reference
-Costanzino, A., Zama Ramirez, P., Del Moro, M., Aiezzo, A., Lisanti, G., Salti, S., & Di Stefano, L. (2024). Test time training for industrial anomaly segmentation. arXiv.<br>
+&nbsp;Costanzino, A., Zama Ramirez, P., Del Moro, M., Aiezzo, A., Lisanti, G., Salti, S., & Di Stefano, L. (2024). Test time training for industrial anomaly segmentation. arXiv.<br>
 Ge, Q., Wu, R., Wu, Y., & Liu, H. (2025). A class-incremental learning method for PCB defect detection. IEEE Transactions on Instrumentation and Measurement, 74, 1–15.<br>
 Gung, J.-J., Lin, C.-Y., Lin, P.-F., & Chung, W.-K. (n.d.). An incremental meta defect detection system for printed circuit boards.<br>
 Ni, T., Jiang, W., Liang, H., Wen, X., & Nie, M. (2026). Incremental learning strategies for improved detection of unknown defects in wafer maps with limited samples. Computers in Industry, 175, 104432.<br>
