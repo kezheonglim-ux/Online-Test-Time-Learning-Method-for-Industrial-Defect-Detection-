@@ -59,7 +59,8 @@ Based on the reviewed literature, the related studies can be grouped into severa
 | Real-world industrial anomaly detection | ReinAD dataset, contrastive normal-abnormal comparison | Highlights real-world issues such as unaligned images, fine-grained defects, and complex anomaly patterns | Mainly provides dataset and model direction.<br><br>Does not address low-code deployment |
 | Test-time learning / adaptation | Test-time training, pseudo-labels, feature extraction, lightweight classifier | Uses test sample information during inference to improve anomaly segmentation | Focuses mainly on segmentation refinement, not a complete online defect detection workflow |
 | Low-code implementation | Low-code workflow for defect detection system | Improves usability for engineers and non-AI users | Rarely addressed in existing defect detection studies |
-### Table 2.1: Summary of Related Studies on Industrial Defect Detection
+
+*Table 2.1: Summary of Related Studies on Industrial Defect Detection*
 
 ## 2.9 Research Gap
 Based on the reviewed literature, several research gaps can be identified.
