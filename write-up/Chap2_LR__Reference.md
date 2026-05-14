@@ -76,20 +76,20 @@ Therefore, this research focuses on developing an online test-time learning meth
 In this sense, the study aims to bridge two gaps: the technical gap between static models and adaptive test-time learning and the practical gap between research algorithms and deployable industrial inspection systems.
 
 # Reference
-&nbsp;Costanzino, A., Zama Ramirez, P., Del Moro, M., Aiezzo, A., Lisanti, G., Salti, S., & Di Stefano, L. (2024). Test time training for industrial anomaly segmentation. arXiv.<br>
-Ge, Q., Wu, R., Wu, Y., & Liu, H. (2025). A class-incremental learning method for PCB defect detection. IEEE Transactions on Instrumentation and Measurement, 74, 1–15.<br>
-Gung, J.-J., Lin, C.-Y., Lin, P.-F., & Chung, W.-K. (n.d.). An incremental meta defect detection system for printed circuit boards.<br>
-Ni, T., Jiang, W., Liang, H., Wen, X., & Nie, M. (2026). Incremental learning strategies for improved detection of unknown defects in wafer maps with limited samples. Computers in Industry, 175, 104432.<br>
-Shen, X., Liu, J., Zhang, H., Jiang, L., Zhao, H., & Yang, H. (2025). A novel incremental defect detection method via elastic heterogeneous distillation network. IEEE Transactions on Automation Science and Engineering, 22, 10149–10161.<br>
-Sun, C., Gao, L., Li, X., Zheng, P., & Gao, Y. (2024). An incremental knowledge learning framework for continuous defect detection. IEEE Transactions on Instrumentation and Measurement, 73, 1–11.<br>
-Wang, S., Chen, H., Zhang, Z., & Su, B. (2024). Multi-scale feature decoupling and similarity distillation for class-incremental defect detection of photovoltaic cells. Measurement, 225, 113997.<br>
-Wang, X., Zhang, Y., Liu, J., Luo, Z., Zielińska, T., & Ge, W. (2022). Online detection of weld surface defects based on improved incremental learning approach. Expert Systems with Applications, 195, 116407.<br>
-Wang, X., Zhuo, J., You, Z., Tan, Z., Yu, Y., Wang, S., & Le, X. (2025). ReinAD: Towards real-world industrial anomaly detection with a comprehensive contrastive dataset. Advances in Neural Information Processing Systems, 39.<br>
-Xiong, W., Chen, G., Liao, X., & Chen, R. (2024). Adaptive dual teacher incremental learning for defect detection of flexible printed circuit. Computers & Electrical Engineering, 118, 109337.<br>
-Yan, Z., Hao, R., Huang, B., Zhu, L., & Pan, H. (2025). A domain incremental learning framework for PCB continuous defect detection. IEEE Transactions on Instrumentation and Measurement, 74, 1–13.<br>
-Yang, X., Li, Z., Lin, X., Sheng, J., Hei, N., Dai, L., & Qi, L. (2025). IF-DETR: Incremental few-shot detection transformer for surface defect detection. In Proceedings of the International Joint Conference on Neural Networks (IJCNN).<br>
-Yu, N., Li, X., Xu, Q., & Jiang, K. (2021). Research on wafer surface defect pattern detection method based on incremental learning. Journal of Physics: Conference Series, 2078(1), 012046.<br>
-Yue, K., Li, J., Deng, S., Chen, Z., Kwoh, C. K., & Li, W. (2026). Toward wafer defect detection: An incremental industrial large model with prompt-aware memory replay. Applied Soft Computing, 194, 114815.<br>
-Zhao, Z., Wang, J., Tao, Q., Li, A., & Chen, Y. (2024). An unknown wafer surface defect detection approach based on incremental learning for reliability analysis. Reliability Engineering & System Safety, 244, 109966.<br>
-Zhu, L., Zhang, B., Zhao, D., & Hu, H. (2024). Few-shot class incremental learning for packaging defects with double class feature interaction. In Proceedings of the Chinese Control and Decision Conference (CCDC).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Costanzino, A., Zama Ramirez, P., Del Moro, M., Aiezzo, A., Lisanti, G., Salti, S., & Di Stefano, L. (2024). Test time training for industrial anomaly segmentation. arXiv.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ge, Q., Wu, R., Wu, Y., & Liu, H. (2025). A class-incremental learning method for PCB defect detection. IEEE Transactions on Instrumentation and Measurement, 74, 1–15.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Gung, J.-J., Lin, C.-Y., Lin, P.-F., & Chung, W.-K. (n.d.). An incremental meta defect detection system for printed circuit boards.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ni, T., Jiang, W., Liang, H., Wen, X., & Nie, M. (2026). Incremental learning strategies for improved detection of unknown defects in wafer maps with limited samples. Computers in Industry, 175, 104432.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Shen, X., Liu, J., Zhang, H., Jiang, L., Zhao, H., & Yang, H. (2025). A novel incremental defect detection method via elastic heterogeneous distillation network. IEEE Transactions on Automation Science and Engineering, 22, 10149–10161.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Sun, C., Gao, L., Li, X., Zheng, P., & Gao, Y. (2024). An incremental knowledge learning framework for continuous defect detection. IEEE Transactions on Instrumentation and Measurement, 73, 1–11.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Wang, S., Chen, H., Zhang, Z., & Su, B. (2024). Multi-scale feature decoupling and similarity distillation for class-incremental defect detection of photovoltaic cells. Measurement, 225, 113997.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Wang, X., Zhang, Y., Liu, J., Luo, Z., Zielińska, T., & Ge, W. (2022). Online detection of weld surface defects based on improved incremental learning approach. Expert Systems with Applications, 195, 116407.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Wang, X., Zhuo, J., You, Z., Tan, Z., Yu, Y., Wang, S., & Le, X. (2025). ReinAD: Towards real-world industrial anomaly detection with a comprehensive contrastive dataset. Advances in Neural Information Processing Systems, 39.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Xiong, W., Chen, G., Liao, X., & Chen, R. (2024). Adaptive dual teacher incremental learning for defect detection of flexible printed circuit. Computers & Electrical Engineering, 118, 109337.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Yan, Z., Hao, R., Huang, B., Zhu, L., & Pan, H. (2025). A domain incremental learning framework for PCB continuous defect detection. IEEE Transactions on Instrumentation and Measurement, 74, 1–13.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Yang, X., Li, Z., Lin, X., Sheng, J., Hei, N., Dai, L., & Qi, L. (2025). IF-DETR: Incremental few-shot detection transformer for surface defect detection. In Proceedings of the International Joint Conference on Neural Networks (IJCNN).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Yu, N., Li, X., Xu, Q., & Jiang, K. (2021). Research on wafer surface defect pattern detection method based on incremental learning. Journal of Physics: Conference Series, 2078(1), 012046.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Yue, K., Li, J., Deng, S., Chen, Z., Kwoh, C. K., & Li, W. (2026). Toward wafer defect detection: An incremental industrial large model with prompt-aware memory replay. Applied Soft Computing, 194, 114815.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Zhao, Z., Wang, J., Tao, Q., Li, A., & Chen, Y. (2024). An unknown wafer surface defect detection approach based on incremental learning for reliability analysis. Reliability Engineering & System Safety, 244, 109966.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Zhu, L., Zhang, B., Zhao, D., & Hu, H. (2024). Few-shot class incremental learning for packaging defects with double class feature interaction. In Proceedings of the Chinese Control and Decision Conference (CCDC).<br>
 
