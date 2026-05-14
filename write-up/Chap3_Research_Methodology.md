@@ -93,7 +93,7 @@ The experiment is carried out across all 15 MVTec AD categories. For each catego
 | Online update steps          | 1                                            | Limits the update amount for each accepted sample. |
 | Acceptance margin            | 0.95                                         | Allows updates only for samples clearly below<br>the anomaly threshold. |
 | Loss weights                 | Consistency = 1.0;<br>Anchor = 0.1           | Balances augmentation consistency and<br>closeness to normal references. |
-**Table 3.3: Main Experimental Parameters**
+*Table 3.3: Main Experimental Parameters*
 
 ## 3.12 Evaluation Metrics and Analysis
 The system is evaluated using both score-based and classification-based metrics. AUROC is used to measure how well the anomaly scores separate normal and anomalous samples. The code records AUROC before and after online test-time learning so that the effect of adaptation can be observed.
