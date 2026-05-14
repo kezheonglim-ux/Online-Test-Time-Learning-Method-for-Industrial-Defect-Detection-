@@ -28,25 +28,25 @@ The system is modular. It consists of data input, feature extraction, online ada
 
 **Figure 3.1: Proposed open-ended online test-time learning workflow**
 
-
-
-
-
 ## 3.4 Dataset and Data Preparation
 Summaries the dataset information as below table 3.2.
-Item	Description
-Dataset	MVTec AD
-Total images	5,354 images
-Categories	15 categories: bottle, cable, capsule, carpet, grid, hazelnut, leather, metal nut, pill, screw, tile, toothbrush, transistor, wood, and zipper
-Dataset structure	Training set contains normal images only; test set contains both normal and defective images
-Training data	80% of original train/good normal images
-Validation data	20% of original train/good normal images
-Test normal data	Original test/good images
-Test anomaly data	All original defect folders in the test set
-Image format	RGB JPG
-Image size	224 × 224 pixels
-Data purpose	Training data builds the normal memory bank, validation data calibrates the threshold, test data evaluates normal and anomaly detection
-Table 3.2: Dataset Preparation Summary
+### Table 3.2: Dataset Preparation Summary
+
+| **Item**             | **Description** |
+|----------------------|-----------------|
+| Dataset              | MVTec&nbsp;AD |
+| Total images         | 5,354 images |
+| Categories           | 15 categories:<br>bottle, cable, capsule, carpet, grid, hazelnut, leather, metal&nbsp;nut, pill, screw, tile, toothbrush, transistor, wood, and zipper |
+| Dataset structure    | Training set: normal images only.<br>Test set: normal **and** defective images. |
+| Training data        | 80% of original train/good normal images |
+| Validation data      | 20% of original train/good normal images |
+| Test normal data     | Original test/good images |
+| Test anomaly data    | All original defect folders in the test set |
+| Image format         | RGB JPG |
+| Image size           | 224 × 224 pixels |
+| Data purpose         | Training data builds the normal memory bank.<br>Validation data calibrates the threshold.<br>Test data evaluates normal and anomaly detection. |
+
+*Table 3.2: Dataset Preparation Summary*
 
 ## 3.5 Feature Extraction using Frozen YOLO26
 The current implementation uses the Ultralytics YOLO26 classification model as a frozen feature extractor. The model is not trained or fine-tuned in this experiment. Instead, the feature embedding is captured from the input to the final linear classification layer. This embedding is then L2-normalized before being used for anomaly scoring.
@@ -78,21 +78,23 @@ This is relevant to the research title because the final target is not only to d
 
 ## 3.11 Experimental Setup and Parameters
 The experiment is carried out across all 15 MVTec AD categories. For each category, a separate memory bank, threshold and adapter are prepared. The test loader uses a batch size of one to simulate streaming test-time operation. This means the system receives one image, scores it, decides whether to update and then moves to the next image.
+### Table 3.3: Main Experimental Parameters
 
-Parameter	Value	Purpose
-Computing environment	Kaggle Notebook with GPU T4 × 2	Provides GPU acceleration for feature extraction, testing, and evaluation
-Feature extractor	Frozen YOLO26 classification model	Extracts image feature embeddings without retraining the full model
-Batch size	32 for preparation; 1 for online testing	Batch processing is used for preparation, while single-image testing simulates streaming operation
-Online adapter	Linear layer initialized as identity	Acts as the only trainable component during test-time adaptation
-Memory bank limit	4,000 feature vectors	Controls memory usage and prevents unlimited growth
-Validation threshold	99.5th percentile of normal validation scores	Defines anomaly decision boundary without using defect labels
-Top-K references	5	Selects the most similar normal reference features for local comparison
-Reference/global score weights	0.7 / 0.3	Combines Top-K similarity and global memory-bank similarity
-Online learning rate	1e-4	Controls the size of adapter updates
-Online update steps	1	Limits the update amount for each accepted sample
-Acceptance margin	0.95	Allows updates only for samples clearly below the anomaly threshold
-Loss weights	Consistency = 1.0; Anchor = 0.1	Balances augmentation consistency and closeness to normal references
-Table 3.3: Main experimental parameters used in the current implementation
+| **Parameter**                | **Value**                                    | **Purpose** |
+|------------------------------|----------------------------------------------|-------------|
+| Computing environment        | Kaggle Notebook with GPU T4 × 2              | Provides GPU acceleration for feature extraction,<br>testing, and evaluation. |
+| Feature extractor            | Frozen YOLO26 classification model           | Extracts image feature embeddings without<br>retraining the full model. |
+| Batch size                   | 32 for preparation; 1 for online testing     | Batch processing is used for preparation; single-image testing simulates streaming operation. |
+| Online adapter               | Linear layer initialized as identity         | Acts as the only trainable component during test-time adaptation. |
+| Memory bank limit            | 4,000 feature vectors                        | Controls memory usage and prevents unlimited growth. |
+| Validation threshold         | 99.5th percentile of normal validation scores | Defines anomaly decision boundary without using defect labels. |
+| Top‑K references             | 5                                            | Selects the most similar normal reference features for local comparison. |
+| Reference/global score weights | 0.7 / 0.3                                  | Combines Top‑K similarity and global memory‑bank similarity. |
+| Online learning rate         | 1e‑4                                         | Controls the size of adapter updates. |
+| Online update steps          | 1                                            | Limits the update amount for each accepted sample. |
+| Acceptance margin            | 0.95                                         | Allows updates only for samples clearly below<br>the anomaly threshold. |
+| Loss weights                 | Consistency = 1.0;<br>Anchor = 0.1           | Balances augmentation consistency and<br>closeness to normal references. |
+
 
 ## 3.12 Evaluation Metrics and Analysis
 The system is evaluated using both score-based and classification-based metrics. AUROC is used to measure how well the anomaly scores separate normal and anomalous samples. The code records AUROC before and after online test-time learning so that the effect of adaptation can be observed.
