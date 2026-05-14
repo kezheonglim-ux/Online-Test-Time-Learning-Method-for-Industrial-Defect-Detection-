@@ -24,8 +24,8 @@ The main stages of the experimental design are summarized in Table 3.1.
 The proposed system is designed as a two-phase architecture. The first phase is the training or preparation phase where normal images are used to form the initial normal memory bank. The second phase is the online test-time phase where each incoming image is compared with the stored normal features to decide whether it is normal or anomalous.
 The system is modular. It consists of data input, feature extraction, online adapter, memory bank, anomaly scoring, online update and evaluation output. This modular structure is useful because the same workflow can later be transferred into a low-code platform. For example, data upload, feature extraction, threshold setting, test-time scoring and result dashboard can each be treated as separate workflow blocks.
 
-images/figure-3-1-workflow.png 
 ![Figure 3.1: Proposed open-ended online test-time learning workflow](images/figure-3-1-workflow.png)
+
 **Figure 3.1: Proposed open-ended online test-time learning workflow**
 
 
