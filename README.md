@@ -192,6 +192,8 @@ In CiRA CORE, a low-code workflow is built using AutoRun, RestGetJson and Debug 
 
 ![CiRA CORE overview](write-up/images/CiRA%20CORE.PNG)
 
+![Debug node display](write-up/images/debug%20node.PNG)
+
 | Feature&nbsp;node | Usage |
 |---|---|
 | `AutoRun` | Triggers the inspection workflow. In a real workflow, this could be replaced by camera trigger, image subscription, or production-line signal.  |
