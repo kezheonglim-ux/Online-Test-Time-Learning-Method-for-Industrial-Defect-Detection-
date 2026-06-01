@@ -35,6 +35,8 @@ Stage 2: Deployment Auto-Calibration
 Stage 3: CiRA CORE + Flask CTTA Deployment Workflow
 </pre>
 
+### 2.1.2 Purpose
+
 | Stage | Name | Main Purpose |
 |---|---|---|
 | Stage&nbsp;1 | Offline Preparation in Notebook | Prepare the initial normal representation and export model files |
