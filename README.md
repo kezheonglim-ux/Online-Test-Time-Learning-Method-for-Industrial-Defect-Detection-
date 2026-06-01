@@ -23,7 +23,26 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
     - Toothbrush: 102
 
             
-## Code Test Flow
+## WORKFLOWS
+## Overall Workflow
+
+| Stage | Name | Main Purpose |
+|---|---|---|
+| Stage 1 | Offline Preparation in Notebook | Prepare the initial normal representation and export model files |
+| Stage 2 | Deployment Auto-Calibration | Adjust the anomaly and update thresholds using trusted normal deployment images |
+| Stage 3 | CiRA CORE + Flask CTTA Deployment Workflow | Run the defect detection system through CiRA CORE and Flask API |
+
+### Process Flow
+
+<pre>
+Stage 1 — Offline Preparation in Notebook
+        ↓
+Stage 2 — Deployment Auto-Calibration
+        ↓
+Stage 3 — CiRA CORE + Flask CTTA Deployment Workflow
+</pre>
+
+
 
 ## Stage 1 — Offline Preparation in Notebook
 
@@ -60,3 +79,10 @@ The offline preparation from notebook here is to develop and prepare the initial
 Normal training images are passed through the YOLO feature extractor to obtain visual feature embeddings and these embeddings are stored in a normal memory bank as reference patterns of normal products. During validation, normal validation images are compared with this memory bank to calculate a distribution of normal anomaly scores. The initial anomaly threshold is then calculated from this normal-score distribution rather than being directly predicted by the model. 
 End of this stage, four deployment files are generated and saved for later testing and deployment. 
 
+
+| File | Purpose |
+|---|---|
+| `yolo26n-cls.pt` | Frozen YOLO feature extractor used to convert images into visual feature embeddings. |
+| `ttl_adapter.pt` | Lightweight online adapter used to adjust the extracted feature embedding before comparison. |
+| `memory_bank.pt` | Normal reference feature bank used to calculate the anomaly score. |
+| `threshold.json` | Stores anomaly threshold and update threshold for decision-making and online update control. |
