@@ -37,10 +37,10 @@ Stage 3: CiRA CORE + Flask CTTA Deployment Workflow
 </pre>
 
 | Stage | Name | Main Purpose |
-|-----|-----|-----|
-| Stage 1 | Offline Preparation in Notebook | Prepare the initial normal representation and export model files |
-| Stage 2 | Deployment Auto-Calibration | Adjust the anomaly and update thresholds using trusted normal deployment images |
-| Stage 3 | CiRA CORE + Flask CTTA Deployment Workflow | Run the defect detection system through CiRA CORE and Flask API |
+|---|---|---|
+| Stage&nbsp;1 | Offline Preparation in Notebook | Prepare the initial normal representation and export model files |
+| Stage&nbsp;2 | Deployment Auto-Calibration | Adjust the anomaly and update thresholds using trusted normal deployment images |
+| Stage&nbsp;3 | CiRA CORE + Flask CTTA Deployment Workflow | Run the defect detection system through CiRA CORE and Flask API |
 
 
 ## Stage 1 — Offline Preparation in Notebook
