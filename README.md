@@ -25,37 +25,38 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
             
 ## Code Test Flow
 
-```mermaid
-flowchart TD
+## Stage 1 — Offline Preparation in Notebook
 
-    subgraph TRAIN[Train Phase]
-        A[Normal Images] --> B[YOLO Feature Extractor]
-        B --> C[Online Adapter<br/>Initialized as Identity]
-        C --> D[Memory Bank<br/>Normal Feature Storage]
-    end
+### Purpose
 
-    subgraph TEST[Test-Time Phase]
-        E[Incoming Image] --> F[YOLO Feature Extractor]
-        F --> G[Online Adapter]
-        G --> H[Test Feature Embedding]
-        H --> I[Top-K Normal Reference Selection]
-        I --> J[Feature Comparison]
-        J --> K[Anomaly Score Calculation]
-        K --> L[Result Generation]
-    end
+Prepare the initial normal representation and model files before deployment.
 
-    L --> M{Normal-like Sample?}
+### Process Flow
 
-    M -->|No| N[Output:<br/>Anomaly Result]
-    M -->|Yes| O[Update Online Adapter]
-    O --> P[Add Feature to Memory Bank]
-    P --> Q[Update Normal Representation]
-    Q --> R[Output:<br/>Normal Result]
-```
+```text
+MVTec AD train/good images
+        ↓
+Image preprocessing
+        ↓
+Frozen YOLO26 feature extraction
+        ↓
+Online adapter with identity initialization
+        ↓
+Build normal memory bank
+        ↓
+Use validation normal scores to calculate initial threshold
+        ↓
+Export deployment files:
+    - yolo26n-cls.pt
+    - ttl_adapter.pt
+    - memory_bank.pt
+    - threshold.json
+
+
 ### Explanation
 
-During the training phase, normal images are passed through the YOLO feature extractor and online adapter. The extracted normal features are stored in a memory bank.
+The offline preparation from notebook here is to develop and prepare the initial anomaly detection model before deployment. A YOLO-based model is used as a frozen feature extractor, only a small adapter layer and the stored normal reference features are updated during online testing. This makes the system more stable and avoids the risk of changing the entire model during deployment.
 
-During the test-time phase, each incoming image is converted into a feature embedding and compared with the most similar normal reference features from the memory bank. An anomaly score is calculated to classify the image as normal or anomalous.
+Normal training images are passed through the YOLO feature extractor to obtain visual feature embeddings and these embeddings are stored in a normal memory bank as reference patterns of normal products. During validation, normal validation images are compared with this memory bank to calculate a distribution of normal anomaly scores. The initial anomaly threshold is then calculated from this normal-score distribution rather than being directly predicted by the model. 
+End of this stage, four deployment files are generated and saved for later testing and deployment. 
 
-If the sample is considered normal-like, the online adapter and memory bank are updated to improve future adaptation without full model retraining.
