@@ -44,7 +44,7 @@ Stage 3: CiRA CORE + Flask CTTA Deployment Workflow
 | Stage&nbsp;3 | CiRA CORE + Flask CTTA Deployment Workflow | Run the defect detection system through CiRA CORE and Flask API |
 
 
-## 2.2 Stage 1 — Offline Preparation in Notebook
+## 2.2 Stage 1: Offline Preparation in Notebook
 
 ### 2.2.1 Purpose
 
