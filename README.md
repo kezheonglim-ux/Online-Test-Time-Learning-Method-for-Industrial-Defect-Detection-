@@ -177,9 +177,7 @@ If the image is confidently normal, the lightweight online adapter and memory ba
 | File | Purpose |
 |---|---|
 | `app_ctta.py` | Flask service file, bridge between CiRA CORE and the Python-based CTTA detector. It load the export files output from `train.ipynb`, receiving image oath from CiRA CORE, running prediction through the CTTA detector, supporting `monitor`/`evalute`/`calibrate` modes, logging predictions to CSV, saving memory checkpoints and returning JSON result to CiRA CORE|
-| `cira_ttl_anomaly.py` | CTTA detector, contain real detection logic used during testing and deployment. It performs two key functions: feature extraction and anomaly score calculation. |
-|| Feature extraction converts the input image into a numerical feature embedding so that it can be compared with normal reference features. |
-|| Anomaly score calculation used to measures how different the incoming image is from the stored normal references. If the image is less similar to the memory bank, the anomaly score becomes higher. |
+| `cira_ttl_anomaly.py` | CTTA detector, contain real detection logic used during testing and deployment. It performs two key functions: feature extraction and anomaly score calculation.<br><br>Feature extraction converts the input image into a numerical feature embedding so that it can be compared with normal reference features.<br><br>Anomaly score calculation used to measures how different the incoming image is from the stored normal references. If the image is less similar to the memory bank, the anomaly score becomes higher. |
 
 ### 2.4.5 Output
 
