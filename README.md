@@ -87,3 +87,45 @@ End of this stage, four deployment files are generated and saved for later testi
 | `ttl_adapter.pt` | Stores the lightweight online adapter. The extracted feature embedding is passed through this adapter before comparison with the memory bank. |
 | `memory_bank.pt` | Stores the normal reference feature embeddings generated from normal training images. Incoming images are compared with this memory bank to calculate the anomaly score. |
 | `threshold.json` | Stores the calibrated decision settings, including the anomaly threshold and update threshold. These settings are used to classify the image and control online updating. |
+
+## 2.3 Stage 2 — Deployment Auto-Calibration
+
+### 2.3.1 Purpose
+
+Adjust the decision thresholds to match the deployment image condition.
+
+### 2.3.2 Process Flow
+
+<pre>
+Trusted normal deployment images
+        ↓
+score_only() calculates normal deployment scores
+        ↓
+Calculate anomaly_threshold from high normal-score quantile
+        ↓
+Calculate update_threshold from stricter normal-score quantile
+        ↓
+Update threshold.json automatically
+</pre>
+
+### 2.3.3 Description
+
+Deployment auto-calibration is used to make the decision thresholds more suitable for the actual deployment environment. Although the notebook generates an initial threshold using validation normal images, the deployment images may have different lighting, image quality, background, capture angle, or image source.
+
+To reduce this gap, a small set of trusted normal deployment images is used to calculate the normal score distribution. The `score_only()` function calculates anomaly scores without updating the adapter or memory bank. These scores are then used to generate the `anomaly_threshold` and `update_threshold`.
+
+The `anomaly_threshold` is used to decide whether an image should be classified as normal or anomalous. The `update_threshold` is used to decide whether an image is confidently normal and suitable for online updating. After calibration, the updated threshold values are saved into `threshold.json`.
+
+### 2.3.4 Output
+
+| Output File | Purpose |
+|---|---|
+| `threshold.json` | Stores the updated `anomaly_threshold`, `update_threshold`, and calibration settings for deployment |
+
+
+
+
+
+
+
+
