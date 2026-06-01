@@ -192,7 +192,7 @@ In CiRA CORE, a low-code workflow is built using AutoRun, RestGetJson and Debug 
 
 ![CiRA CORE overview](write-up/images/CiRA%20CORE.PNG)
 
-![Debug node display](write-up/images/debug%20node.PNG)
+![Debug node display](write-up/images/debug_node.PNG)
 
 | Feature&nbsp;node | Usage |
 |---|---|
