@@ -51,7 +51,7 @@ Prepare the initial normal representation and model files before deployment.
 
 ### Process Flow
 
-```text
+<pre>
 MVTec AD train/good images
         ↓
 Image preprocessing
@@ -69,7 +69,7 @@ Export deployment files:
     - ttl_adapter.pt
     - memory_bank.pt
     - threshold.json
-
+</pre>
 
 ### Explanation
 
@@ -78,10 +78,11 @@ The offline preparation from notebook here is to develop and prepare the initial
 Normal training images are passed through the YOLO feature extractor to obtain visual feature embeddings and these embeddings are stored in a normal memory bank as reference patterns of normal products. During validation, normal validation images are compared with this memory bank to calculate a distribution of normal anomaly scores. The initial anomaly threshold is then calculated from this normal-score distribution rather than being directly predicted by the model. 
 End of this stage, four deployment files are generated and saved for later testing and deployment. 
 
+### Exported Files
 
 | File | Purpose |
 |---|---|
-| `yolo26n-cls.pt` | Frozen YOLO feature extractor used to convert images into visual feature embeddings. |
-| `ttl_adapter.pt` | Lightweight online adapter used to adjust the extracted feature embedding before comparison. |
-| `memory_bank.pt` | Normal reference feature bank used to calculate the anomaly score. |
-| `threshold.json` | Stores anomaly threshold and update threshold for decision-making and online update control. |
+| `yolo26n-cls.pt` | Provides the frozen YOLO feature extractor. It converts each incoming image into a visual feature embedding without retraining the YOLO model. |
+| `ttl_adapter.pt` | Stores the lightweight online adapter. The extracted feature embedding is passed through this adapter before comparison with the memory bank. |
+| `memory_bank.pt` | Stores the normal reference feature embeddings generated from normal training images. Incoming images are compared with this memory bank to calculate the anomaly score. |
+| `threshold.json` | Stores the calibrated decision settings, including the anomaly threshold and update threshold. These settings are used to classify the image and control online updating. |
