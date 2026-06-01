@@ -37,7 +37,7 @@ Stage 3: CiRA CORE + Flask CTTA Deployment Workflow
 
 ### 2.1.2 Purpose
 
-| Stage | Name | Main Purpose |
+| Stage | Name | Main Usage |
 |---|---|---|
 | Stage&nbsp;1 | Offline Preparation in Notebook | Prepare the initial normal representation and export model files |
 | Stage&nbsp;2 | Deployment Auto-Calibration | Adjust the anomaly and update thresholds using trusted normal deployment images |
@@ -81,13 +81,13 @@ End of this stage, four deployment files are generated and saved for later testi
 
 ### 2.2.4 Files in use
 
-| File | Purpose |
+| File | Usage |
 |---|---|
 | `train_rev1.3.ipynb` | Dataset preparation, feature extraction, memory bank construction, initial threshold calibration, evalution and export of model files |
 
 ### 2.2.5 Exported Files
 
-| File | Purpose |
+| File | Usage |
 |---|---|
 | `yolo26n-cls.pt` | Provides the frozen YOLO feature extractor. It converts each incoming image into a visual feature embedding without retraining the YOLO model. |
 | `ttl_adapter.pt` | Stores the lightweight online adapter. The extracted feature embedding is passed through this adapter before comparison with the memory bank. |
@@ -124,13 +124,13 @@ In the current implementation, about 5 normal bottle images from the testing fol
 
 ### 2.3.4 Files in use
 
-| File | Purpose |
+| File | Usage |
 |---|---|
 | `auto_calibrate_threshold.py` | Deployment threshold calibration. Calibrated anomaly threshold and update threshold. Trusted normal deployment images used to calibrate threshold under testing folder stored in `workdir\cira_ttl_calibration` |
 
 ### 2.3.5 Output
 
-| Output File | Purpose |
+| Output File | Usage |
 |---|---|
 | `threshold.json` | Stores the updated `anomaly_threshold`, `update_threshold` and calibration settings for deployment |
 
@@ -174,14 +174,14 @@ If the image is confidently normal, the lightweight online adapter and memory ba
 
 ### 2.4.4 Files in use
 
-| File | Purpose |
+| File | Usage |
 |---|---|
 | `app_ctta.py` | Flask service file, bridge between CiRA CORE and the Python-based CTTA detector. It load the export files output from `train.ipynb`, receiving image oath from CiRA CORE, running prediction through the CTTA detector, supporting `monitor`/`evalute`/`calibrate` modes, logging predictions to CSV, saving memory checkpoints and returning JSON result to CiRA CORE|
 | `cira_ttl_anomaly.py` | CTTA detector, contain real detection logic used during testing and deployment. It performs two key functions: feature extraction and anomaly score calculation.<br><br>Feature extraction converts the input image into a numerical feature embedding so that it can be compared with normal reference features.<br><br>Anomaly score calculation used to measures how different the incoming image is from the stored normal references. If the image is less similar to the memory bank, the anomaly score becomes higher. |
 
 ### 2.4.5 Output
 
-| Output File | Purpose |
+| Output File | Usage |
 |---|---|
 | JSON prediction result | Returned to CiRA CORE and shows prediction result for each image displayed in the Debug node or dashboard  |
 | `prediction_log.csv` | Stores prediction history, including image path, score, label, update status and memory size |
@@ -189,4 +189,14 @@ If the image is confidently normal, the lightweight online adapter and memory ba
 
 ### 2.4.6 CiRA CORE overview
 In CiRA CORE, a low-code workflow is built using AutoRun, RestGetJson and Debug nodes. 
+
+![CiRA CORE overview](write-up/images/CiRA CORE.png)
+
+| Feature node | Usage |
+|---|---|
+| `AutoRun` | Triggers the inspection workflow. In a real workflow, this could be replaced by camera trigger, image subscription, or production-line signal.  |
+| `RestGetJson` | Calls the Flask CTTA API. |
+| `Debug`| A debug dashboard to shows full JSON result from Flask. |
+
+
 
