@@ -1,8 +1,7 @@
 # Online-Test-Time-Learning-Method-for-Industrial-Defect-Detection-
 Modern manufacturing requires defect detection systems that are efficient, adaptive and capable of identifying unknown defects. This research proposes an online test-time learning method using a YOLO26 nano classification model within an open-ended anomaly detection pipeline. A low-code platform is also developed to support easier implementation and practical use.
 
-DATASET
---------
+## 1.0 DATASET
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
 - Total of 5354 images (Train: 3629; Test: 1725). About 70:30 ratio. 
 - Having 15 types material including
@@ -23,10 +22,10 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
     - Toothbrush: 102
 
             
-## WORKFLOWS
-## Overall Workflow
+## 2.0 WORKFLOWS
+## 2.1 Overall Workflow
 
-### Process Flow
+### 2.1.1 Process Flow
 
 <pre>
 Stage 1: Offline Preparation in Notebook
@@ -43,13 +42,13 @@ Stage 3: CiRA CORE + Flask CTTA Deployment Workflow
 | Stage&nbsp;3 | CiRA CORE + Flask CTTA Deployment Workflow | Run the defect detection system through CiRA CORE and Flask API |
 
 
-## Stage 1 — Offline Preparation in Notebook
+## 2.2 Stage 1 — Offline Preparation in Notebook
 
-### Purpose
+### 2.2.1 Purpose
 
 Prepare the initial normal representation and model files before deployment.
 
-### Process Flow
+### 2.2.2 Process Flow
 
 <pre>
 MVTec AD train/good images
@@ -71,14 +70,14 @@ Export deployment files:
     - threshold.json
 </pre>
 
-### Explanation
+### 2.2.3 Explanation
 
 The offline preparation from notebook here is to develop and prepare the initial anomaly detection model before deployment. A YOLO-based model is used as a frozen feature extractor, only a small adapter layer and the stored normal reference features are updated during online testing. This makes the system more stable and avoids the risk of changing the entire model during deployment.
 
 Normal training images are passed through the YOLO feature extractor to obtain visual feature embeddings and these embeddings are stored in a normal memory bank as reference patterns of normal products. During validation, normal validation images are compared with this memory bank to calculate a distribution of normal anomaly scores. The initial anomaly threshold is then calculated from this normal-score distribution rather than being directly predicted by the model. 
 End of this stage, four deployment files are generated and saved for later testing and deployment. 
 
-### Exported Files
+### 2.2.4 Exported Files
 
 | File | Purpose |
 |---|---|
