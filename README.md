@@ -190,15 +190,22 @@ If the image is confidently normal, the lightweight online adapter and memory ba
 ### 2.4.6 CiRA CORE overview
 In CiRA CORE, a low-code workflow is built using AutoRun, RestGetJson and Debug nodes. 
 
-![CiRA CORE overview](write-up/images/CiRA%20CORE.PNG)
+![CiRA CORE Main Flow](write-up/images/cira%20run_flow.PNG)
 
-![Debug node display](write-up/images/debug_node.PNG)
+![CiRA CORE Stop Flow](write-up/images/cira%20stop_flow.PNG)
+
+![CiRA CORE Reset Flow](write-up/images/cira%20reset_flow.PNG)
 
 | Feature&nbsp;node | Usage |
 |---|---|
-| `AutoRun` | Triggers the inspection workflow. In a real workflow, this could be replaced by camera trigger, image subscription, or production-line signal.  |
-| `RestGetJson` | Calls the Flask CTTA API. |
-| `Debug`| A debug dashboard to shows full JSON result from Flask. |
-
+| `Button Run` | Button to trigger activation.  |
+| `Python` | Python feature enable. |
+| `Debug`| A debug dashboard to shows internal readout. |
+| `IfElse` | If-else feature support.  |
+| `RestPutJson` | Send image to CTTA Flask API. |
+| `Set`| Trigger the selected data for readout. |
+| `Get`| Receive trigger on selected data for kick start the process. |
+| `Delay`| Set a delay for next image load. |
+| `Text/Label/LED/Image`| Readout/display based on the trigger. |
 
 
