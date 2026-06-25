@@ -188,12 +188,15 @@ If the image is confidently normal, the lightweight online adapter and memory ba
 | `memory_bank_update_*.pt`| Saves updated memory bank after selected online updates |
 
 ### 2.4.6 CiRA CORE overview
-In CiRA CORE, a low-code workflow is built using AutoRun, RestGetJson and Debug nodes. 
+In CiRA CORE, a low-code workflow is built with 3 flows here. 
 
+### 2.4.6.1 Main flow
 ![CiRA CORE Main Flow](write-up/images/cira_run_flow.PNG)
 
+### 2.4.6.1 Stop flow
 ![CiRA CORE Stop Flow](write-up/images/cira_stop_flow.PNG)
 
+### 2.4.6.1 Reset flow
 ![CiRA CORE Reset Flow](write-up/images/cira_reset_flow.PNG)
 
 | Feature&nbsp;node | Usage |
