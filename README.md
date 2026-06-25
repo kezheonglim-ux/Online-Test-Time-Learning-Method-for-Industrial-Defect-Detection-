@@ -190,11 +190,11 @@ If the image is confidently normal, the lightweight online adapter and memory ba
 ### 2.4.6 CiRA CORE overview
 In CiRA CORE, a low-code workflow is built using AutoRun, RestGetJson and Debug nodes. 
 
-![CiRA CORE Main Flow](write-up/images/cira%20run_flow.PNG)
+![CiRA CORE Main Flow](write-up/images/cira_run_flow.PNG)
 
-![CiRA CORE Stop Flow](write-up/images/cira%20stop_flow.PNG)
+![CiRA CORE Stop Flow](write-up/images/cira_stop_flow.PNG)
 
-![CiRA CORE Reset Flow](write-up/images/cira%20reset_flow.PNG)
+![CiRA CORE Reset Flow](write-up/images/cira_reset_flow.PNG)
 
 | Feature&nbsp;node | Usage |
 |---|---|
