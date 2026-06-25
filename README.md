@@ -187,28 +187,33 @@ If the image is confidently normal, the lightweight online adapter and memory ba
 | `prediction_log.csv` | Stores prediction history, including image path, score, label, update status and memory size |
 | `memory_bank_update_*.pt`| Saves updated memory bank after selected online updates |
 
-### 2.4.6 CiRA CORE overview
-In CiRA CORE, a low-code workflow is built with 3 flows here. 
+### 2.4.6 CiRA CORE Overview
 
-### 2.4.6.1 Main flow
+In CiRA CORE, a low-code workflow is built with three flows: Main Flow, Stop Flow, and Reset Flow.
+
+#### 2.4.6.1 Main Flow
+
 ![CiRA CORE Main Flow](write-up/images/cira_run_flow.PNG)
 
-### 2.4.6.1 Stop flow
+#### 2.4.6.2 Stop Flow
+
 ![CiRA CORE Stop Flow](write-up/images/cira_stop_flow.PNG)
 
-### 2.4.6.1 Reset flow
+#### 2.4.6.3 Reset Flow
+
 ![CiRA CORE Reset Flow](write-up/images/cira_reset_flow.PNG)
 
-| Feature&nbsp;node | Usage |
-|---|---|
-| `Button Run` | Button to trigger activation.  |
-| `Python` | Python feature enable. |
-| `Debug`| A debug dashboard to shows internal readout. |
-| `IfElse` | If-else feature support.  |
-| `RestPutJson` | Send image to CTTA Flask API. |
-| `Set`| Trigger the selected data for readout. |
-| `Get`| Receive trigger on selected data for kick start the process. |
-| `Delay`| Set a delay for next image load. |
-| `Text/Label/LED/Image`| Readout/display based on the trigger. |
+#### 2.4.6.4 Feature Nodes
 
+| Feature Node | Usage |
+|---|---|
+| `Button Run` | Button to trigger activation. |
+| `Python` | Python feature enable. |
+| `Debug` | Debug dashboard to show internal readout. |
+| `IfElse` | If-else feature support. |
+| `RestPutJson` | Send image to CiRA Flask API. |
+| `Set` | Trigger the selected data for readout. |
+| `Get` | Receive triggered or selected data to start the process. |
+| `Delay` | Set a delay before loading the next image. |
+| `Text/Label/LED/Image` | Display/readout based on the trigger. |
 
