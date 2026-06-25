@@ -203,17 +203,20 @@ In CiRA CORE, a low-code workflow is built with three flows: Main Flow, Stop Flo
 
 ![CiRA CORE Reset Flow](write-up/images/cira_reset_flow.PNG)
 
+
 #### 2.4.6.4 Feature Nodes
 
 | Feature Node | Usage |
 |---|---|
-| `Button Run` | Button to trigger activation. |
-| `Python` | Python feature enable. |
-| `Debug` | Debug dashboard to show internal readout. |
-| `IfElse` | If-else feature support. |
-| `RestPutJson` | Send image to CiRA Flask API. |
-| `Set` | Trigger the selected data for readout. |
-| `Get` | Receive triggered or selected data to start the process. |
-| `Delay` | Set a delay before loading the next image. |
-| `Text/Label/LED/Image` | Display/readout based on the trigger. |
+| `Button Run` | Triggers the execution of the selected workflow. |
+| `Python` | Executes Python scripts for data processing, control logic, and custom functions. |
+| `Debug` | Displays internal payloads, outputs, and system messages for troubleshooting. |
+| `IfElse` | Provides conditional branching based on the defined logic. |
+| `RestPutJson` | Sends image data and related parameters to the CiRA Flask API for prediction. |
+| `Set` | Publishes the selected payload to a specified data channel for UI display or readout. |
+| `Get` | Retrieves selected flow data from a specified data channel. |
+| `Delay` | Adds a time delay before triggering the next image or workflow step. |
+| `Text / Label / LED / Image` | Displays workflow information, prediction results, anomaly status, and the current image. |
+
+
 
