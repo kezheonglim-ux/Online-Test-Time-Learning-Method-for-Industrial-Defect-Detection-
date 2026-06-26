@@ -206,7 +206,7 @@ In CiRA CORE, a low-code workflow is built with three flows: Main Flow, Stop Flo
 
 #### 2.4.6.4 Feature Nodes
 
-| Feature Node | Usage in This Workflow |
+| Feature Node | Usage in Workflow |
 |---|---|
 | `Button Run` | Used as the main execution trigger for each workflow.<br><br>**In use:** The Run `Button Run` starts the batch image testing loop. |
 | `Python`-Batch Image Loader | Python node used to control the batch image input process.<br><br>***In use:** It checks `stop.txt`, reads `batch_index.txt`, loads the next valid image from `C:\cira_batch_test`, and prepares `image_path`, `category`, and `mode` for Flask prediction. |
