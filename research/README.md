@@ -53,7 +53,7 @@ Based on the comparison, `YOLO26 was selected` in this project because the syste
 
 ## 1.4 Comparison of Alternative Learning Methods
 
-| Method | How It Works | Strength | Weakness | Implementation Difficulty if YOLO26 is Selected | Relevant Reference |
+| Method | How It Works | Strength | Weakness | Challenge Implemented to YOLO26 | Relevant Reference |
 |---|---|---|---|---|---|
 | Offline retraining | Collect new data, label it, and retrain or fine-tune the model. | Stable and controlled because the model is updated in a planned training stage. | Slow; requires labelled data; not suitable for fast deployment changes. | High. If YOLO26 is retrained as a detector, labelled defect images and bounding-box annotations are required. This is time-consuming for industrial defect cases. | Plested & Gedeon (2022), Deep Transfer Learning for Image Classification: A Survey. https://arxiv.org/abs/2205.09904 |
 | Transfer learning / fine-tuning | Fine-tune a pre-trained model on a target defect dataset. | Strong when enough labelled examples are available. | Needs labelled defect data and may overfit when the dataset is small. | Medium to High. YOLO26 can be fine-tuned, but the process requires labelled samples, training configuration, validation, and risk control. | Plested & Gedeon (2022), Deep Transfer Learning for Image Classification: A Survey. https://arxiv.org/abs/2205.09904 |
