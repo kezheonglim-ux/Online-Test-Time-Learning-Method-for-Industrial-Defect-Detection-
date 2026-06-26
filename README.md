@@ -26,7 +26,7 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
 
 ### 2.1 Project Purpose 
 
-The purpose of this project is to develop a working online test-time learning method for industrial defect detection. The system is designed to identify abnormal product images by comparing incoming image features with stored normal reference features. Instead of retraining the entire model during deployment, this project uses a frozen YOLO26 feature extractor, a lightweight online adapter, a normal memory bank, and calibrated decision thresholds. This allows the system to keep the main feature extractor stable while still adapting to trusted normal images during testing. The project also connects the Python-based defect detection pipeline with Flask API and CiRA CORE. Through this integration, the system can display the current image, image number, total image count, category, prediction result, anomaly status, anomaly score, and threshold in a low-code workflow interface. 
+To develop a working online test-time learning method for industrial defect detection. The system is designed to identify abnormal product images by comparing incoming image features with stored normal reference features. Instead of retraining the entire model during deployment, this project uses a frozen YOLO26 feature extractor, a lightweight online adapter, a normal memory bank, and calibrated decision thresholds. This allows the system to keep the main feature extractor stable while still adapting to trusted normal images during testing. The project also connects the Python-based defect detection pipeline with Flask API and CiRA CORE. Through this integration, the system can display the current image, image number, total image count, category, prediction result, anomaly status, anomaly score, and threshold in a low-code workflow interface. 
 
 ### 2.2 Article Review 
 
@@ -36,7 +36,7 @@ Detail of article review in reserach/
 
 Here the key implementation ideas used in this project and records the main references that support each technical decision. The project is built around industrial anomaly detection using a frozen YOLO26 feature extractor, normal feature memory bank, threshold-based anomaly decision, online test-time adaptation and CiRA CORE low-code deployment.
 
-| Project Idea | Description Related to This Project | Supporting Reference |
+| Project Idea | Describe | Supporting Reference |
 |---|---|---|
 | Normal memory bank with reference embeddings | Normal training images are converted into feature embeddings and stored as a normal reference memory bank. During testing, the incoming image feature is compared with the stored normal features to calculate the anomaly score. | Roth et al. (2022), *Towards Total Recall in Industrial Anomaly Detection*. [arXiv](https://arxiv.org/abs/2106.08265) <br> Anomalib PatchCore Documentation. [Anomalib](https://anomalib.readthedocs.io/en/v2.0.0/markdown/guides/reference/models/image/patchcore.html) |
 | Nearest-neighbor feature comparison | The test image embedding is compared with the closest normal reference embeddings. If the distance is large, the test image is considered more different from the normal pattern and may be classified as anomalous. | Roth et al. (2022), *Towards Total Recall in Industrial Anomaly Detection*. [arXiv](https://arxiv.org/abs/2106.08265) |
