@@ -28,13 +28,47 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
 
 The purpose of this project is to develop a working online test-time learning method for industrial defect detection. The system is designed to identify abnormal product images by comparing incoming image features with stored normal reference features. Instead of retraining the entire model during deployment, this project uses a frozen YOLO26 feature extractor, a lightweight online adapter, a normal memory bank, and calibrated decision thresholds. This allows the system to keep the main feature extractor stable while still adapting to trusted normal images during testing. The project also connects the Python-based defect detection pipeline with Flask API and CiRA CORE. Through this integration, the system can display the current image, image number, total image count, category, prediction result, anomaly status, anomaly score, and threshold in a low-code workflow interface. 
 
-### 2.2 Article Review <!-- Leave this section blank first. This part will later review related studies and methods that support the proposed system. --> 
+### 2.2 Article Review 
+<!-- Leave this section blank first. This part will later review related studies and methods that support the proposed system. --> 
 
 #### 2.2.1 Overview of Industrial Defect Detection 
-<!-- Leave blank first. --> 
-
 #### 2.2.2 Literature Review of Existing Methods 
-<!-- Leave blank first. --> 
+
+#### 2.2.1 Key Implementation Ideas and Supporting References
+
+| Project Idea | Description Related to This Project | Supporting Reference |
+|---|---|---|
+| Normal memory bank with reference embeddings | Normal image features are extracted and stored as a reference memory bank. During testing, a new image is compared with the stored normal features to calculate the anomaly score. | [R1], [R2] |
+| Nearest-neighbor anomaly scoring | The test image embedding is compared with the closest normal reference embeddings. A larger distance means the image is more different from the normal pattern and may be classified as anomaly. | [R1], [R2] |
+| Frozen/pre-trained feature extractor | Instead of training the full model again, a pre-trained feature extractor is used to extract stable visual features. This supports anomaly detection when labelled defect samples are limited. | [R3] |
+| YOLO-family model as feature extractor | YOLO-type models are suitable for real-time visual inspection because they are efficient and practical for deployment. In this project, YOLO26 is used mainly as a frozen feature extractor, not as a fully supervised defect detector. | [R4], [R5] |
+| Threshold-based anomaly decision | The anomaly score is compared with a threshold to decide whether the image is normal or abnormal. However, fixed thresholds may become less reliable when lighting, camera angle, or product conditions change. | [R6] |
+| Online test-time adaptation | The system adapts during inference by using incoming trusted normal-like samples, instead of waiting for full offline retraining. This supports continuous deployment under changing production conditions. | [R6], [R7], [R8] |
+| Lightweight adapter update | A small adapter is updated while the main feature extractor remains frozen. This reduces the risk and cost of retraining the full model. | [R7], [R8] |
+| Low-code deployment workflow | The AI backend is connected to a low-code interface so that users can trigger inspection, view images, and monitor results without working directly inside Python notebooks. | [R9], [R10], [R11] |
+
+### 2.2.2 Technical Literature Review Table
+
+| Article / Source | Method / Technical Idea | Target Problem | Key Technical Information | Limitation / Gap | Link to This Project |
+|---|---|---|---|---|---|
+| PatchCore: Towards Total Recall in Industrial Anomaly Detection | Memory bank-based anomaly detection | Industrial anomaly detection with limited or no defect labels | Uses pre-trained features and stores nominal patch features in a memory bank for nearest-neighbor anomaly scoring. | Mainly an offline anomaly detection method; memory bank and threshold are not automatically adapted during deployment. | Supports the project idea of storing normal feature embeddings as a reference memory bank. |
+| Anomalib PatchCore documentation | Practical implementation of PatchCore-style anomaly detection | Implementing anomaly detection using memory bank and nearest-neighbor search | Uses memory bank comparison and nearest-neighbor distance to compute anomaly scores. | Documentation/reference implementation only; does not fully solve online test-time update or low-code deployment. | Used as practical reference for feature embedding, memory bank, and anomaly score calculation. |
+| Exploring the Importance of Pretrained Feature Extractors for Unsupervised Anomaly Detection | Study of pre-trained feature extractors | Unsupervised anomaly detection performance | Shows that the selected pre-trained feature space is important for anomaly detection and localization. | Focuses on feature extractor analysis, not a complete online deployment workflow. | Supports the use of a frozen/pre-trained feature extractor in this project. |
+| Test Time Training for Industrial Anomaly Segmentation | Test-time training for anomaly segmentation | Fixed threshold and segmentation limitation in industrial anomaly detection | Uses test-time information to improve anomaly segmentation and reduce dependence on validation-based thresholding. | Mainly focuses on segmentation refinement, not a full image-level online defect detection workflow with low-code display. | Supports the project direction of using test-time information during deployment. |
+| TENT: Fully Test-Time Adaptation by Entropy Minimization | Test-time adaptation using entropy minimization | Distribution shift during testing | Updates model parameters during testing using prediction entropy, without changing the training process. | Designed mainly for classification/segmentation adaptation; direct use in anomaly detection needs careful modification. | Supports the general idea of adapting during inference instead of offline retraining. |
+| CoTTA: Continual Test-Time Adaptation | Continual adaptation under changing test distributions | Non-stationary test-time distribution shift | Uses continual test-time adaptation and addresses error accumulation and forgetting during long-term adaptation. | More complex than a simple adapter/memory-bank update; risk of unstable updates remains. | Supports the need to control online updates and avoid memory contamination. |
+| Industrial defect detection with YOLO-family models | Real-time object detection | Fast industrial visual inspection | YOLO-type models are commonly selected when speed and deployment simplicity are important. | Supervised YOLO detection usually requires labelled defect bounding boxes; unknown anomaly detection still needs additional logic. | Supports using YOLO26 as a fast frozen feature extractor instead of a fully retrained detector. |
+| Low-code / visual workflow platforms such as Node-RED, KNIME, and Orange | Low-code / no-code workflow building | Reducing coding barrier for users | Visual workflow tools allow users to connect data, APIs, model outputs, and display components with less manual coding. | General platforms may need customization for real-time image inspection and AI backend integration. | Supports the use of CiRA CORE as a practical low-code interface for the detection workflow. |
+
+### 2.2.3 Research Gap Linked to This Project
+
+| Existing Direction | Current Gap | How This Project Responds |
+|---|---|---|
+| Supervised defect detection | Requires labelled defect samples and may not handle unknown defects well. | Uses normal reference features and anomaly scoring, reducing dependence on labelled defect images. |
+| Offline anomaly detection | Normal memory bank and threshold are usually prepared before deployment and may become less reliable when production conditions change. | Adds deployment calibration and online update of trusted normal-like features. |
+| Incremental learning | Usually requires staged training sessions, labelled new data, or offline update procedures. | Uses online test-time learning so adaptation can happen during operation. |
+| Test-time adaptation | Many methods focus on classification or segmentation, not a complete industrial inspection workflow. | Builds a full workflow from feature extraction to score calculation, threshold decision, Flask API, and CiRA CORE display. |
+| Low-code implementation | Most research focuses on model performance but less on operator-friendly deployment. | Integrates the detection backend with a low-code workflow for easier operation and monitoring. |
 
 #### 2.2.3 Comparison of Different Methods 
 
