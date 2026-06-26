@@ -22,8 +22,8 @@ https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-li
     - Toothbrush: 102
 
             
-## 2.0 WORKFLOWS
-## 2.1 Overall Workflow
+## 2.0 Project Workflow
+### 2.1 Overall System Workflow
 
 ### 2.1.1 Process Flow
 
