@@ -206,17 +206,23 @@ In CiRA CORE, a low-code workflow is built with three flows: Main Flow, Stop Flo
 
 #### 2.4.6.4 Feature Nodes
 
-| Feature Node | Usage |
+| Feature Node | Usage in This Workflow |
 |---|---|
-| `Button Run` | Triggers the execution of the selected workflow. |
-| `Python` | Executes Python scripts for data processing, control logic, and custom functions. |
-| `Debug` | Displays internal payloads, outputs, and system messages for troubleshooting. |
-| `IfElse` | Provides conditional branching based on the defined logic. |
-| `RestPutJson` | Sends image data and related parameters to the CiRA Flask API for prediction. |
-| `Set` | Publishes the selected payload to a specified data channel for UI display or readout. |
-| `Get` | Retrieves selected flow data from a specified data channel. |
-| `Delay` | Adds a time delay before triggering the next image or workflow step. |
-| `Text / Label / LED / Image` | Displays workflow information, prediction results, anomaly status, and the current image. |
+| `Button Run` | Used as the main execution trigger for each workflow. In the Run Flow, it starts the batch image testing loop. |
+| `Python` | Used to execute custom logic. In the Run Flow, Python1 loads the next image, checks `stop.txt`, reads `batch_index.txt`, and prepares `image_path`, `category`, and `mode` for prediction. Python2 parses the Flask prediction result and prepares the text display, LED colour, and image display. In the Stop Flow, Python creates `stop.txt`. In the Reset Flow, Python deletes `stop.txt` and resets `batch_index.txt` to `0`. |
+| `Debug` | Used to monitor internal payloads and troubleshoot the workflow. It helps verify image loading, Flask API responses, prediction results, stop requests, reset status, and UI output values. |
+| `IfElse` | Used in the Run Flow to decide whether the workflow should continue. If `have_img = true`, the image is sent to the Flask API for prediction. If `have_img = false`, the workflow stops because the batch is completed, stopped, or has an error. |
+| `RestPutJson` | Used in the Run Flow to send the selected image information to the CTTA Flask API. It sends `image_path`, `category`, and `mode`, then receives the anomaly prediction result from the API. |
+| `Set` | Used to publish Python2 output to UI display channels. `Set(text_me)` updates the result Text display, `Set(led_me)` updates the LED anomaly status, and `Set(image_status)` updates the current image display. |
+| `Get` | Used to retrieve selected flow data when needed. In this workflow, it may be used for testing or retrieving UI-related data, but the main Run / Stop / Reset execution is controlled by `Button Run` for stability. |
+| `Delay` | Used in the Run Flow to control the interval before loading the next image. After each prediction is completed and the UI is updated, the Delay block triggers the Run Flow again to process the next image automatically. |
+| `Text` | Used to display the parsed prediction result, including image progress, category, result, anomaly status, file name, anomaly score, and threshold. It receives data through `Set(text_me)`. |
+| `Label` | Used as a static explanation block on the CiRA CORE canvas. It describes the purpose and logic of the Run Flow, Stop Flow, and Reset Flow for better readability. |
+| `LED` | Used to show the anomaly status visually. It receives data through `Set(led_me)`. The LED turns red when an anomaly is detected and green when the image is classified as normal. |
+| `Image` | Used to display the current image being analyzed. It receives the actual image object through `Set(image_status)`, allowing the UI to show the image processed in the current prediction cycle. |
+
+
+
 
 
 
