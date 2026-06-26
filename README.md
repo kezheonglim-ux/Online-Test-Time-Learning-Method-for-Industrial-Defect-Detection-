@@ -34,7 +34,7 @@ Detail of article review in reserach/
 
 #### 2.2.1 Key Implementation Ideas and Supporting References
 
-This section summarises the key implementation ideas used in this project and records the main references that support each technical decision. The project is built around industrial anomaly detection using a frozen YOLO26 feature extractor, normal feature memory bank, threshold-based anomaly decision, online test-time adaptation, and CiRA CORE low-code deployment.
+Here the key implementation ideas used in this project and records the main references that support each technical decision. The project is built around industrial anomaly detection using a frozen YOLO26 feature extractor, normal feature memory bank, threshold-based anomaly decision, online test-time adaptation and CiRA CORE low-code deployment.
 
 | Project Idea | Description Related to This Project | Supporting Reference |
 |---|---|---|
