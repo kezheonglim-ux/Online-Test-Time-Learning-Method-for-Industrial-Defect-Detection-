@@ -221,7 +221,6 @@ The `Prediction Result Parser` formats the result for UI display. The Text block
 
 ### 2.6.4.1 Deployment Folder Structure
 
-```text
 **C:\cira_ttl_model**
 │
 ├── yolo26n-cls.pt
