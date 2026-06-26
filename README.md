@@ -334,13 +334,13 @@ python app_ctta.py
 3. Click `Reset` in CiRA CORE to set batch_index.txt to 0.
 4. Click `Run` to start automated batch prediction.
 5. The UI will show:
-- current image
-- progress
-- category
-- prediction result
-- anomaly score
-- threshold
-- LED anomaly status
+    - current image
+    - progress
+    - category
+    - prediction result
+    - anomaly score
+    - threshold
+    - LED anomaly status
 6. Click `Stop` to create stop.txt. The Run Flow will stop after the current image is completed.
 
 
