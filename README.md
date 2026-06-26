@@ -32,7 +32,6 @@ The purpose of this project is to develop a working online test-time learning me
 
 Detail of article review in reserach/
 
-```md
 #### 2.2.1 Key Implementation Ideas and Supporting References
 
 This section summarises the key implementation ideas used in this project and records the main references that support each technical decision. The project is built around industrial anomaly detection using a frozen YOLO26 feature extractor, normal feature memory bank, threshold-based anomaly decision, online test-time adaptation, and CiRA CORE low-code deployment.
@@ -53,10 +52,6 @@ This section summarises the key implementation ideas used in this project and re
 Based on the references above, this project adopts a memory bank-based anomaly detection direction supported by online test-time learning. YOLO26 is used as a frozen feature extractor to generate image embeddings, while the normal memory bank and calibrated thresholds are used to determine whether an incoming image is normal or anomalous. The selected design avoids full model retraining during deployment and supports a practical low-code workflow through Flask API and CiRA CORE.
 
 However, the selected method also has a limitation. If an abnormal image is wrongly treated as normal and added into the memory bank, the normal reference representation may become contaminated. Therefore, online updating should only be performed when the image is confidently normal or verified as a trusted normal sample.
-```
-
-
-
 
 ### 2.3 Proposed System Workflow
 
