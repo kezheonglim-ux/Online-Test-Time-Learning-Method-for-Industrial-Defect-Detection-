@@ -205,24 +205,24 @@ If the image is confidently normal, the lightweight online adapter and memory ba
 | `prediction_log.csv` | Stores prediction history, including image path, score, label, update status and memory size |
 | `memory_bank_update_*.pt`| Saves updated memory bank after selected online updates |
 
-### 2.6.6 CiRA CORE Overview
+### 2.7 CiRA CORE Overview
 
 In CiRA CORE, a low-code workflow is built with three flows: Main Flow, Stop Flow, and Reset Flow.
 
-#### 2.6.6.1 Main Flow
+#### 2.7.1 Main Flow
 
 ![CiRA CORE Main Flow](write-up/images/cira_run_flow.PNG)
 
-#### 2.6.6.2 Stop Flow
+#### 2.7.2 Stop Flow
 
 ![CiRA CORE Stop Flow](write-up/images/cira_stop_flow.PNG)
 
-#### 2.6.6.3 Reset Flow
+#### 2.7.3 Reset Flow
 
 ![CiRA CORE Reset Flow](write-up/images/cira_reset_flow.PNG)
 
 
-#### 2.6.6.4 Feature Nodes
+#### 2.7.4 Feature Nodes
 
 | Feature Node | Usage in Workflow |
 |---|---|
