@@ -1,10 +1,10 @@
 # Online-Test-Time-Learning-Method-for-Industrial-Defect-Detection-
-Modern manufacturing requires defect detection systems that are efficient, adaptive and capable of identifying unknown defects. This research proposes an online test-time learning method using a YOLO26 nano classification model within an open-ended anomaly detection pipeline. A low-code platform is also developed to support easier implementation and practical use.
+Modern manufacturing requires defect detection systems that are efficient, adaptive and capable of identifying unknown defects. This research proposes an online test-time learning method for industrial defect detection using a frozen YOLO26 nano classification model, a normal memory bank, a lightweight adapter, and category-specific decision thresholds. The latest deployment supports automated batch image testing in CiRA CORE, where multiple category folders can be processed sequentially through a Flask API. The system displays the current image, prediction result, anomaly score, threshold and LED anomaly status, while also supporting Stop and Reset control flows.
 
 ## 1.0 DATASET
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
 - Total of 5354 images (Train: 3629; Test: 1725). About 70:30 ratio. 
-- Having 15 types material including
+- Having 15 types category including
     - Hazelnut: 501
     - Screw: 439
     - Pill: 434
@@ -115,18 +115,20 @@ End of this stage, four deployment files are generated and saved for later testi
 
 ### 2.4.5 Exported Files
 
-| File | Usage |
+| File / Folder | Usage |
 |---|---|
-| `yolo26n-cls.pt` | Provides the frozen YOLO feature extractor. It converts each incoming image into a visual feature embedding without retraining the YOLO model. |
-| `ttl_adapter.pt` | Stores the lightweight online adapter. The extracted feature embedding is passed through this adapter before comparison with the memory bank. |
-| `memory_bank.pt` | Stores the normal reference feature embeddings generated from normal training images. Incoming images are compared with this memory bank to calculate the anomaly score. |
-| `threshold.json` | Stores the calibrated decision settings, including the anomaly threshold and update threshold. These settings are used to classify the image and control online updating. |
+| `yolo26n-cls.pt` | Shared frozen YOLO26 feature extractor used for all categories. |
+| `<category>/memory_bank.pt` | Stores the normal reference feature embeddings for each product category. |
+| `<category>/ttl_adapter.pt` | Stores the lightweight adapter for each category. |
+| `<category>/threshold.json` | Stores the category-specific anomaly threshold, update threshold, and related decision settings. |
+
+Each deployed category has its own `memory_bank.pt`, `ttl_adapter.pt`, and `threshold.json`. This allows the Flask service to load the correct model files based on the category name received from CiRA CORE.
 
 ## 2.5 Stage 2: Deployment Auto-Calibration
 
 ### 2.5.1 Purpose
 
-Adjust the decision thresholds to match the deployment image condition.
+It involved 15 categories. Each category has its own threshold configuration because different product categories have different normal feature distributions and decision boundaries. During deployment, the Flask service loads the corresponding category folder based on the category name sent by CiRA CORE.
 
 ### 2.5.2 Process Flow
 
@@ -172,52 +174,118 @@ Run the defect detection system through a low-code workflow.
 ### 2.6.2 Process Flow
 
 <pre>
-CiRA CORE triggers inspection
+Run ButtonRun
         ↓
-RestGetJson sends image path to Flask CTTA API
+Batch Image Loader
         ↓
-Flask loads the image and calls the CTTA detector
+Check stop.txt and batch_index.txt
+        ↓
+Load next valid image from category folder
+        ↓
+IfElse checks have_img
+        ↓
+RestPutJson sends image_path, category, and mode to Flask CTTA API
+        ↓
+Flask loads category-specific model files
         ↓
 CTTA detector extracts YOLO26 features and compares with memory bank
         ↓
-Calculate anomaly score and apply dual-threshold decision
+Calculate anomaly score and apply threshold decision
         ↓
-If confidently normal:
-    update adapter and memory bank
-Else:
-    no online update
+Prediction Result Parser prepares UI outputs
         ↓
-Return JSON result to CiRA CORE
+Set(text_status), Set(led_status), Set(image_status)
         ↓
-Display result and save prediction log / memory checkpoint
+Display result, LED status, and current image
+        ↓
+Delay loops back to process the next image
 </pre>
 
 ###  2.6.3 Description
 
-In this stage, the prepared anomaly detection workflow is deployed through CiRA CORE and the Flask CTTA service. CiRA CORE acts as the low-code workflow interface, while Flask serves as the bridge to the Python-based CTTA detector by loading the exported model files, running the detection process, and returning the prediction result to CiRA CORE.
+In this stage, the anomaly detection workflow is deployed through CiRA CORE and a Flask CTTA service. CiRA CORE acts as the low-code interface, while Flask serves as the bridge to the Python-based CTTA detector.
 
-The CiRA CORE `RestGetJson` node sends the image path to the Flask API. Flask then reads the image and calls the CTTA detector. The detector extracts YOLO26 visual features, compares them with the normal memory bank, calculates the anomaly score and applies the dual-threshold decision logic.
+The latest CiRA CORE workflow supports automated batch testing. Images are stored under `C:\cira_batch_test` using category subfolders, such as `bottle`, `hazelnut`, `tile`, and other supported MVTec AD categories. The `Batch Image Loader` reads `batch_index.txt`, loads the next valid image, infers the category from the folder name, and sends `image_path`, `category`, and `mode` to the Flask `/predict` endpoint through `RestPutJson`.
 
-If the image is confidently normal, the lightweight online adapter and memory bank are updated during online test-time learning. If the image is not confidently normal, no online update is performed. The final prediction result is returned to CiRA CORE in JSON format and can be displayed through the Debug node or dashboard. Prediction logs and memory checkpoints are also saved for traceability.
+The Flask service loads the corresponding category-specific files from `C:\cira_ttl_model\<category>`, including `memory_bank.pt`, `ttl_adapter.pt`, and `threshold.json`. The CTTA detector extracts YOLO26 visual features, compares them with the normal memory bank, calculates the anomaly score, and returns the prediction result to CiRA CORE.
+
+The `Prediction Result Parser` formats the result for UI display. The Text block shows image progress, category, result, anomaly status, score, and threshold. The LED turns red for anomaly and green for normal. The Image block displays the current analyzed image. A Delay block then loops back to process the next image automatically until all images are completed or a stop request is detected.
 
 ### 2.6.4 Files in use
 
 | File | Usage |
 |---|---|
-| `app_ctta.py` | Flask service file, bridge between CiRA CORE and the Python-based CTTA detector. It load the export files output from `train.ipynb`, receiving image oath from CiRA CORE, running prediction through the CTTA detector, supporting `monitor`/`evalute`/`calibrate` modes, logging predictions to CSV, saving memory checkpoints and returning JSON result to CiRA CORE|
-| `cira_ttl_anomaly.py` | CTTA detector, contain real detection logic used during testing and deployment. It performs two key functions: feature extraction and anomaly score calculation.<br><br>Feature extraction converts the input image into a numerical feature embedding so that it can be compared with normal reference features.<br><br>Anomaly score calculation used to measures how different the incoming image is from the stored normal references. If the image is less similar to the memory bank, the anomaly score becomes higher. |
+| `app_ctta.py` | Category-aware Flask service file. It receives `image_path`, `category`, and `mode` from CiRA CORE, loads the corresponding category model files, runs prediction through the CTTA detector, and returns the JSON result to CiRA CORE. It supports `evaluate`, `monitor`, and `calibrate` modes. |
+| `cira_ttl_anomaly.py` | Core CTTA detector file. It handles YOLO26 feature extraction, adapter processing, normal memory bank comparison, anomaly score calculation, threshold decision, and optional online update. |
+| `auto_calibrate_threshold.py` | Optional deployment calibration script used to adjust anomaly and update thresholds using trusted normal deployment images. |
+
+### 2.6.4.1 Deployment Folder Structure
+
+```text
+**C:\cira_ttl_model**
+│
+├── yolo26n-cls.pt
+│
+├── bottle
+│   ├── memory_bank.pt
+│   ├── ttl_adapter.pt
+│   └── threshold.json
+│
+├── hazelnut
+│   ├── memory_bank.pt
+│   ├── ttl_adapter.pt
+│   └── threshold.json
+│
+├── tile
+│   ├── memory_bank.pt
+│   ├── ttl_adapter.pt
+│   └── threshold.json
+│
+└── ...
+
+**C:\cira_batch_test**
+│
+├── bottle
+│   ├── good_1.png
+│   └── bad_1.png
+│
+├── hazelnut
+│   ├── good_1.png
+│   └── bad_1.png
+│
+├── tile
+│   ├── good_1.png
+│   └── bad_1.png
+│
+├── batch_index.txt
+└── stop.txt <Created when triggered by STOP button>
+
+**C:\cira_ttl_service**
+│
+├── app_ctta.py
+└── auto_calibrate_threshold.py
+
 
 ### 2.6.5 Output
 
-| Output File | Usage |
+| Output | Usage |
 |---|---|
-| JSON prediction result | Returned to CiRA CORE and shows prediction result for each image displayed in the Debug node or dashboard  |
-| `prediction_log.csv` | Stores prediction history, including image path, score, label, update status and memory size |
-| `memory_bank_update_*.pt`| Saves updated memory bank after selected online updates |
+| JSON prediction result | Returned from the Flask API to CiRA CORE for each image. |
+| Text display | Shows image progress, category, result, anomaly status, file name, anomaly score, and threshold. |
+| LED display | Shows anomaly status visually. Red indicates anomaly; green indicates normal. |
+| Image display | Shows the current image being analyzed. |
+| `batch_index.txt` | Stores the current image index so the Run Flow can continue to the next image. |
+| `stop.txt` | Created by the Stop Flow to request the Run Flow to stop after the current image. |
+| `prediction_log.csv` | Stores prediction history, including image path, score, label, update status, and memory size if logging is enabled. |
+| `memory_bank_update_*.pt` | Saves updated memory bank checkpoints when online update is enabled. |
 
 ### 2.7 CiRA CORE Overview
 
-In CiRA CORE, a low-code workflow is built with three flows: Main Flow, Stop Flow, and Reset Flow.
+In CiRA CORE, the low-code deployment is built with three supporting flows:
+
+1. **Run Flow** – automatically loads batch images, sends them to the Flask API, displays results, and loops to the next image.
+2. **Stop Flow** – creates `stop.txt` to request the Run Flow to stop safely after the current image.
+3. **Reset Flow** – resets `batch_index.txt` to `0` so the next Run Flow starts from the first image.
 
 #### 2.7.1 Main Flow
 
@@ -252,7 +320,25 @@ In CiRA CORE, a low-code workflow is built with three flows: Main Flow, Stop Flo
 | `LED` | Used to show anomaly status visually.<br><br>***In use:** It receives data through `Set(led_status)`. The LED turns red when an anomaly is detected and green when the image is classified as normal. |
 | `Image` | Used to display the current image being analyzed.<br><br>***In use:** It receives the actual image object through `Set(image_status)`, allowing the UI to show the image processed in the current prediction cycle. |
 
+#### TESTING
 
+| Feature Node | Usage in This Workflow |
+|---|---|
+| `Button Run` | Used as the main execution trigger for each workflow.<br><br>**Real case:** The Run `Button Run` starts the batch image testing loop. The Stop `Button Run` triggers `Stop File Gen`. The Reset `Button Run` triggers `Batch Index Reset`. |
+| `Batch Image Loader` | Python node used to control the batch image input process.<br><br>**Real case:** It checks `stop.txt`, reads `batch_index.txt`, loads the next valid image from `C:\cira_batch_test`, and prepares `image_path`, `category`, and `mode` for Flask prediction. |
+| `Prediction Result Parser` | Python node used to process the prediction result and prepare UI output.<br><br>**Real case:** It parses the CTTA Flask API response, extracts the prediction result, anomaly score, threshold, and image information, then prepares `display_text`, `led_color`, and the current image object for UI display. |
+| `Batch Index Reset` | Python node used to reset the batch image sequence.<br><br>**Real case:** It resets `batch_index.txt` to `0`, allowing the next Run Flow to restart from the first image. |
+| `Stop File Gen` | Python node used to request a safe stop for the Run Flow.<br><br>**Real case:** It creates `stop.txt` in `C:\cira_batch_test`. The Run Flow will detect this file before loading the next image and stop after the current image is completed. |
+| `Debug` | Used to monitor internal payloads and troubleshoot the workflow.<br><br>**Real case:** It verifies image loading, Flask API responses, prediction results, stop requests, reset status, and UI output values. |
+| `IfElse` | Used to decide whether the Run Flow should continue.<br><br>**Real case:** If `have_img = true`, the image is sent to the Flask API for prediction. If `have_img = false`, the workflow stops because the batch is completed, stopped, or has an error. |
+| `RestPutJson` | Used to send image information to the CTTA Flask API.<br><br>**Real case:** It sends `image_path`, `category`, and `mode` to the Flask `/predict` endpoint and receives the anomaly prediction result. |
+| `Set` | Used to publish Python output to selected UI display channels.<br><br>**Real case:** `Set(text_status)` updates the result Text display, `Set(led_status)` updates the LED anomaly status, and `Set(image_status)` updates the current image display. |
+| `Get` | Used to retrieve selected flow data when required.<br><br>**Real case:** It is mainly used for testing or retrieving UI-related data. The main Run / Stop / Reset execution is controlled by `Button Run` for stability. |
+| `Delay` | Used to control the interval before the next image is loaded.<br><br>**Real case:** After each prediction is completed and the UI is updated, the Delay block triggers the Run Flow again to process the next image automatically. |
+| `Text` | Used to display the parsed prediction result.<br><br>**Real case:** It displays progress, category, result, anomaly status, file name, anomaly score, and threshold through `Set(text_status)`. |
+| `Label` | Used as a static explanation block on the CiRA CORE canvas.<br><br>**Real case:** It describes the purpose and logic of the Run Flow, Stop Flow, and Reset Flow for better readability. |
+| `LED` | Used to show anomaly status visually.<br><br>**Real case:** It receives data through `Set(led_status)`. The LED turns red when an anomaly is detected and green when the image is classified as normal. |
+| `Image` | Used to display the current image being analyzed.<br><br>**Real case:** It receives the actual image object through `Set(image_status)`, allowing the UI to show the image processed in the current prediction cycle. |
 
 
 
