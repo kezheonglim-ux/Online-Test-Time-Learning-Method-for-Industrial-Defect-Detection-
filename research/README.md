@@ -1,6 +1,5 @@
 # 1.0 Article Review 
-Here an overview of the project proposing and source recorded. It starting with Literature review to quick the overall industrial defect detection, summarising further analysis to modeling, methodology and platform.
-
+Here an overview of the proposed project and records the key sources used to support its development. It begins with a literature review to provide a general understanding of industrial defect detection, followed by further analysis of relevant modelling approaches, methodologies, and platform options.
 
 ## 1.1 Overview of Industrial Defect Detection 
 
