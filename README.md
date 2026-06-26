@@ -209,7 +209,7 @@ In CiRA CORE, a low-code workflow is built with three flows: Main Flow, Stop Flo
 | Feature Node | Usage in This Workflow |
 |---|---|
 | `Button Run` | Used as the main execution trigger for each workflow.<br><br>**In use:** The Run `Button Run` starts the batch image testing loop. |
-| `Python` -Batch Image Loader | Python node used to control the batch image input process.<br><br>***In use:** It checks `stop.txt`, reads `batch_index.txt`, loads the next valid image from `C:\cira_batch_test`, and prepares `image_path`, `category`, and `mode` for Flask prediction. |
+| `Python` (Batch Image Loader) | Python node used to control the batch image input process.<br><br>***In use:** It checks `stop.txt`, reads `batch_index.txt`, loads the next valid image from `C:\cira_batch_test`, and prepares `image_path`, `category`, and `mode` for Flask prediction. |
 | `Python` -Prediction Result Parser | Python node used to process the prediction result and prepare UI output.<br><br>***In use:** It parses the CTTA Flask API response, extracts the prediction result, anomaly score, threshold, and image information, then prepares `display_text`, `led_color`, and the current image object for UI display. |
 | `Python`-Batch Index Reset | Python node used to reset the batch image sequence.<br><br>***In use:** It resets `batch_index.txt` to `0`, allowing the next Run Flow to restart from the first image. |
 | `Python` -Stop File Gen | Python node used to request a safe stop for the Run Flow.<br><br>***In use:** It creates `stop.txt` in `C:\cira_batch_test`. The Run Flow will detect this file before loading the next image and stop after the current image is completed. |
