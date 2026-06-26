@@ -27,7 +27,7 @@
 | Main Direction | Summary |
 |---|---|
 | Deep learning-based defect detection | Uses CNN, YOLO, ResNet, DETR, or transformer-based models to detect industrial defects such as PCB, wafer, photovoltaic, weld, and packaging defects. These methods improve detection accuracy but often `depend on labelled data` and `fixed training conditions`. |
-| Incremental learning | Allows models to learn new defect categories over time while reducing catastrophic forgetting. However, most methods still `require staged training, labelled new samples, or controlled update sessions'. |
+| Incremental learning | Allows models to learn new defect categories over time while reducing catastrophic forgetting. However, most methods still `require staged training, labelled new samples, or controlled update sessions`. |
 | Few-shot and unknown defect detection | Helps detect new or rare defect types when only 'limited samples are available'. The challenge is that most methods 'still need labelled few-shot samples or offline fine-tuning'. |
 | Real-world anomaly detection | Highlights practical industrial problems such as lighting changes, unaligned images, subtle defects, and normal-reference comparison. These studies are highly relevant but 'usually focus on benchmark/model design rather than full deployment workflow'. |
 | Test-time learning / adaptation | Uses test-time information during inference to improve adaptation. This is close to this project direction, but many existing studies `focus on segmentation or classification rather than a complete online defect detection workflow`. |
