@@ -326,6 +326,8 @@ In CiRA CORE, the low-code deployment is built with three supporting flows:
 C:\cira_ttl_env\Scripts\activate
 cd C:\cira_ttl_service
 python app_ctta.py
+```
+![CiRA CORE Reset Flow](write-up/images/terminal_launch.PNG)
 
 2. Prepare batch images under C:\cira_batch_test using category subfolders.
 3. Click `Reset` in CiRA CORE to set batch_index.txt to 0.
