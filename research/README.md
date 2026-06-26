@@ -1,5 +1,5 @@
 # 1.0 Article Review 
-<!-- Leave this section blank first. This part will later review related studies and methods that support the proposed system. --> 
+Here an overview of the project proposing and source recorded. It starting with Literature review to quick the overall industrial defect detection, summarising further analysis to modeling, methodology and platform.
 
 
 ## 1.1 Overview of Industrial Defect Detection 
