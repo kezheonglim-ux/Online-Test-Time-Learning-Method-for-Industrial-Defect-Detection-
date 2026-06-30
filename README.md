@@ -1,6 +1,39 @@
 # Online-Test-Time-Learning-Method-for-Industrial-Defect-Detection-
 Modern manufacturing requires defect detection systems that are efficient, adaptive and capable of identifying unknown defects. This research proposes an online test-time learning method for industrial defect detection using a frozen YOLO26 nano classification model, a normal memory bank, a lightweight adapter, and category-specific decision thresholds. The latest deployment supports automated batch image testing in CiRA CORE, where multiple category folders can be processed sequentially through a Flask API. The system displays the current image, prediction result, anomaly score, threshold and LED anomaly status, while also supporting Stop and Reset control flows.
 
+## Table of Contents
+
+- [1.0 Dataset](#10-dataset)
+- [2.0 Project Workflow](#20-project-workflow)
+  - [2.1 Project Purpose](#21-project-purpose)
+  - [2.2 Article Review](#22-article-review)
+    - [2.2.1 Key Implementation Ideas and Supporting References](#221-key-implementation-ideas-and-supporting-references)
+  - [2.3 Proposed System Workflow](#23-proposed-system-workflow)
+  - [2.4 Stage 1: Offline Preparation in Notebook](#24-stage-1-offline-preparation-in-notebook)
+    - [2.4.1 Purpose](#241-purpose)
+    - [2.4.2 Process Flow](#242-process-flow)
+    - [2.4.3 Description](#243-description)
+    - [2.4.4 Files in Use](#244-files-in-use)
+    - [2.4.5 Exported Files](#245-exported-files)
+    - [2.4.6 Model Performance by Category](#246-model-performance-by-category)
+  - [2.5 Stage 2: Deployment Auto-Calibration](#25-stage-2-deployment-auto-calibration)
+    - [2.5.1 Purpose](#251-purpose)
+    - [2.5.2 Process Flow](#252-process-flow)
+    - [2.5.3 Description](#253-description)
+    - [2.5.4 Files in Use](#254-files-in-use)
+    - [2.5.5 Output](#255-output)
+  - [2.6 Stage 3: CiRA CORE + Flask CTTA Deployment Workflow](#26-stage-3-cira-core--flask-ctta-deployment-workflow)
+    - [2.6.1 Purpose](#261-purpose)
+    - [2.6.2 Process Flow](#262-process-flow)
+    - [2.6.3 Description](#263-description)
+    - [2.6.4 Files in Use](#264-files-in-use)
+    - [2.6.5 Output](#265-output)
+    - [2.6.6 CiRA CORE Workflow Design](#266-cira-core-workflow-design)
+      - [2.6.6.1 Run Flow](#2661-run-flow)
+      - [2.6.6.2 Stop Flow](#2662-stop-flow)
+      - [2.6.6.3 Reset Flow](#2663-reset-flow)
+      - [2.6.6.4 Feature Nodes](#2664-feature-nodes)
+
 ## 1.0 DATASET
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
 - Total of 5354 images (Train: 3629; Test: 1725). About 70:30 ratio. 
