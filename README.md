@@ -28,11 +28,11 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.6.3 Description](#263-description)
     - [2.6.4 Files in Use](#264-files-in-use)
     - [2.6.5 Output](#265-output)
-    - [2.6.6 CiRA CORE Workflow Design](#266-cira-core-workflow-design)
-      - [2.6.6.1 Run Flow](#2661-run-flow)
-      - [2.6.6.2 Stop Flow](#2662-stop-flow)
-      - [2.6.6.3 Reset Flow](#2663-reset-flow)
-      - [2.6.6.4 Feature Nodes](#2664-feature-nodes)
+  - [2.7 CiRA CORE Workflow Design](#27-cira-core-workflow-design)
+    - [2.7.1 Run Flow](#271-run-flow)
+    - [2.7.2 Stop Flow](#272-stop-flow)
+    - [2.7.3 Reset Flow](#273-reset-flow)
+    - [2.7.4 Feature Nodes](#274-feature-nodes)
 
 ## 1.0 DATASET
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
