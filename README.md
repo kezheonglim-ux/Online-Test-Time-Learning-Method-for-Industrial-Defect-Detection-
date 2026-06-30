@@ -33,6 +33,7 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.7.2 Stop Flow](#272-stop-flow)
     - [2.7.3 Reset Flow](#273-reset-flow)
     - [2.7.4 Feature Nodes](#274-feature-nodes)
+    - [2.7.5 CiRA CORE Operation](#275-cira-core-operation)
 
 ## 1.0 DATASET
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
@@ -350,7 +351,7 @@ The `Prediction Result Parser` formats the result for UI display. The Text block
 | `prediction_log.csv` | Stores prediction history, including image path, score, label, update status, and memory size if logging is enabled. |
 | `memory_bank_update_*.pt` | Saves updated memory bank checkpoints when online update is enabled. |
 
-### 2.7 CiRA CORE Overview
+### 2.7 CiRA CORE Workflown Design
 
 In CiRA CORE, the low-code deployment is built with three supporting flows:
 
@@ -358,7 +359,7 @@ In CiRA CORE, the low-code deployment is built with three supporting flows:
 2. **Stop Flow** – creates `stop.txt` to request the Run Flow to stop safely after the current image.
 3. **Reset Flow** – resets `batch_index.txt` to `0` so the next Run Flow starts from the first image.
 
-#### 2.7.1 Main Flow
+#### 2.7.1 Run Flow
 
 ![CiRA CORE Main Flow](write-up/images/cira_run_flow.PNG)
 
