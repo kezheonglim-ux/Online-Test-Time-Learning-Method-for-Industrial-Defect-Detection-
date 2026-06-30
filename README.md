@@ -391,7 +391,7 @@ In CiRA CORE, the low-code deployment is built with three supporting flows:
 | `LED` | Used to show anomaly status visually.<br><br>**Real case:** It receives data through `Set(led_status)`. The LED turns red when an anomaly is detected and green when the image is classified as normal. |
 | `Image` | Used to display the current image being analyzed.<br><br>**Real case:** It receives the actual image object through `Set(image_status)`, allowing the UI to show the image processed in the current prediction cycle. |
 
-#### 2.7.4 CiRA CORE Operation
+#### 2.7.5 CiRA CORE Operation
 
 1. Start the Flask CTTA service.
 
