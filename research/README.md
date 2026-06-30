@@ -1,5 +1,15 @@
 # 1.0 Article Review 
+
 Here an overview of the proposed project and records the key sources used to support its development. It begins with a literature review to provide a general understanding of industrial defect detection, followed by further analysis of relevant modelling approaches, methodologies and platform options.
+
+## Table of Contents
+
+- [1.0 Article Review](#10-article-review)
+  - [1.1 Overview of Industrial Defect Detection](#11-overview-of-industrial-defect-detection)
+  - [1.2 Summary of Literature Review Directions](#12-summary-of-literature-review-directions)
+  - [1.3 Modelling Option Analysis](#13-modelling-option-analysis)
+  - [1.4 Comparison of Alternative Learning Methods](#14-comparison-of-alternative-learning-methods)
+  - [1.5 Low-Code / Visual Platform Alternative Analysis](#15-low-code--visual-platform-alternative-analysis)
 
 ## 1.1 Overview of Industrial Defect Detection 
 
