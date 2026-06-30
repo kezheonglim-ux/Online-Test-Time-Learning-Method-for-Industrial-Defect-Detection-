@@ -125,6 +125,43 @@ End of this stage, four deployment files are generated and saved for later testi
 
 Each deployed category has its own `memory_bank.pt`, `ttl_adapter.pt`, and `threshold.json`. This allows the Flask service to load the correct model files based on the category name received from CiRA CORE.
 
+### 2.4.6 Model Performance by Category
+
+Here the summarizes of evaluation result for each deployed category.
+
+#### Model Performance by Category
+
+| Rank | Category | Test Total | Threshold | Overall Accuracy | Normal Accuracy / Recall | Abnormal Accuracy / Recall | Normal Precision | Abnormal Precision | Macro F1 | AUROC |
+|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | `bottle` | 83 | 0.011006 | 95.18% | 95.00% | 95.24% | 86.36% | 98.36% | 93.63% | 98.49% |
+| 2 | `hazelnut` | 110 | 0.031495 | 90.91% | 77.50% | 98.57% | 96.88% | 88.46% | 89.68% | 98.25% |
+| 3 | `tile` | 117 | 0.016451 | 88.89% | 81.82% | 91.67% | 79.41% | 92.77% | 86.41% | 96.68% |
+| 4 | `cable` | 150 | 0.023347 | 86.00% | 84.48% | 86.96% | 80.33% | 89.89% | 85.38% | 95.16% |
+| 5 | `transistor` | 100 | 0.015753 | 83.00% | 96.67% | 62.50% | 79.45% | 92.59% | 80.92% | 87.96% |
+| 6 | `metal_nut` | 115 | 0.014402 | 82.61% | 81.82% | 82.80% | 52.94% | 95.06% | 76.40% | 90.57% |
+| 7 | `zipper` | 151 | 0.008115 | 81.46% | 75.00% | 83.19% | 54.55% | 92.52% | 75.38% | 88.76% |
+| 8 | `wood` | 79 | 0.032310 | 81.01% | 57.89% | 88.33% | 61.11% | 86.89% | 73.53% | 91.49% |
+| 9 | `screw` | 160 | 0.026497 | 78.12% | 21.95% | 97.48% | 75.00% | 78.38% | 60.43% | 88.75% |
+| 10 | `grid` | 78 | 0.021676 | 76.92% | 52.38% | 85.96% | 57.89% | 83.05% | 69.74% | 72.10% |
+| 11 | `toothbrush` | 42 | 0.018410 | 76.19% | 33.33% | 93.33% | 66.67% | 77.78% | 64.65% | 88.89% |
+| 12 | `leather` | 124 | 0.006895 | 71.77% | 9.38% | 93.48% | 33.33% | 74.78% | 48.86% | 62.91% |
+| 13 | `capsule` | 132 | 0.006881 | 71.21% | 78.26% | 69.72% | 35.29% | 93.83% | 64.32% | 84.04% |
+| 14 | `carpet` | 117 | 0.005212 | 69.23% | 14.29% | 86.52% | 25.00% | 76.24% | 49.62% | 68.94% |
+| 15 | `pill` | 167 | 0.011324 | 64.67% | 84.62% | 60.99% | 28.57% | 95.56% | 58.59% | 80.36% |
+
+#### Important Evaluation Metrics
+
+| Metric | Usage |
+|---|---|
+| `Overall Accuracy` | Measures the overall correct prediction rate across both normal and abnormal images. It is useful for quick comparison, but it can be misleading when the dataset is imbalanced. |
+| `Normal Accuracy / Recall` | Measures how well the model correctly identifies normal images. A low value means many normal images are wrongly detected as anomalies, causing false alarms. |
+| `Abnormal Accuracy / Recall` | Measures how well the model detects actual abnormal or defective images. This is one of the most important metrics for industrial defect detection because missing a defect is usually more critical than a false alarm. |
+| `Normal Precision` | Measures how reliable the model is when it predicts an image as normal. |
+| `Abnormal Precision` | Measures how reliable the model is when it predicts an image as abnormal. A low value means many normal images are incorrectly flagged as defects. |
+| `Macro F1` | Provides a balanced score between the normal and abnormal classes. It is useful when the number of normal and abnormal images is uneven. |
+| `AUROC` | Measures how well the anomaly score separates normal and abnormal images regardless of one fixed threshold. Higher AUROC means better separation between normal and defective samples. |
+| `Threshold` | Defines the anomaly decision boundary for each category. If the anomaly score is higher than the threshold, the image is classified as abnormal. |
+
 ## 2.5 Stage 2: Deployment Auto-Calibration
 
 ### 2.5.1 Purpose
