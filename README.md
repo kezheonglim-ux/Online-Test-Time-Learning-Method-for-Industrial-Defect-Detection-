@@ -351,7 +351,7 @@ The `Prediction Result Parser` formats the result for UI display. The Text block
 | `prediction_log.csv` | Stores prediction history, including image path, score, label, update status, and memory size if logging is enabled. |
 | `memory_bank_update_*.pt` | Saves updated memory bank checkpoints when online update is enabled. |
 
-### 2.7 CiRA CORE Workflown Design
+### 2.7 CiRA CORE Workflow Design
 
 In CiRA CORE, the low-code deployment is built with three supporting flows:
 
