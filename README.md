@@ -92,6 +92,7 @@ However, the selected method also has a limitation. If an abnormal image is wron
 
 The proposed system is arranged into three main stages:
 
+![Overall Three-Stage System Architecture](write-up/images/Overall Three-Stage System Architecture.png)
 <pre>
 Stage 1: Offline Preparation in Notebook
         ↓
