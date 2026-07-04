@@ -92,14 +92,7 @@ However, the selected method also has a limitation. If an abnormal image is wron
 
 The proposed system is arranged into three main stages:
 
-![Overall Three-Stage System Architecture](write-up/images/Overall Three-Stage System Architecture.png)
-<pre>
-Stage 1: Offline Preparation in Notebook
-        ↓
-Stage 2: Deployment Auto-Calibration
-        ↓
-Stage 3: CiRA CORE + Flask CTTA Deployment Workflow
-</pre>
+![Online Test-Time Learning Procedure](write-up/images/Online%20Test-Time%20Learning%20Procedure.png)
 
 | Stage | Name | Main Usage |
 |---|---|---|
