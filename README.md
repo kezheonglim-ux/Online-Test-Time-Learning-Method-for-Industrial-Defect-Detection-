@@ -165,7 +165,7 @@ This section explains how the prepared memory bank, adapter and threshold are us
   <img src="write-up/images/Online%20Test-Time%20Learning%20Procedure.png" width="650">
 </p>
 
-During preparation, normal training images are converted into feature embeddings using the frozen YOLO26 feature extractor and online adapter. These embeddings are stored in the normal memory bank. Normal validation images are then compared with the memory bank to calculate anomaly scores, and the threshold is obtained from the high percentile of these normal validation scores.
+During preparation, normal training images are converted into feature embeddings using the frozen YOLO26 feature extractor and online adapter. These embeddings are stored in the normal memory bank. Normal validation images are then compared with the memory bank to calculate anomaly scores and the threshold is obtained from the high percentile of these normal validation scores.
 
 During online testing, each test image is processed one by one. The image embedding is compared with the normal memory bank using Top-K normal references and the global memory-bank score. The final anomaly score is then compared with the category-specific threshold to decide whether the image is normal or anomalous.
 
