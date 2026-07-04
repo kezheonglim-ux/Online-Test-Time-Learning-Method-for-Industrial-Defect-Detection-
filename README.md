@@ -224,22 +224,29 @@ It involved 15 categories. Each category has its own threshold configuration bec
 <pre>
 Trusted normal deployment images
         ↓
-score_only() calculates normal deployment scores
+Load existing threshold.json configuration
         ↓
-Calculate anomaly_threshold from high normal-score quantile
+Initialize TTLAnomalyDetector
         ↓
-Calculate update_threshold from stricter normal-score quantile
+score_only() calculates normal deployment anomaly scores
+(no adapter update and no memory-bank update)
         ↓
-Update threshold.json automatically
+Calculate anomaly_threshold from 99.5th percentile of normal scores
+        ↓
+Add small safety margin to anomaly_threshold
+        ↓
+Calculate update_threshold from 95th percentile of normal scores
+        ↓
+Save updated threshold.json
 </pre>
 
 ### 2.5.3 Description
 
-Deployment auto-calibration is included to adjust the decision thresholds before the system is used in the CiRA CORE workflow. Although the notebook generates an initial threshold from validation normal images, the actual deployment images may have different lighting, image quality, background, capture angle or image source. Therefore, a small set of trusted normal images from the target deployment category is used to calculate a more suitable `anomaly_threshold` and `update_threshold`. 
+Deployment auto-calibration is used to adjust the threshold before running the system in the CiRA CORE workflow. Although the notebook already creates an initial threshold from validation normal images, deployment images may have different lighting, image quality, background or camera conditions. Therefore, trusted normal deployment images are used to calculate deployment-condition anomaly scores.
 
-The `score_only()` function calculates anomaly scores without updating the adapter or memory bank. These scores are then used to generate the `anomaly_threshold` and `update_threshold`. The `anomaly_threshold` is used to decide whether an image should be classified as normal or anomalous. The `update_threshold` is used to decide whether an image is confidently normal and suitable for online updating. After calibration, the updated threshold values are saved into `threshold.json`.
+The `auto_calibrate_threshold.py` script loads the existing `threshold.json`, `ttl_adapter.pt`, `memory_bank.pt` and `yolo26n-cls.pt`. It then uses `score_only()` to calculate anomaly scores for trusted normal images. This is important because `score_only()` does not update the adapter or memory bank during calibration. :contentReference[oaicite:1]{index=1}
 
-In the current implementation, about 5 normal bottle images from the testing folder are selected and treated as deployment-condition normal samples for demonstration. The bottle category is used as the example category in this stage. If additional categories are deployed in the future, the same calibration process should be repeated separately for each category because each product category has its own normal feature distribution and decision boundary.
+The anomaly threshold is calculated from the 99.5th percentile of the normal deployment scores. A small safety margin, calculated as `0.1 × standard deviation`, is added to reduce false alarms caused by normal score variation. The update threshold is calculated from the 95th percentile of the same normal scores and is used as a stricter boundary for online memory-bank updates. The calibrated values and calibration statistics are saved back into `threshold.json`. :contentReference[oaicite:2]{index=2}
 
 ### 2.5.4 Files in use
 
@@ -251,7 +258,7 @@ In the current implementation, about 5 normal bottle images from the testing fol
 
 | Output File | Usage |
 |---|---|
-| `threshold.json` | Stores the updated `anomaly_threshold`, `update_threshold` and calibration settings for deployment |
+| `threshold.json` | Stores the calibrated anomaly threshold, update threshold, calibration method, quantile settings, safety margin and normal score statistics for deployment. |
 
 
 ## 2.6 Stage 3: CiRA CORE + Flask CTTA Deployment Workflow
