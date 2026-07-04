@@ -244,9 +244,9 @@ Save updated threshold.json
 
 Deployment auto-calibration is used to adjust the threshold before running the system in the CiRA CORE workflow. Although the notebook already creates an initial threshold from validation normal images, deployment images may have different lighting, image quality, background or camera conditions. Therefore, trusted normal deployment images are used to calculate deployment-condition anomaly scores.
 
-The `auto_calibrate_threshold.py` script loads the existing `threshold.json`, `ttl_adapter.pt`, `memory_bank.pt` and `yolo26n-cls.pt`. It then uses `score_only()` to calculate anomaly scores for trusted normal images. This is important because `score_only()` does not update the adapter or memory bank during calibration. :contentReference[oaicite:1]{index=1}
+The `auto_calibrate_threshold.py` script loads the existing `threshold.json`, `ttl_adapter.pt`, `memory_bank.pt` and `yolo26n-cls.pt`. It then uses `score_only()` to calculate anomaly scores for trusted normal images. This is important because `score_only()` does not update the adapter or memory bank during calibration.
 
-The anomaly threshold is calculated from the 99.5th percentile of the normal deployment scores. A small safety margin, calculated as `0.1 × standard deviation`, is added to reduce false alarms caused by normal score variation. The update threshold is calculated from the 95th percentile of the same normal scores and is used as a stricter boundary for online memory-bank updates. The calibrated values and calibration statistics are saved back into `threshold.json`. :contentReference[oaicite:2]{index=2}
+The anomaly threshold is calculated from the 99.5th percentile of the normal deployment scores. A small safety margin, calculated as `0.1 × standard deviation`, is added to reduce false alarms caused by normal score variation. The update threshold is calculated from the 95th percentile of the same normal scores and is used as a stricter boundary for online memory-bank updates. The calibrated values and calibration statistics are saved back into `threshold.json`.
 
 ### 2.5.4 Files in use
 
