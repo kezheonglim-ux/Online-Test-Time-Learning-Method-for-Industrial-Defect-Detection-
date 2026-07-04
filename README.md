@@ -25,6 +25,8 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
   - [2.6 Stage 3: CiRA CORE + Flask CTTA Deployment Workflow](#26-stage-3-cira-core--flask-ctta-deployment-workflow)
     - [2.6.1 Purpose](#261-purpose)
     - [2.6.2 Process Flow](#262-process-flow)
+      - [2.6.2.1 Application-Level Operation Flow](#2621-application-level-operation-flow)
+      - [2.6.2.2 CiRA CORE + Flask deployment Workflow](#2621-cira-core-+-flask-deployment-wrokflow)        
     - [2.6.3 Description](#263-description)
     - [2.6.4 Files in Use](#264-files-in-use)
     - [2.6.5 Output](#265-output)
@@ -242,10 +244,36 @@ Run the defect detection system through a low-code workflow.
 
 ### 2.6.2 Process Flow
 
-#### 2.6.2.1 Application Flow
-![Flask API and CiRA CORE Deployment Workflow](write-up/images/Flask%20API%20and%20CiRA%20CORE%20Deployment%20Workflow.png)
+The Stage 3 deployment is shown using two related workflows. The first workflow explains the application-level operation from the user side. The second workflow explains the technical backend flow between CiRA CORE and Flask.
 
-#### 2.6.2.2 Workflow
+#### 2.6.2.1 Application-Level Operation Flow
+
+The application-level flow shows how the user operates the prototype through CiRA CORE.
+
+<p align="center">
+  <img src="write-up/images/Flask%20API%20and%20CiRA%20CORE%20Deployment%20Workflow.png" width="850">
+</p>
+
+Main application steps:
+
+<pre>
+Start Flask service
+        ↓
+Prepare batch image folders
+        ↓
+Click Reset in CiRA CORE
+        ↓
+Click Run in CiRA CORE
+        ↓
+Batch images are tested automatically
+        ↓
+Display current image, result, score, threshold and LED status
+        ↓
+Click Stop when the user wants to end the batch loop
+</pre>
+
+#### 2.6.2.2 CiRA CORE + Flask Deployment Workflow
+
 <pre>
 Run ButtonRun
         ↓
@@ -257,32 +285,33 @@ Load next valid image from category folder
         ↓
 IfElse checks have_img
         ↓
-RestPutJson sends image_path, category, and mode to Flask CTTA API
+RestPutJson sends image_path, category and mode to Flask /predict API
         ↓
-Flask loads category-specific model files
+Flask loads category-specific files
+memory_bank.pt + ttl_adapter.pt + threshold.json
         ↓
-CTTA detector extracts YOLO26 features and compares with memory bank
+CTTA detector extracts YOLO26 feature embedding
         ↓
-Calculate anomaly score and apply threshold decision
+Compare feature embedding with normal memory bank
+        ↓
+Calculate anomaly score and apply category threshold decision
         ↓
 Prediction Result Parser prepares UI outputs
         ↓
 Set(text_status), Set(led_status), Set(image_status)
         ↓
-Display result, LED status, and current image
+Display result text, LED status and current image
         ↓
-Delay loops back to process the next image
+Delay loops back to Batch Image Loader for the next image
 </pre>
 
 ###  2.6.3 Description
 
-In this stage, the anomaly detection workflow is deployed through CiRA CORE and a Flask CTTA service. CiRA CORE acts as the low-code interface, while Flask serves as the bridge to the Python-based CTTA detector.
+The workflow starts when the Run ButtonRun is triggered in CiRA CORE. The Batch Image Loader then checks the stop control file and the current batch index before selecting the next valid image from the category folder. The IfElse node checks whether a valid image is available. If an image exists, the RestPutJson node sends the image path, category name and running mode to the Flask /predict API.
 
-The latest CiRA CORE workflow supports automated batch testing. Images are stored under `C:\cira_batch_test` using category subfolders, such as `bottle`, `hazelnut`, `tile`, and other supported MVTec AD categories. The `Batch Image Loader` reads `batch_index.txt`, loads the next valid image, infers the category from the folder name, and sends `image_path`, `category`, and `mode` to the Flask `/predict` endpoint through `RestPutJson`.
+After receiving the request, Flask loads the matching category-specific files, including memory_bank.pt, ttl_adapter.pt and threshold.json. The CTTA detector then extracts the image feature embedding using the frozen YOLO26 feature extractor. The embedding is compared with the normal memory bank to calculate the anomaly score. The score is compared with the category-specific threshold to decide whether the image is normal or anomalous.
 
-The Flask service loads the corresponding category-specific files from `C:\cira_ttl_model\<category>`, including `memory_bank.pt`, `ttl_adapter.pt`, and `threshold.json`. The CTTA detector extracts YOLO26 visual features, compares them with the normal memory bank, calculates the anomaly score, and returns the prediction result to CiRA CORE.
-
-The `Prediction Result Parser` formats the result for UI display. The Text block shows image progress, category, result, anomaly status, score, and threshold. The LED turns red for anomaly and green for normal. The Image block displays the current analyzed image. A Delay block then loops back to process the next image automatically until all images are completed or a stop request is detected.
+The result returned by Flask is processed by the Prediction Result Parser. The parsed outputs are assigned to text_status, led_status and image_status. These values are then displayed in CiRA CORE as result text, LED status and the current image. After a short delay, the workflow loops back to the Batch Image Loader and continues with the next image.
 
 ### 2.6.4 Files in use
 
