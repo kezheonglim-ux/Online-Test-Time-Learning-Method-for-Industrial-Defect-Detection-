@@ -1,3 +1,12 @@
+Main code file:
+--------------
+- app_ctta.py
+- cira_ttl_anomaly.py
+- auto_calibrate_threshold.py
+- train_rev1.5.ipynb
+  
+
+
 rev1.0
 -----
 - basic test-time phase flow
