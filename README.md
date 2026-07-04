@@ -100,6 +100,21 @@ The proposed system is arranged into three main stages:
 | Stage&nbsp;2 | Deployment Auto-Calibration | Adjust the anomaly and update thresholds using trusted normal deployment images |
 | Stage&nbsp;3 | CiRA CORE + Flask CTTA Deployment Workflow | Run the defect detection system through CiRA CORE and Flask API |
 
+### 2.3 Proposed System Workflow
+
+The proposed system is arranged into three main stages. The workflow starts from offline notebook preparation, followed by deployment auto-calibration, and finally runs through the Flask API and CiRA CORE low-code interface.
+
+<p align="center">
+  <img src="figures/proposed_system_workflow.png" width="850">
+</p>
+
+| Stage | Stage Name | Main Purpose | Main Output |
+|---|---|---|---|
+| Stage 1 | Offline Preparation in Notebook | Prepare the initial anomaly detection components using MVTec AD normal images. YOLO26 is used as a frozen feature extractor, while normal feature embeddings are stored in the memory bank. | `memory_bank.pt`, `ttl_adapter.pt`, initial `threshold.json` |
+| Stage 2 | Deployment Auto-Calibration | Adjust the threshold using trusted normal deployment images so the system can better match the actual deployment condition. | calibrated `threshold.json` |
+| Stage 3 | Flask API + CiRA CORE Deployment | Run automated batch image testing through Flask API and CiRA CORE. The system displays the current image, anomaly result, anomaly score, threshold and LED status. | inspection result, score, threshold, LED status, image display |
+
+In this workflow, YOLO26 is not used as a supervised defect detector. It is used as a frozen feature extractor. The normal or anomaly decision is produced by comparing the image embedding with the normal memory bank and applying the category-specific threshold.
 
 ## 2.4 Stage 1: Offline Preparation in Notebook
 
