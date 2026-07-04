@@ -2,7 +2,7 @@ Main code file:
 --------------
 - app_ctta.py
 - cira_ttl_anomaly.py
-- auto_calibrate_threshold.py
+- auto_calibrate_threshold.py- Deployment threshold calibration. Calibrated anomaly threshold and update threshold. Trusted normal deployment images used to calibrate threshold under testing folder stored in workdir\cira_ttl_calibration
 - train_rev1.5.ipynb - Offiline preparation notebook, including dataset preparation, feature extraction, memory bank construction, initial threshold calibration, evalution and export of model files
   
 
