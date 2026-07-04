@@ -428,7 +428,7 @@ Display result text, LED status, and current image
 Delay loops back to process the next image
 </pre>
 
-#### 2.7.4 Feature Nodes
+#### 2.7.5 Feature Nodes
 
 | Feature Node | Usage in This Workflow |
 |---|---|
@@ -448,7 +448,7 @@ Delay loops back to process the next image
 | `LED` | Used to show anomaly status visually.<br><br>**Real case:** It receives data through `Set(led_status)`. The LED turns red when an anomaly is detected and green when the image is classified as normal. |
 | `Image` | Used to display the current image being analyzed.<br><br>**Real case:** It receives the actual image object through `Set(image_status)`, allowing the UI to show the image processed in the current prediction cycle. |
 
-#### 2.7.5 CiRA CORE Operation
+#### 2.7.6 CiRA CORE Operation
 
 1. Start the Flask CTTA service.
 
