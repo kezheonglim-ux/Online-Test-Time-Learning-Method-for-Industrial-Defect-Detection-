@@ -251,7 +251,7 @@ The Stage 3 deployment is shown using two related workflows. The first workflow 
 The application-level flow shows how the user operates the prototype through CiRA CORE.
 
 <p align="center">
-  <img src="write-up/images/Flask%20API%20and%20CiRA%20CORE%20Deployment%20Workflow.png" width="850">
+  <img src="write-up/images/Flask%20API%20and%20CiRA%20CORE%20Deployment%20Workflow.png" width="650">
 </p>
 
 Main application steps:
