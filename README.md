@@ -144,7 +144,7 @@ End of this stage, four deployment files are generated and saved for later testi
 
 | File | Usage |
 |---|---|
-| `train_rev1.3.ipynb` | Dataset preparation, feature extraction, memory bank construction, initial threshold calibration, evalution and export of model files |
+| `train_rev1.5.ipynb` | Dataset preparation, feature extraction, memory bank construction, initial threshold calibration, evalution and export of model files |
 
 ### 2.4.5 Exported Files
 
