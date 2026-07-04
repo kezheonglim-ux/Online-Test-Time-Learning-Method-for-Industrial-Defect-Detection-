@@ -3,7 +3,7 @@ Main code file:
 - app_ctta.py
 - cira_ttl_anomaly.py
 - auto_calibrate_threshold.py
-- train_rev1.5.ipynb
+- train_rev1.5.ipynb - Offiline preparation notebook, including dataset preparation, feature extraction, memory bank construction, initial threshold calibration, evalution and export of model files
   
 
 
