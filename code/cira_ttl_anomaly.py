@@ -1,51 +1,50 @@
-"""
-cira_ttl_anomaly.py
+# cira_ttl_anomaly.py
+# 
+# Memory-bank anomaly detector with online test-time learning.
+# 
+# Front summary of the code flow
+# ------------------------------
+# 1. Library import and device setup
+#    - Import OpenCV, PyTorch, NumPy, random utilities and Ultralytics YOLO.
+#    - Select CUDA if available, otherwise use CPU.
+# 
+# 2. YOLOFeatureExtractor
+#    - Load the YOLO classification model.
+#    - Freeze all YOLO weights.
+#    - Capture the image feature embedding before the final linear layer.
+#    - YOLO is used only as a frozen feature extractor, not as a bounding-box detector.
+# 
+# 3. OnlineAdapter
+#    - Define a lightweight linear adapter after the frozen YOLO feature extractor.
+#    - Initialize the adapter as an identity mapping.
+#    - Only this adapter is updated during online test-time learning.
+# 
+# 4. TTLAnomalyDetector initialization
+#    - Load category-specific files:
+#      memory_bank.pt, ttl_adapter.pt and threshold.json value.
+#    - Set anomaly scoring parameters, update threshold and online learning settings.
+#    - Prepare the optimizer for updating only the adapter.
+# 
+# 5. Image preprocessing
+#    - Resize image, convert BGR to RGB, normalize pixel values and convert to tensor.
+# 
+# 6. Memory-bank comparison
+#    - Compare the current image embedding with the normal memory bank.
+#    - Select Top-K most similar normal references.
+#    - Calculate anomaly score using Top-K reference score and global memory-bank score.
+# 
+# 7. Online adaptation
+#    - Apply weak and strong augmentations to an accepted normal-like image.
+#    - Update the adapter using consistency loss and anchor loss.
+#    - Add accepted normal-like embeddings into the memory bank.
+# 
+# 8. Prediction
+#    - Calculate anomaly score before possible update.
+#    - Check whether the sample is safe for update using update_threshold.
+#    - If accepted, update the adapter and memory bank.
+#    - Recalculate anomaly score after possible update.
+#    - Compare final anomaly score with anomaly threshold to output normal or anomaly.
 
-Memory-bank anomaly detector with online test-time learning.
-
-Front summary of the code flow
-------------------------------
-1. Library import and device setup
-   - Import OpenCV, PyTorch, NumPy, random utilities and Ultralytics YOLO.
-   - Select CUDA if available, otherwise use CPU.
-
-2. YOLOFeatureExtractor
-   - Load the YOLO classification model.
-   - Freeze all YOLO weights.
-   - Capture the image feature embedding before the final linear layer.
-   - YOLO is used only as a frozen feature extractor, not as a bounding-box detector.
-
-3. OnlineAdapter
-   - Define a lightweight linear adapter after the frozen YOLO feature extractor.
-   - Initialize the adapter as an identity mapping.
-   - Only this adapter is updated during online test-time learning.
-
-4. TTLAnomalyDetector initialization
-   - Load category-specific files:
-     memory_bank.pt, ttl_adapter.pt and threshold.json value.
-   - Set anomaly scoring parameters, update threshold and online learning settings.
-   - Prepare the optimizer for updating only the adapter.
-
-5. Image preprocessing
-   - Resize image, convert BGR to RGB, normalize pixel values and convert to tensor.
-
-6. Memory-bank comparison
-   - Compare the current image embedding with the normal memory bank.
-   - Select Top-K most similar normal references.
-   - Calculate anomaly score using Top-K reference score and global memory-bank score.
-
-7. Online adaptation
-   - Apply weak and strong augmentations to an accepted normal-like image.
-   - Update the adapter using consistency loss and anchor loss.
-   - Add accepted normal-like embeddings into the memory bank.
-
-8. Prediction
-   - Calculate anomaly score before possible update.
-   - Check whether the sample is safe for update using update_threshold.
-   - If accepted, update the adapter and memory bank.
-   - Recalculate anomaly score after possible update.
-   - Compare final anomaly score with anomaly threshold to output normal or anomaly.
-"""
 
 # Image processing and deep learning libraries
 import cv2

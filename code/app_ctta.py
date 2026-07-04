@@ -1,19 +1,19 @@
 # ============================================================
 # Code Flow Summary: app_ctta.py
-# ============================================================
-# | Part | Main Function | Description |
-# |---|---|---|
-# | 1 | Library Import | Import Flask, OpenCV, PyTorch, JSON, CSV and system utilities used by the deployment API. |
-# | 2 | Configuration | Define model folder, YOLO26 path, log folder, checkpoint folder and memory checkpoint interval. |
-# | 3 | Model Import | Add the model folder to Python path and import TTLAnomalyDetector from cira_ttl_anomaly.py. |
-# | 4 | Flask Setup and Cache | Create the Flask app and cache loaded category detectors to avoid reloading models for every image. |
-# | 5 | Utility Functions | Handle folder creation, path normalization, safe category naming, JSON reading, image path extraction and mode selection. |
-# | 6 | Category-Aware Loading | Load category-specific memory_bank.pt, ttl_adapter.pt and threshold.json based on the requested category. |
-# | 7 | Logging and Checkpoint | Save prediction records to CSV and optionally save memory-bank checkpoints after online updates. |
-# | 8 | Prediction Mode Control | Use evaluate/calibrate mode for score-only prediction and monitor mode for online test-time updating. |
-# | 9 | API Routes | Provide home, categories, config and predict endpoints for CiRA CORE and manual testing. |
-# | 10 | Main Runner | Start the Flask service on 127.0.0.1:5000 for local CiRA CORE connection. |
-# ============================================================
+# ===============================================================================================================================================================
+# | Part | Main Function            | Description                                                                                                               |
+# |------|--------------------------|---------------------------------------------------------------------------------------------------------------------------|
+# | 1    | Library Import           | Import Flask, OpenCV, PyTorch, JSON, CSV and system utilities used by the deployment API.                                 |
+# | 2    | Configuration            | Define model folder, YOLO26 path, log folder, checkpoint folder and memory checkpoint interval.                           |
+# | 3    | Model Import             | Add the model folder to Python path and import TTLAnomalyDetector from cira_ttl_anomaly.py.                               |
+# | 4    | Flask Setup and Cache    | Create the Flask app and cache loaded category detectors to avoid reloading models for every image.                       |
+# | 5    | Utility Functions        | Handle folder creation, path normalization, safe category naming, JSON reading, image path extraction and mode selection. |
+# | 6    | Category-Aware Loading   | Load category-specific memory_bank.pt, ttl_adapter.pt and threshold.json based on the requested category.                 |
+# | 7    | Logging and Checkpoint   | Save prediction records to CSV and optionally save memory-bank checkpoints after online updates.                          |
+# | 8    | Prediction Mode Control  | Use evaluate/calibrate mode for score-only prediction and monitor mode for online test-time updating.                     |
+# | 9    | API Routes               | Provide home, categories, config and predict endpoints for CiRA CORE and manual testing.                                  |
+# | 10   | Main Runner              | Start the Flask service on 127.0.0.1:5000 for local CiRA CORE connection.                                                 |
+# ===============================================================================================================================================================
 
 from flask import Flask, jsonify, request
 import os

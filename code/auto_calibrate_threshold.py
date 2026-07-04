@@ -1,19 +1,19 @@
 # ============================================================
 # Code Flow Summary: auto_calibrate_threshold.py
 # ============================================================
-# | Part | Main Function | Description |
-# |---|---|---|
-# | 1 | Library Import | Import file handling, JSON, OpenCV, NumPy and system path utilities. |
-# | 2 | Path Configuration | Define the deployed model folder and the trusted normal calibration image folder. |
-# | 3 | Model Import | Import TTLAnomalyDetector from cira_ttl_anomaly.py for score-only anomaly scoring. |
-# | 4 | Score Calculation Function | Read each normal calibration image and calculate its anomaly score without online update. |
-# | 5 | Load Existing Threshold Config | Read threshold.json to reuse the existing model parameters and scoring settings. |
-# | 6 | Detector Initialization | Load YOLO26 feature extractor, adapter, memory bank and current threshold settings. |
-# | 7 | Normal Score Collection | Calculate anomaly scores from trusted normal deployment images. |
-# | 8 | Dual Threshold Calibration | Calculate a stricter update threshold and a high-percentile anomaly threshold. |
-# | 9 | Safety Margin | Add a small margin to the anomaly threshold based on normal score variation. |
-# | 10 | Save Updated Config | Write the calibrated threshold, update threshold and calibration statistics back to threshold.json. |
-# ============================================================
+# | Part | Main Function                  | Description                                                                                         |
+# |------|--------------------------------|-----------------------------------------------------------------------------------------------------|
+# | 1    | Library Import                 | Import file handling, JSON, OpenCV, NumPy and system path utilities.                                |
+# | 2    | Path Configuration             | Define the deployed model folder and the trusted normal calibration image folder.                   |
+# | 3    | Model Import                   | Import TTLAnomalyDetector from cira_ttl_anomaly.py for score-only anomaly scoring.                  |
+# | 4    | Score Calculation Function     | Read each normal calibration image and calculate its anomaly score without online update.           |
+# | 5    | Load Existing Threshold Config | Read threshold.json to reuse the existing model parameters and scoring settings.                    |
+# | 6    | Detector Initialization        | Load YOLO26 feature extractor, adapter, memory bank and current threshold settings.                 |
+# | 7    | Normal Score Collection        | Calculate anomaly scores from trusted normal deployment images.                                     |
+# | 8    | Dual Threshold Calibration     | Calculate a stricter update threshold and a high-percentile anomaly threshold.                      |
+# | 9    | Safety Margin                  | Add a small margin to the anomaly threshold based on normal score variation.                        |
+# | 10   | Save Updated Config            | Write the calibrated threshold, update threshold and calibration statistics back to threshold.json. |
+# ===============================================================================================================================================
 
 import os
 import json
