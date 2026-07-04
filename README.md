@@ -27,6 +27,7 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.6.1 Purpose](#261-purpose)
     - [2.6.2 Deployment Workflow Overview](#262-deployment-workflow-overview)    
     - [2.6.3 Files in Use](#263-files-in-use)
+        - [2.6.3.1 Deployment Folder Structure](#2631-deployment-folder-structure)
     - [2.6.4 Output](#264-output)
   - [2.7 CiRA CORE Workflow Design](#27-cira-core-workflow-design)
     - [2.7.1 Run Flow](#271-run-flow)
@@ -269,45 +270,7 @@ The overall Flask API and CiRA CORE deployment workflow is shown below.
 
 The workflow is divided into five parts: CiRA CORE input flow, Flask API backend, CTTA model processing, result UI and control files. CiRA CORE selects the next image, prepares the request payload and sends it to Flask. Flask loads the matching category files, runs anomaly detection and returns the result to CiRA CORE for display.
 
-### 2.6.3 Node Connection and Process Description
-
-The actual node connection follows the sequence below:
-
-<pre>
-Start Batch Image Loader
-        ↓
-Image Request Payload
-image path + category name + running mode
-        ↓
-Send JSON Request to Flask
-CiRA CORE RestPutJson node
-        ↓
-Flask /predict API receives image request
-        ↓
-Read category and load matching files
-memory_bank.pt + ttl_adapter.pt + threshold.json
-        ↓
-Extract image features using frozen YOLO26
-        ↓
-Compare with normal memory bank
-        ↓
-Calculate anomaly score and compare with category threshold
-        ↓
-Format prediction output
-        ↓
-Show inspection result
-result text + LED status + current image
-        ↓
-Delay node returns to Batch Image Loader
-</pre>
-
-In this workflow, the Batch Image Loader selects the next image from the batch folder and prepares the image path, category name and running mode. The RestPutJson node sends this information to the Flask /predict API as a JSON request.
-
-After Flask receives the request, it reads the category name and loads the matching memory_bank.pt, ttl_adapter.pt and threshold.json files. The frozen YOLO26 feature extractor converts the image into a feature embedding. The embedding is compared with the normal memory bank to calculate the anomaly score. The score is then compared with the category-specific threshold to decide whether the image is normal or anomalous.
-
-The returned result is processed and shown in CiRA CORE as result text, LED status and current image. The Delay node then loops back to the Batch Image Loader so that the next image can be processed automatically.
-
-### 2.6.4 Files in use
+### 2.6.3 Files in use
 
 | File | Usage |
 |---|---|
@@ -315,7 +278,7 @@ The returned result is processed and shown in CiRA CORE as result text, LED stat
 | `cira_ttl_anomaly.py` | Core CTTA detector file. It handles YOLO26 feature extraction, adapter processing, normal memory bank comparison, anomaly score calculation, threshold decision, and optional online update. |
 | `auto_calibrate_threshold.py` | Optional deployment calibration script used to adjust anomaly and update thresholds using trusted normal deployment images. |
 
-### 2.6.4.1 Deployment Folder Structure
+### 2.6.3.1 Deployment Folder Structure
 
 ```text
 **C:\cira_ttl_model**
@@ -362,7 +325,7 @@ The returned result is processed and shown in CiRA CORE as result text, LED stat
 └── auto_calibrate_threshold.py
 ```
 
-### 2.6.5 Output
+### 2.6.4 Output
 
 | Output | Usage |
 |---|---|
