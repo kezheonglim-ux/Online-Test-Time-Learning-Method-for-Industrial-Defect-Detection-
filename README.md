@@ -15,7 +15,7 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.4.3 Description](#243-description)
     - [2.4.4 Files in Use](#244-files-in-use)
     - [2.4.5 Exported Files](#245-exported-files)
-    - [2.4.6 Online Test-Time Learning Procedure](#246-online-test--time-learning-procedure)
+    - [2.4.6 Online Test-Time Learning Procedure](#246-online-test-time-learning-procedure)
     - [2.4.7 Model Performance by Category](#247-model-performance-by-category)
   - [2.5 Stage 2: Deployment Auto-Calibration](#25-stage-2-deployment-auto-calibration)
     - [2.5.1 Purpose](#251-purpose)
@@ -159,17 +159,17 @@ Each deployed category has its own `memory_bank.pt`, `ttl_adapter.pt`, and `thre
 
 ### 2.4.6 Online Test-Time Learning Procedure
 
-This section explains how the prepared model files are used during sequential online testing. The procedure connects the offline preparation stage with the online test-time adaptation stage.
+This section explains how the prepared memory bank, adapter and threshold are used during online test-time testing.
 
 <p align="center">
   <img src="write-up/images/Online%20Test-Time%20Learning%20Procedure.png" width="650">
 </p>
 
-During the training / preparation phase, only normal training images are used. These images are passed through the frozen YOLO26 feature extractor and the online adapter. The resulting L2-normalized feature embeddings are stored in the normal memory bank. Normal validation images are then compared with the memory bank to calculate validation anomaly scores, and the threshold is calculated from the high percentile of these normal scores.
+During preparation, normal training images are converted into feature embeddings using the frozen YOLO26 feature extractor and online adapter. These embeddings are stored in the normal memory bank. Normal validation images are then compared with the memory bank to calculate anomaly scores, and the threshold is obtained from the high percentile of these normal validation scores.
 
-During the online test-time phase, each incoming test image is processed one by one. The image is converted into a feature embedding using the frozen YOLO26 feature extractor and online adapter. The feature is compared with the normal memory bank by selecting the Top-K most similar normal references. The anomaly score is calculated using both the Top-K reference score and the global memory-bank score.
+During online testing, each test image is processed one by one. The image embedding is compared with the normal memory bank using Top-K normal references and the global memory-bank score. The final anomaly score is then compared with the category-specific threshold to decide whether the image is normal or anomalous.
 
-The anomaly score is first compared with the category-specific threshold to produce the image-level normal or anomaly decision. After that, the same anomaly score is checked again using a stricter acceptance rule:
+For online updating, the system applies a stricter acceptance rule:
 
 ```text
 anomaly score < threshold × acceptance margin
