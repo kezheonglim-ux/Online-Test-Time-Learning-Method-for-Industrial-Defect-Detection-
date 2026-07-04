@@ -92,7 +92,7 @@ However, the selected method also has a limitation. If an abnormal image is wron
 
 The proposed system is arranged into three main stages:
 
-![Online Test-Time Learning Procedure](write-up/images/Online%20Test-Time%20Learning%20Procedure.png)
+![Overall Three-Stage System Architecture](write-up/images/Overall%20Three-Stage%20System%20Architecture.png)
 
 | Stage | Name | Main Usage |
 |---|---|---|
@@ -239,6 +239,10 @@ Run the defect detection system through a low-code workflow.
 
 ### 2.6.2 Process Flow
 
+#### 2.6.2.1 Application Flow
+![Flask API and CiRA CORE Deployment Workflow](write-up/images/Flask%20API%20and%20CiRA%20CORE%20Deployment%20Workflow.png)
+
+#### 2.6.2.2 Workflow
 <pre>
 Run ButtonRun
         ↓
