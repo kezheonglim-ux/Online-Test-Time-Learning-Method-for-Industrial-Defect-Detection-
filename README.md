@@ -26,7 +26,7 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.6.1 Purpose](#261-purpose)
     - [2.6.2 Process Flow](#262-process-flow)
       - [2.6.2.1 Application-Level Operation Flow](#2621-application-level-operation-flow)
-      - [2.6.2.2 CiRA CORE + Flask deployment Workflow](#2621-cira-core--flask-deployment-wrokflow)        
+      - [2.6.2.2 CiRA CORE + Flask Deployment Workflow](#2621-cira-core--flask-deployment-wrokflow)        
     - [2.6.3 Description](#263-description)
     - [2.6.4 Files in Use](#264-files-in-use)
     - [2.6.5 Output](#265-output)
