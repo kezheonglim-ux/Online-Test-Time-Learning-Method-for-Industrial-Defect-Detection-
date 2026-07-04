@@ -26,15 +26,15 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
   - [2.6 Stage 3: CiRA CORE + Flask CTTA Deployment Workflow](#26-stage-3-cira-core--flask-ctta-deployment-workflow)
     - [2.6.1 Purpose](#261-purpose)
     - [2.6.2 Deployment Workflow Overview](#262-deployment-workflow-overview)    
-    - [2.6.3 Node Connection and Process Description](#263-node-connection-and-process-description)
-    - [2.6.4 Files in Use](#264-files-in-use)
-    - [2.6.5 Output](#265-output)
+    - [2.6.3 Files in Use](#263-files-in-use)
+    - [2.6.4 Output](#264-output)
   - [2.7 CiRA CORE Workflow Design](#27-cira-core-workflow-design)
     - [2.7.1 Run Flow](#271-run-flow)
     - [2.7.2 Stop Flow](#272-stop-flow)
     - [2.7.3 Reset Flow](#273-reset-flow)
-    - [2.7.4 Feature Nodes](#274-feature-nodes)
-    - [2.7.5 CiRA CORE Operation](#275-cira-core-operation)
+    - [2.7.4 CiRA CORE + Flask Node Connection Workflow](#274-cira-core--flask-node-connection-workflow)
+    - [2.7.5 Feature Nodes](#275-feature-nodes)
+    - [2.7.6 CiRA CORE Operation](#276-cira-core-operation)
 
 ## 1.0 DATASET
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
@@ -394,6 +394,39 @@ In CiRA CORE, the low-code deployment is built with three supporting flows:
 #### 2.7.3 Reset Flow
 
 ![CiRA CORE Reset Flow](write-up/images/cira_reset_flow.PNG)
+
+#### 2.7.4 CiRA CORE + Flask Node Connection Workflow
+
+<pre>
+Run ButtonRun
+        ↓
+Batch Image Loader
+        ↓
+Check stop.txt and batch_index.txt
+        ↓
+Load next valid image from category folder
+        ↓
+IfElse checks have_img
+        ↓
+RestPutJson sends image_path, category, and mode to Flask /predict API
+        ↓
+Flask loads category-specific model files
+memory_bank.pt + ttl_adapter.pt + threshold.json
+        ↓
+CTTA detector extracts YOLO26 feature embedding
+        ↓
+Compare feature embedding with normal memory bank
+        ↓
+Calculate anomaly score and apply category-specific threshold decision
+        ↓
+Prediction Result Parser prepares UI outputs
+        ↓
+Set(text_status), Set(led_status), Set(image_status)
+        ↓
+Display result text, LED status, and current image
+        ↓
+Delay loops back to process the next image
+</pre>
 
 #### 2.7.4 Feature Nodes
 
