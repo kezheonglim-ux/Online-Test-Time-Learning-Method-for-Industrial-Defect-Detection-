@@ -2,9 +2,9 @@
 
 | File | Purpose |
 |---|---|
-| `train_rev<latest>.ipynb` | Offline preparation notebook. It includes dataset preparation, feature extraction, memory bank construction, initial threshold calibration, evaluation, and export of model files. |
+| `train_rev<latest>.ipynb` | `Offline preparation notebook`. It includes `dataset preparation`, `feature extraction`, `memory bank construction`, `initial threshold calibration`, `evaluation`, and `export of model files`. |
 | `app_ctta.py` | Category-aware Flask service file. It receives `image_path`, `category`, and `mode` from CiRA CORE, loads the corresponding category model files, runs prediction through the CTTA detector, and returns the JSON result to CiRA CORE. It supports `evaluate`, `monitor`, and `calibrate` modes. |
-| `cira_ttl_anomaly.py` | Core CTTA detector file. It handles YOLO26 feature extraction, adapter processing, normal memory bank comparison, anomaly score calculation, threshold decision, and optional online update. |
+| `cira_ttl_anomaly.py` | Core `CTTA detector` file. It handles `YOLO26 feature extraction`, `adapter processing`, `normal memory bank comparison`, `anomaly score calculation`, `threshold decision`, and `optional online update`. |
 | `auto_calibrate_threshold.py` | Deployment threshold calibration file. It calculates calibrated anomaly threshold and update threshold using trusted normal deployment images stored in `cira_ttl_calibration` under the target category folder. |
 
 
