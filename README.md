@@ -93,7 +93,7 @@ However, the selected method also has a limitation. If an abnormal image is wron
 The proposed system is arranged into three main stages. The workflow starts from offline notebook preparation, followed by deployment auto-calibration, and finally runs through the Flask API and CiRA CORE low-code interface.
 
 <p align="center">
-  <img src="write-up/images/Overall%20Three-Stage%20System%20Architecture.png" width="850">
+  <img src="write-up/images/Overall%20Three-Stage%20System%20Architecture.png" width="650">
 </p>
 
 | Stage | Stage Name | Main Purpose | Main Output |
