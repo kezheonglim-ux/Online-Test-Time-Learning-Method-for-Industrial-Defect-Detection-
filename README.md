@@ -15,7 +15,8 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.4.3 Description](#243-description)
     - [2.4.4 Files in Use](#244-files-in-use)
     - [2.4.5 Exported Files](#245-exported-files)
-    - [2.4.6 Model Performance by Category](#246-model-performance-by-category)
+    - [2.4.6 Online Test-Time Learning Procedure](#245-online-test--time-learning-procedure)
+    - [2.4.7 Model Performance by Category](#246-model-performance-by-category)
   - [2.5 Stage 2: Deployment Auto-Calibration](#25-stage-2-deployment-auto-calibration)
     - [2.5.1 Purpose](#251-purpose)
     - [2.5.2 Process Flow](#252-process-flow)
@@ -24,10 +25,8 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.5.5 Output](#255-output)
   - [2.6 Stage 3: CiRA CORE + Flask CTTA Deployment Workflow](#26-stage-3-cira-core--flask-ctta-deployment-workflow)
     - [2.6.1 Purpose](#261-purpose)
-    - [2.6.2 Process Flow](#262-process-flow)
-      - [2.6.2.1 Application-Level Operation Flow](#2621-application-level-operation-flow)
-      - [2.6.2.2 CiRA CORE + Flask Deployment Workflow](#2622-cira-core--flask-deployment-workflow)        
-    - [2.6.3 Description](#263-description)
+    - [2.6.2 Deployment Workflow Overview](#262-deployment-workflow-overview)    
+    - [2.6.3 Node Connection and Process Description](#263-node-connection-and-process-description)
     - [2.6.4 Files in Use](#264-files-in-use)
     - [2.6.5 Output](#265-output)
   - [2.7 CiRA CORE Workflow Design](#27-cira-core-workflow-design)
@@ -158,7 +157,25 @@ End of this stage, four deployment files are generated and saved for later testi
 
 Each deployed category has its own `memory_bank.pt`, `ttl_adapter.pt`, and `threshold.json`. This allows the Flask service to load the correct model files based on the category name received from CiRA CORE.
 
-### 2.4.6 Model Performance by Category
+### 2.4.6 Online Test-Time Learning Procedure
+
+This section explains how the prepared model files are used during sequential online testing. The procedure connects the offline preparation stage with the online test-time adaptation stage.
+
+<p align="center">
+  <img src="write-up/images/online%20test%20time%20learning%20procedure.png" width="650">
+</p>
+
+During the training / preparation phase, only normal training images are used. These images are passed through the frozen YOLO26 feature extractor and the online adapter. The resulting L2-normalized feature embeddings are stored in the normal memory bank. Normal validation images are then compared with the memory bank to calculate validation anomaly scores, and the threshold is calculated from the high percentile of these normal scores.
+
+During the online test-time phase, each incoming test image is processed one by one. The image is converted into a feature embedding using the frozen YOLO26 feature extractor and online adapter. The feature is compared with the normal memory bank by selecting the Top-K most similar normal references. The anomaly score is calculated using both the Top-K reference score and the global memory-bank score.
+
+The anomaly score is first compared with the category-specific threshold to produce the image-level normal or anomaly decision. After that, the same anomaly score is checked again using a stricter acceptance rule:
+
+```text
+anomaly score < threshold × acceptance margin
+```
+
+### 2.4.7 Model Performance by Category
 
 Here the summarizes of evaluation result for each deployed category.
 
@@ -252,7 +269,7 @@ The overall Flask API and CiRA CORE deployment workflow is shown below.
 
 The workflow is divided into five parts: CiRA CORE input flow, Flask API backend, CTTA model processing, result UI and control files. CiRA CORE selects the next image, prepares the request payload and sends it to Flask. Flask loads the matching category files, runs anomaly detection and returns the result to CiRA CORE for display.
 
-#### 2.6.3 Node Connection and Process Description
+### 2.6.3 Node Connection and Process Description
 
 The actual node connection follows the sequence below:
 
@@ -283,8 +300,6 @@ result text + LED status + current image
         ↓
 Delay node returns to Batch Image Loader
 </pre>
-
-###  2.6.3 Description
 
 In this workflow, the Batch Image Loader selects the next image from the batch folder and prepares the image path, category name and running mode. The RestPutJson node sends this information to the Flask /predict API as a JSON request.
 
