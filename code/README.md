@@ -5,7 +5,7 @@ rev1.0
 
 rev1.1
 -------
-- improved the test-time phase become open-edned anomaly detection
+- improved the test-time phase become open-ended anomaly detection
 
 rev1.2
 -------
