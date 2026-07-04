@@ -15,8 +15,8 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.4.3 Description](#243-description)
     - [2.4.4 Files in Use](#244-files-in-use)
     - [2.4.5 Exported Files](#245-exported-files)
-    - [2.4.6 Online Test-Time Learning Procedure](#245-online-test--time-learning-procedure)
-    - [2.4.7 Model Performance by Category](#246-model-performance-by-category)
+    - [2.4.6 Online Test-Time Learning Procedure](#246-online-test--time-learning-procedure)
+    - [2.4.7 Model Performance by Category](#247-model-performance-by-category)
   - [2.5 Stage 2: Deployment Auto-Calibration](#25-stage-2-deployment-auto-calibration)
     - [2.5.1 Purpose](#251-purpose)
     - [2.5.2 Process Flow](#252-process-flow)
@@ -162,7 +162,7 @@ Each deployed category has its own `memory_bank.pt`, `ttl_adapter.pt`, and `thre
 This section explains how the prepared model files are used during sequential online testing. The procedure connects the offline preparation stage with the online test-time adaptation stage.
 
 <p align="center">
-  <img src="write-up/images/online%20test%20time%20learning%20procedure.png" width="650">
+  <img src="write-up/images/Online%20Test-Time%20Learning%20Procedure.png" width="650">
 </p>
 
 During the training / preparation phase, only normal training images are used. These images are passed through the frozen YOLO26 feature extractor and the online adapter. The resulting L2-normalized feature embeddings are stored in the normal memory bank. Normal validation images are then compared with the memory bank to calculate validation anomaly scores, and the threshold is calculated from the high percentile of these normal scores.
