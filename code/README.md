@@ -105,3 +105,63 @@ The next experiment should focus on improving the remaining weak category, espec
 - image resolution.
 
 After the final offline representation is fixed, the next stage is trusted-normal threshold calibration followed by CiRA CORE evaluate and monitor-mode CTTA testing.
+
+
+### rev1.8 – Weak-Category Patch Optimization
+
+**Objective**
+
+rev1.8 focused on the remaining weak categories after rev1.7, especially `grid`, `carpet`, `leather`, `screw`, and `pill`.
+
+The experiment tested:
+
+- Image size: 224 / 384 / 512
+- Patch grid: 8 / 14 / 20
+- Different intermediate YOLO feature depths
+- Patch anomaly aggregation using different top-fractions
+
+The goal was to improve local defect representation before fixing the final offline model.
+
+**Result**
+
+The best fixed configurations on the weak-category experiment achieved mean AUROC above **0.92**.
+
+The final all-category model achieved:
+
+| Metric | Result |
+|---|---:|
+| Mean AUROC | **0.9449** |
+| Mean Accuracy | 0.8236 |
+| Mean Normal Recall | 0.8459 |
+| Mean Anomaly Recall | 0.8086 |
+| Mean Macro F1 | 0.7842 |
+
+Strong categories include:
+
+- Bottle: AUROC **1.0000**
+- Hazelnut: **0.9993**
+- Tile: **0.9928**
+- Transistor: **0.9858**
+- Cable: **0.9846**
+- Metal Nut: **0.9805**
+- Wood: **0.9798**
+- Zipper: **0.9737**
+
+The weakest category is now `grid` with AUROC **0.8246**, which is a clear improvement compared with the earlier global-only representation.
+
+**Conclusion**
+
+rev1.8 confirms that the patch-based representation substantially improves offline anomaly-score separation.
+
+The mean AUROC increased to approximately **0.945**, indicating that the offline representation is sufficiently strong to proceed to the next stage.
+
+Some categories still show weak thresholded accuracy or anomaly recall, especially:
+
+- screw
+- grid
+- pill
+- leather
+
+However, their AUROC values indicate that the main remaining issue is threshold placement rather than feature separation.
+
+Therefore, the offline model can now be frozen and the project should proceed to **trusted-normal deployment calibration**.
