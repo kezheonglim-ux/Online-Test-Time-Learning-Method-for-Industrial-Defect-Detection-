@@ -36,7 +36,9 @@ Modern manufacturing requires defect detection systems that are efficient, adapt
     - [2.7.4 CiRA CORE + Flask Node Connection Workflow](#274-cira-core--flask-node-connection-workflow)
     - [2.7.5 Feature Nodes](#275-feature-nodes)
     - [2.7.6 CiRA CORE Operation](#276-cira-core-operation)
-
+- [3.0 Project Result](#30-project-result)
+  - [3.1 Comparison between baseline, calibration and Full CTTA](#31-comparison-between-baseline-calibration-and-full-ccta)
+    
 ## 1.0 DATASET
 https://www.kaggle.com/code/ipythonx/mvtec-ad-anomaly-detection-with-anomalib-library/data
 - Total of 5354 images (Train: 3629; Test: 1725). About 70:30 ratio. 
@@ -442,5 +444,96 @@ python app_ctta.py
     - LED anomaly status
 6. Click `Stop` to create stop.txt. The Run Flow will stop after the current image is completed.
 
+## Project Result
+
+### 3.1 Comparison between Baseline, Calibration and Online CTTA
+
+### Experimental Setup
+
+The final rev1.8 patch-based detector was evaluated under three deployment settings:
+
+1. **Baseline**
+   - Offline rev1.8 threshold
+   - Online update disabled
+
+2. **Calibration**
+   - Threshold recalibrated using trusted normal deployment samples
+   - Online update disabled
+
+3. **Online CTTA**
+   - Calibrated threshold
+   - Online patch-memory update enabled during inference
+
+Each experiment used the same 600-image test set covering 15 MVTec AD categories.
+
+### Overall Result
+
+| Metric | Baseline | Calibration | Online CTTA |
+|---|---:|---:|---:|
+| Accuracy | 79.50% | 84.17% | **88.33%** |
+| Normal Recall | 71.33% | 77.33% | **85.67%** |
+| Anomaly Recall | 87.67% | **91.00%** | **91.00%** |
+| Macro F1 | 79.36% | 84.09% | **88.33%** |
+| AUROC | 86.21% | 86.21% | **94.04%** |
+| False Positives | 86 | 68 | **43** |
+| False Negatives | 37 | **27** | **27** |
+
+### Calibration Effect
+
+Calibration improved the operating threshold without changing the underlying anomaly-score ranking.
+
+Compared with the baseline:
+
+- Accuracy: **+4.67 percentage points**
+- Normal Recall: **+6.00 points**
+- Anomaly Recall: **+3.33 points**
+- False Positives: **86 → 68**
+- False Negatives: **37 → 27**
+
+The unchanged AUROC is expected because threshold calibration does not modify the anomaly scores.
+
+### Online CTTA Effect
+
+Online adaptation further improved the calibrated model:
+
+- Accuracy: **84.17% → 88.33%**
+- Normal Recall: **77.33% → 85.67%**
+- Macro F1: **84.09% → 88.33%**
+- False Positives: **68 → 43**
+- False Negatives remained at **27**
+
+The main CTTA benefit was improved recognition of normal samples while maintaining anomaly sensitivity.
+
+Notable category improvements from Calibration → CTTA include:
+
+- Leather: 57.5% → **82.5%**
+- Carpet: 65.0% → **77.5%**
+- Wood: 82.5% → **95.0%**
+- Cable: 87.5% → **92.5%**
+- Zipper: 87.5% → **92.5%**
+
+`grid` remains the weakest category at 65% accuracy and approximately 0.77 AUROC.
+
+### Online Memory Update
+
+During the CTTA run:
+
+- Total memory updates: **244 / 600**
+- Normal samples accepted for update: **232**
+- Defective samples incorrectly accepted for update: **12**
+
+This shows that the confidence-gated update mechanism mostly selects normal samples, but memory contamination is still possible.
+
+### Conclusion
+
+The experimental sequence demonstrates progressive deployment improvement:
+
+Baseline  
+→ **threshold calibration** improves the operating point  
+→ **online adaptation** further reduces false-positive normal rejection.
+
+The final online configuration achieved **88.33% accuracy, 88.33% Macro F1 and 94.04% AUROC**.
+
+The results support the effectiveness of deployment calibration and adaptive normal-reference memory for industrial anomaly detection.
 
 
