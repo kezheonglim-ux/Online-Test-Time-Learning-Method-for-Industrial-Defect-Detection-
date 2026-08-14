@@ -165,3 +165,169 @@ Some categories still show weak thresholded accuracy or anomaly recall, especial
 However, their AUROC values indicate that the main remaining issue is threshold placement rather than feature separation.
 
 Therefore, the offline model can now be frozen and the project should proceed to **trusted-normal deployment calibration**.
+
+### rev1.9 – Safe Confidence and Consistency Update Gate
+
+**Objective**
+
+rev1.9 improves the safety of online test-time learning by preventing uncertain samples from directly updating the model.
+
+The CTTA update rule was changed from a score-only condition to a dual safety gate:
+
+```python
+update_allowed = (
+    score_before < update_threshold
+    and consistency_error < consistency_threshold
+)
+```
+
+Only samples that are:
+
+1. confidently predicted as normal, and
+2. stable under weak/strong augmentation
+
+are allowed to update:
+
+- the lightweight patch adapter
+- the patch memory bank
+
+The YOLO26 backbone remains frozen.
+
+---
+
+**Method**
+
+A consistency error is measured between weakly and strongly augmented versions of the same image.
+
+The consistency threshold was calibrated using trusted-normal images.
+
+The first configuration used:
+
+```text
+Anomaly Quantile = 0.995
+Update Quantile  = 0.95
+```
+
+The consistency gate alone reduced the total number of updates, but it did not sufficiently reduce defective-sample contamination.
+
+Therefore, the update gate was made more conservative by changing:
+
+```text
+Update Quantile: q95 → q90
+```
+
+while keeping:
+
+```text
+Anomaly Quantile = 0.995
+```
+
+unchanged.
+
+---
+
+**q95 vs q90 Comparison**
+
+| Metric | q95 | q90 | Change |
+|---|---:|---:|---:|
+| Accuracy | 88.33% | 88.00% | -0.33 pp |
+| Normal Recall | 85.67% | 85.00% | -0.67 pp |
+| Anomaly Recall | 91.00% | 91.00% | 0.00 pp |
+| Macro F1 | 88.33% | 87.99% | -0.34 pp |
+| AUROC | 93.99% | 93.06% | -0.93 pp |
+| Good Samples Accepted | 218 | 197 | -21 |
+| Bad Samples Accepted | 12 | 8 | -4 |
+| Total Updates | 230 | 205 | -25 |
+| Update Precision | 94.78% | 96.10% | +1.31 pp |
+
+---
+
+**Analysis**
+
+The q90 configuration makes online adaptation more conservative.
+
+The most important improvement is:
+
+```text
+Bad samples accepted for online learning:
+12 → 8
+```
+
+This is a:
+
+```text
+33.3% reduction in contaminated updates
+```
+
+Update precision also improves from:
+
+```text
+94.78% → 96.10%
+```
+
+while anomaly recall remains unchanged at:
+
+```text
+91.00%
+```
+
+The trade-off is that fewer normal samples are accepted for adaptation:
+
+```text
+218 → 197
+```
+
+and overall accuracy decreases slightly:
+
+```text
+88.33% → 88.00%
+```
+
+The 0.33 percentage-point reduction in accuracy is small compared with the improvement in online-update safety.
+
+---
+
+**Final rev1.9 Configuration**
+
+| Item | Final Setting |
+|---|---|
+| Anomaly Quantile | 0.995 |
+| Update Quantile | 0.90 |
+| Consistency Gate | Enabled |
+| Patch Adapter Update | Enabled |
+| Patch Memory Update | Enabled |
+| YOLO26 Backbone | Frozen |
+
+---
+
+**Final Update Flow**
+
+```text
+Input Image
+    ↓
+Patch Feature Extraction
+    ↓
+Anomaly Score
+    ↓
+Score Confidence Gate
+    ↓
+Consistency Stability Gate
+    ↓
+Confident Normal Sample
+    ↓
+Online Patch-Adapter Update
+    ↓
+Patch Memory-Bank Update
+```
+
+---
+
+**Conclusion**
+
+Step 2 successfully improves the safety of the CTTA update mechanism.
+
+The final q90 configuration reduces defective-sample contamination from **12 to 8 updates** and improves update precision from **94.78% to 96.10%**, while maintaining the same **91.00% anomaly recall**.
+
+Although fewer normal samples are accepted and overall accuracy decreases slightly, the q90 configuration provides a better balance between adaptation capability and contamination control.
+
+
