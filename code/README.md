@@ -331,3 +331,93 @@ The final q90 configuration reduces defective-sample contamination from **12 to 
 Although fewer normal samples are accepted and overall accuracy decreases slightly, the q90 configuration provides a better balance between adaptation capability and contamination control.
 
 
+### rev1.10 Fixed-Seed Shuffled Evaluation
+
+**Objective**
+
+rev1.10 evaluates whether the online CTTA performance is affected by image order.
+
+The previous evaluation used alphabetically sorted images, which could introduce sequence bias. A fixed-seed shuffle was therefore added so that good and defective samples are mixed while remaining reproducible.
+
+```python
+SHUFFLE_SEED = 42
+rng = random.Random(SHUFFLE_SEED)
+rng.shuffle(category_images)
+```
+
+Three independent shuffled streams were evaluated:
+
+```text
+Seed 42
+Seed 130
+Seed 2030
+```
+
+Each run used:
+
+- 600 images
+- 15 MVTec AD categories
+- the same image set
+- `MODE = monitor`
+- final q90 safe-update configuration
+- clean starting model state
+
+---
+
+**Results**
+
+| Metric | Seed 42 | Seed 130 | Seed 2030 | Mean ± SD |
+|---|---:|---:|---:|---:|
+| Accuracy | 86.83% | 85.50% | 84.83% | **85.72% ± 1.02%** |
+| Normal Recall | 87.00% | 81.00% | 79.67% | **82.56% ± 3.91%** |
+| Anomaly Recall | 86.67% | 90.00% | 90.00% | **88.89% ± 1.92%** |
+| Macro F1 | 86.83% | 85.47% | 84.79% | **85.70% ± 1.04%** |
+| Pooled AUROC | 92.81% | 92.29% | 91.72% | **92.27% ± 0.54%** |
+| Good Updates | 221 | 191 | 181 | **197.7 ± 20.8** |
+| Bad Updates | 19 | 12 | 11 | **14.0 ± 4.4** |
+| Total Updates | 240 | 203 | 192 | **211.7 ± 25.1** |
+| Update Precision | 92.08% | 94.09% | 94.27% | **93.48% ± 1.21%** |
+
+Category-averaged AUROC remained very stable:
+
+```text
+Seed 42   = 93.08%
+Seed 130  = 93.41%
+Seed 2030 = 93.14%
+```
+
+---
+
+**Analysis**
+
+The shuffled experiments show that CTTA performance remains reasonably consistent across different input orders.
+
+The main detection metrics vary only slightly:
+
+```text
+Accuracy SD   ≈ 1.02%
+Macro F1 SD   ≈ 1.04%
+AUROC SD      ≈ 0.54%
+```
+
+This indicates that the model is not strongly dependent on one specific image sequence.
+
+The number of online updates varies more between seeds because CTTA is sequential: earlier accepted samples change the adapter and memory bank and therefore influence later update decisions.
+
+Despite this, anomaly recall remains stable at approximately:
+
+```text
+88.89% ± 1.92%
+```
+
+and update precision remains above 92% for all three streams.
+
+---
+
+Conclusion
+
+Step 3 confirms that the proposed online CTTA method is reasonably robust to different image orders.
+
+Using fixed random seeds also provides a reproducible evaluation protocol and removes the bias caused by the previous alphabetical good/bad ordering.
+
+
