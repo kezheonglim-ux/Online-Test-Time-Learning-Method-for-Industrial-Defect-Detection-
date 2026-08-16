@@ -414,10 +414,180 @@ and update precision remains above 92% for all three streams.
 
 ---
 
-Conclusion
+**Conclusion**
 
 Step 3 confirms that the proposed online CTTA method is reasonably robust to different image orders.
 
 Using fixed random seeds also provides a reproducible evaluation protocol and removes the bias caused by the previous alphabetical good/bad ordering.
 
+### rev1.11 Final Ablation Study
+
+**Objective**
+
+Step 4 evaluates the contribution of each component in the proposed online test-time learning framework.
+
+Five configurations were compared using the same three fixed random seeds:
+
+```text
+42
+130
+2030
+```
+
+| Experiment | Calibration | Adapter Update | Memory Update |
+|---|---:|---:|---:|
+| Baseline | No | OFF | OFF |
+| Calibration | Yes | OFF | OFF |
+| Memory CTTA | Yes | OFF | ON |
+| Adapter CTTA | Yes | ON | OFF |
+| Full CTTA | Yes | ON | ON |
+
+Each experiment used the same 600-image dataset and identical shuffled sequence for the corresponding seed.
+
+---
+
+**Final Ablation Results**
+
+| Method | Accuracy | Normal Recall | Anomaly Recall | Macro F1 | Category AUROC |
+|---|---:|---:|---:|---:|---:|
+| Baseline | 79.50% ± 0.00% | 71.33% ± 0.00% | 87.67% ± 0.00% | 79.36% ± 0.00% | **94.70% ± 0.00%** |
+| Calibration | 84.17% ± 0.00% | 77.33% ± 0.00% | **91.00% ± 0.00%** | 84.09% ± 0.00% | **94.70% ± 0.00%** |
+| Memory CTTA | **85.22% ± 0.42%** | 80.67% ± 1.20% | 89.78% ± 0.38% | **85.19% ± 0.43%** | 93.11% ± 0.05% |
+| Adapter CTTA | 84.11% ± 0.10% | 77.22% ± 0.19% | **91.00% ± 0.00%** | 84.04% ± 0.10% | **94.70% ± 0.02%** |
+| Full CTTA | 85.17% ± 0.44% | **81.00% ± 1.33%** | 89.33% ± 0.88% | 85.14% ± 0.45% | 93.14% ± 0.18% |
+
+---
+
+**Online Update Behaviour**
+
+| Method | Good Updates | Bad Updates | Total Updates | Update Precision |
+|---|---:|---:|---:|---:|
+| Memory CTTA | 183.0 | 10.0 | 193.0 | **94.82% ± 0.14%** |
+| Adapter CTTA | 174.3 | **8.0** | 182.3 | **95.61% ± 0.01%** |
+| Full CTTA | 186.7 | 12.7 | 199.3 | 93.66% ± 0.55% |
+
+Adapter behaviour:
+
+```text
+Adapter CTTA:
+~182 adapter updates/run
+Memory updates = 0
+
+Full CTTA:
+~199 adapter updates/run
+~199 memory updates/run
+```
+
+The average adapter parameter change remained non-zero, confirming that online parameter learning was active.
+
+---
+
+### Component Analysis
+
+**Baseline → Calibration**
+
+Calibration provides the largest single improvement:
+
+```text
+Accuracy:
+79.50% → 84.17%   (+4.67 pp)
+
+Normal Recall:
+71.33% → 77.33%   (+6.00 pp)
+
+Anomaly Recall:
+87.67% → 91.00%   (+3.33 pp)
+```
+
+This confirms that trusted-normal deployment calibration is important for selecting an appropriate operating threshold.
+
+---
+
+**Calibration → Memory CTTA**
+
+Online memory adaptation further improves:
+
+```text
+Accuracy:
+84.17% → 85.22%
+
+Macro F1:
+84.09% → 85.19%
+
+Normal Recall:
+77.33% → 80.67%
+```
+
+Memory adaptation therefore contributes the clearest additional improvement after calibration.
+
+---
+
+**Calibration → Adapter CTTA**
+
+Adapter-only CTTA produces almost the same detection performance as Calibration:
+
+```text
+Accuracy:
+84.17% → 84.11%
+
+Macro F1:
+84.09% → 84.04%
+```
+
+Although the adapter parameters are actively updated, the current lightweight adapter provides limited direct performance gain when used alone.
+
+---
+
+**Memory CTTA → Full CTTA**
+
+Full CTTA gives:
+
+```text
+Memory CTTA accuracy = 85.22%
+Full CTTA accuracy   = 85.17%
+```
+
+The difference is very small.
+
+Full CTTA achieves slightly better normal recall:
+
+```text
+80.67% → 81.00%
+```
+
+but also accepts more defective samples for adaptation.
+
+Therefore, combining adapter and memory learning does not clearly outperform memory-only CTTA under the current configuration.
+
+---
+
+**Interpretation**
+
+The ablation study shows that:
+
+1. **Trusted-normal calibration is essential** and provides the largest performance improvement.
+2. **Online memory adaptation provides the strongest CTTA contribution** after calibration.
+3. The lightweight online adapter is genuinely learning, but its standalone detection benefit is limited.
+4. Full CTTA remains competitive and stable across random image orders, but does not significantly outperform memory-only adaptation.
+5. The safe update gate limits most online updates to normal samples, although some defective-sample contamination remains.
+
+---
+
+**Conclusion**
+
+The final experiments confirm that online adaptation can improve deployment performance beyond the static calibrated model.
+
+The strongest result is obtained using online memory adaptation:
+
+```text
+Baseline Accuracy      = 79.50%
+Calibration Accuracy   = 84.17%
+Memory CTTA Accuracy   = 85.22%
+Adapter CTTA Accuracy  = 84.11%
+Full CTTA Accuracy     = 85.17%
+```
+
+The results indicate that the main performance gain of the proposed CTTA framework comes from adaptive normal-memory updating, while the lightweight adapter provides a smaller contribution.
+
+The ablation therefore provides clear evidence of the individual contribution of each component and identifies memory adaptation as the most effective online adaptation mechanism in the current implementation.
 
