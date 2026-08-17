@@ -35,8 +35,8 @@ rev1.5
 -------
 - Update the comment
 
-## More intense experiment to improve further each categories
-### rev1.6 – Scoring Formula Ablation
+## Further Experiment 
+### rev1.6 – Global Feature Baseline
 
 rev1.6 evaluated whether the weak offline performance was caused mainly by the anomaly scoring formula.
 
@@ -166,11 +166,43 @@ However, their AUROC values indicate that the main remaining issue is threshold 
 
 Therefore, the offline model can now be frozen and the project should proceed to **trusted-normal deployment calibration**.
 
-### rev1.9 – Safe Confidence and Consistency Update Gate
+---
+
+### rev1.9 – Restore Online Adapter Learning
+
+**Purpose:**  
+Activate and verify real PatchAdapter optimization during inference.
+
+Previously, the system mainly updated the memory bank while the adapter optimization path was not actually executed.
+
+**Added Verification:**
+
+```text
+update_loss
+adapter_updated
+adapter_delta_norm
+updated_memory
+```
+
+**Result:**
+
+```text
+234 samples passed the update gate
+234 / 234 adapter updates confirmed
+update_loss was non-null
+adapter_delta_norm > 0
+```
+
+**Conclusion:**  
+Real online parameter adaptation was successfully restored and verified.
+
+---
+
+### rev1.10 – Safe Confidence and Consistency Update Gate
 
 **Objective**
 
-rev1.9 improves the safety of online test-time learning by preventing uncertain samples from directly updating the model.
+rev1.10 improves the safety of online test-time learning by preventing uncertain samples from directly updating the model.
 
 The CTTA update rule was changed from a score-only condition to a dual safety gate:
 
@@ -193,7 +225,6 @@ are allowed to update:
 
 The YOLO26 backbone remains frozen.
 
----
 
 **Method**
 
@@ -224,7 +255,6 @@ Anomaly Quantile = 0.995
 
 unchanged.
 
----
 
 **q95 vs q90 Comparison**
 
@@ -239,8 +269,6 @@ unchanged.
 | Bad Samples Accepted | 12 | 8 | -4 |
 | Total Updates | 230 | 205 | -25 |
 | Update Precision | 94.78% | 96.10% | +1.31 pp |
-
----
 
 **Analysis**
 
@@ -285,9 +313,7 @@ and overall accuracy decreases slightly:
 
 The 0.33 percentage-point reduction in accuracy is small compared with the improvement in online-update safety.
 
----
-
-**Final rev1.9 Configuration**
+**Final rev1.10 Configuration**
 
 | Item | Final Setting |
 |---|---|
@@ -297,8 +323,6 @@ The 0.33 percentage-point reduction in accuracy is small compared with the impro
 | Patch Adapter Update | Enabled |
 | Patch Memory Update | Enabled |
 | YOLO26 Backbone | Frozen |
-
----
 
 **Final Update Flow**
 
@@ -320,8 +344,6 @@ Online Patch-Adapter Update
 Patch Memory-Bank Update
 ```
 
----
-
 **Conclusion**
 
 Step 2 successfully improves the safety of the CTTA update mechanism.
@@ -330,12 +352,13 @@ The final q90 configuration reduces defective-sample contamination from **12 to 
 
 Although fewer normal samples are accepted and overall accuracy decreases slightly, the q90 configuration provides a better balance between adaptation capability and contamination control.
 
+---
 
-### rev1.10 Fixed-Seed Shuffled Evaluation
+### rev1.11 Fixed-Seed Shuffled Evaluation
 
 **Objective**
 
-rev1.10 evaluates whether the online CTTA performance is affected by image order.
+rev1.11 evaluates whether the online CTTA performance is affected by image order.
 
 The previous evaluation used alphabetically sorted images, which could introduce sequence bias. A fixed-seed shuffle was therefore added so that good and defective samples are mixed while remaining reproducible.
 
@@ -362,7 +385,6 @@ Each run used:
 - final q90 safe-update configuration
 - clean starting model state
 
----
 
 **Results**
 
@@ -385,8 +407,6 @@ Seed 42   = 93.08%
 Seed 130  = 93.41%
 Seed 2030 = 93.14%
 ```
-
----
 
 **Analysis**
 
@@ -412,19 +432,19 @@ Despite this, anomaly recall remains stable at approximately:
 
 and update precision remains above 92% for all three streams.
 
----
-
 **Conclusion**
 
-Step 3 confirms that the proposed online CTTA method is reasonably robust to different image orders.
+rev1.11 confirms that the proposed online CTTA method is reasonably robust to different image orders.
 
 Using fixed random seeds also provides a reproducible evaluation protocol and removes the bias caused by the previous alphabetical good/bad ordering.
 
-### rev1.11 Final Ablation Study
+---
+
+### rev1.12 Final Ablation Study
 
 **Objective**
 
-Step 4 evaluates the contribution of each component in the proposed online test-time learning framework.
+rev1.12 evaluates the contribution of each component in the proposed online test-time learning framework.
 
 Five configurations were compared using the same three fixed random seeds:
 
@@ -444,8 +464,6 @@ Five configurations were compared using the same three fixed random seeds:
 
 Each experiment used the same 600-image dataset and identical shuffled sequence for the corresponding seed.
 
----
-
 **Final Ablation Results**
 
 | Method | Accuracy | Normal Recall | Anomaly Recall | Macro F1 | Category AUROC |
@@ -455,8 +473,6 @@ Each experiment used the same 600-image dataset and identical shuffled sequence 
 | Memory CTTA | **85.22% ± 0.42%** | 80.67% ± 1.20% | 89.78% ± 0.38% | **85.19% ± 0.43%** | 93.11% ± 0.05% |
 | Adapter CTTA | 84.11% ± 0.10% | 77.22% ± 0.19% | **91.00% ± 0.00%** | 84.04% ± 0.10% | **94.70% ± 0.02%** |
 | Full CTTA | 85.17% ± 0.44% | **81.00% ± 1.33%** | 89.33% ± 0.88% | 85.14% ± 0.45% | 93.14% ± 0.18% |
-
----
 
 **Online Update Behaviour**
 
@@ -480,8 +496,6 @@ Full CTTA:
 
 The average adapter parameter change remained non-zero, confirming that online parameter learning was active.
 
----
-
 ### Component Analysis
 
 **Baseline → Calibration**
@@ -501,7 +515,6 @@ Anomaly Recall:
 
 This confirms that trusted-normal deployment calibration is important for selecting an appropriate operating threshold.
 
----
 
 **Calibration → Memory CTTA**
 
@@ -520,7 +533,6 @@ Normal Recall:
 
 Memory adaptation therefore contributes the clearest additional improvement after calibration.
 
----
 
 **Calibration → Adapter CTTA**
 
@@ -536,7 +548,6 @@ Macro F1:
 
 Although the adapter parameters are actively updated, the current lightweight adapter provides limited direct performance gain when used alone.
 
----
 
 **Memory CTTA → Full CTTA**
 
@@ -559,7 +570,6 @@ but also accepts more defective samples for adaptation.
 
 Therefore, combining adapter and memory learning does not clearly outperform memory-only CTTA under the current configuration.
 
----
 
 **Interpretation**
 
@@ -571,7 +581,6 @@ The ablation study shows that:
 4. Full CTTA remains competitive and stable across random image orders, but does not significantly outperform memory-only adaptation.
 5. The safe update gate limits most online updates to normal samples, although some defective-sample contamination remains.
 
----
 
 **Conclusion**
 
