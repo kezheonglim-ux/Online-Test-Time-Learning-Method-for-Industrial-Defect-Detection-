@@ -1,183 +1,377 @@
-# ============================================================
-# Code Flow Summary: auto_calibrate_threshold.py
-# ============================================================
-# | Part | Main Function                  | Description                                                                                         |
-# |------|--------------------------------|-----------------------------------------------------------------------------------------------------|
-# | 1    | Library Import                 | Import file handling, JSON, OpenCV, NumPy and system path utilities.                                |
-# | 2    | Path Configuration             | Define the deployed model folder and the trusted normal calibration image folder.                   |
-# | 3    | Model Import                   | Import TTLAnomalyDetector from cira_ttl_anomaly.py for score-only anomaly scoring.                  |
-# | 4    | Score Calculation Function     | Read each normal calibration image and calculate its anomaly score without online update.           |
-# | 5    | Load Existing Threshold Config | Read threshold.json to reuse the existing model parameters and scoring settings.                    |
-# | 6    | Detector Initialization        | Load YOLO26 feature extractor, adapter, memory bank and current threshold settings.                 |
-# | 7    | Normal Score Collection        | Calculate anomaly scores from trusted normal deployment images.                                     |
-# | 8    | Dual Threshold Calibration     | Calculate a stricter update threshold and a high-percentile anomaly threshold.                      |
-# | 9    | Safety Margin                  | Add a small margin to the anomaly threshold based on normal score variation.                        |
-# | 10   | Save Updated Config            | Write the calibrated threshold, update threshold and calibration statistics back to threshold.json. |
-# ===============================================================================================================================================
+"""Trusted-normal threshold calibration for the rev1.8 patch detector."""
 
-import os
+from __future__ import annotations
+
+import argparse
 import json
-import cv2
+import os
+import shutil
 import sys
+from contextlib import redirect_stderr, redirect_stdout
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+import cv2
 import numpy as np
 
-# ============================================================
-# Path configuration
-# ============================================================
+MODEL_ROOT = Path(r"C:\cira_ttl_model")
+CALIBRATION_ROOT = Path(r"C:\cira_batch_test\normal_trusted")
+YOLO_PATH = MODEL_ROOT / "yolo26n-cls.pt"
 
-# Folder containing the deployed YOLO26 model, adapter, memory bank and threshold.json.
-MODEL_DIR = r"C:\cira_ttl_model"
+GOOD_PREFIX = "good_"
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff"}
 
-# Folder containing trusted normal images collected from the deployment condition.
-# These images are used only for threshold calibration, not for defect training.
-NORMAL_DIR = r"C:\cira_ttl_calibration\bottle\normal"
-
-# Allow Python to import cira_ttl_anomaly.py from the model folder.
-sys.path.append(MODEL_DIR)
-
-from cira_ttl_anomaly import TTLAnomalyDetector
+ANOMALY_QUANTILE = 0.995
+UPDATE_QUANTILE = 0.90
+SAFETY_MARGIN_STD_FACTOR = 0.10
+MINIMUM_IMAGES = 3
+RECOMMENDED_IMAGES = 20
 
 
-# ============================================================
-# Calculate normal calibration scores
-# ============================================================
+class Tee:
+    """Write output to console and report file."""
 
-def calculate_scores(detector, folder):
-    """
-    Calculate anomaly scores for trusted normal calibration images.
+    def __init__(self, *streams: Any):
+        self.streams = streams
 
-    The detector uses score_only(), so no online adapter update and no
-    memory-bank update are performed during calibration.
-    """
+    def write(self, data: str) -> int:
+        for stream in self.streams:
+            stream.write(data)
+            stream.flush()
+        return len(data)
+
+    def flush(self):
+        for stream in self.streams:
+            stream.flush()
+
+
+def dry_run_report_path() -> Path:
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return CALIBRATION_ROOT / f"auto_calibration_dry_run_{stamp}.txt"
+
+
+sys.path.insert(0, str(MODEL_ROOT))
+from cira_ttl_anomaly import TTLAnomalyDetector  # noqa: E402
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Calibrate rev1.8 patch thresholds from trusted good_ images."
+    )
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--category")
+    group.add_argument("--all", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
+    return parser.parse_args()
+
+
+def safe_category_name(category: str) -> str:
+    value = str(category).strip().lower()
+    if not value or value in {".", ".."}:
+        raise ValueError("Invalid category.")
+    if any(c in value for c in ("/", "\\")) or ".." in value:
+        raise ValueError(f"Unsafe category: {category!r}")
+    return value
+
+
+def required_category_files(category: str) -> dict[str, Path]:
+    category_dir = MODEL_ROOT / category
+    return {
+        "category_dir": category_dir,
+        "threshold": category_dir / "threshold.json",
+        "patch_memory_bank": category_dir / "patch_memory_bank.pt",
+        "patch_adapter": category_dir / "patch_adapter.pt",
+        "yolo": YOLO_PATH,
+        "anomaly_module": MODEL_ROOT / "cira_ttl_anomaly.py",
+        "images": CALIBRATION_ROOT / category,
+    }
+
+
+def validate_paths(category: str) -> dict[str, Path]:
+    paths = required_category_files(category)
+    required = [
+        paths["threshold"],
+        paths["patch_memory_bank"],
+        paths["yolo"],
+        paths["anomaly_module"],
+        paths["images"],
+    ]
+    missing = [str(path) for path in required if not path.exists()]
+    if missing:
+        raise FileNotFoundError(
+            "Required path(s) not found:\n  - " + "\n  - ".join(missing)
+        )
+    return paths
+
+
+def find_good_images(folder: Path) -> list[Path]:
+    return sorted(
+        path
+        for path in folder.iterdir()
+        if path.is_file()
+        and path.suffix.lower() in IMAGE_EXTENSIONS
+        and path.name.lower().startswith(GOOD_PREFIX)
+    )
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, dict):
+        raise ValueError(f"Expected JSON object: {path}")
+    return data
+
+
+def build_detector(paths, cfg):
+    adapter_path = (
+        str(paths["patch_adapter"])
+        if paths["patch_adapter"].exists()
+        else None
+    )
+
+    return TTLAnomalyDetector(
+        patch_memory_bank_path=str(paths["patch_memory_bank"]),
+        patch_adapter_path=adapter_path,
+        threshold=cfg.get("threshold", 999.0),
+        model_name=str(paths["yolo"]),
+        img_size=cfg.get("img_size", 384),
+        feature_choice=cfg.get("feature_choice", "last2"),
+        patch_grid=cfg.get("patch_grid", 14),
+        patch_top_fraction=cfg.get("patch_top_fraction", 0.05),
+        update_threshold=cfg.get("update_threshold"),
+        accept_margin=cfg.get("accept_margin", 0.95),
+        online_lr=cfg.get("online_lr", 1e-4),
+        online_steps=cfg.get("online_steps", 1),
+        max_patch_memory=cfg.get("max_patch_memory", 16000),
+        consistency_weight=cfg.get("consistency_weight", 1.0),
+        anchor_weight=cfg.get("anchor_weight", 0.1),
+    )
+
+
+def calculate_scores(detector, image_paths):
     scores = []
     records = []
 
-    for name in os.listdir(folder):
-        if name.lower().endswith((".png", ".jpg", ".jpeg", ".bmp")):
-            image_path = os.path.join(folder, name)
-            img = cv2.imread(image_path)
+    for image_path in image_paths:
+        image = cv2.imread(str(image_path))
+        if image is None:
+            print(f"WARNING: Cannot read {image_path}; skipped.")
+            continue
 
-            if img is None:
-                print("Cannot read:", image_path)
-                continue
+        score = float(detector.score_only(image))
+        scores.append(score)
+        records.append((image_path.name, score))
 
-            # Score-only mode keeps the detector fixed during calibration.
-            score = detector.score_only(img)
-            scores.append(score)
-            records.append((name, score))
-
-    return np.array(scores, dtype=float), records
+    return np.asarray(scores, dtype=float), records
 
 
-# ============================================================
-# Load existing threshold configuration
-# ============================================================
-
-# Read the existing threshold.json so the calibration uses the same
-# image size, Top-K, score weights and online-update settings as deployment.
-with open(os.path.join(MODEL_DIR, "threshold.json"), "r") as f:
-    cfg = json.load(f)
+def backup_threshold(path: Path) -> Path:
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup = path.with_name(f"threshold_before_calibration_{stamp}.json")
+    shutil.copy2(path, backup)
+    return backup
 
 
-# ============================================================
-# Initialize detector
-# ============================================================
+def calibrate_category(category: str, dry_run=False):
+    category = safe_category_name(category)
+    paths = validate_paths(category)
+    images = find_good_images(paths["images"])
 
-# Load the same detector components used during deployment:
-# frozen YOLO26 feature extractor, online adapter, memory bank and threshold.
-detector = TTLAnomalyDetector(
-    adapter_path=os.path.join(MODEL_DIR, "ttl_adapter.pt"),
-    memory_bank_path=os.path.join(MODEL_DIR, "memory_bank.pt"),
-    threshold=cfg.get("threshold", 999),
-    model_name=os.path.join(MODEL_DIR, "yolo26n-cls.pt"),
-    img_size=cfg.get("img_size", 224),
+    if len(images) < MINIMUM_IMAGES:
+        raise ValueError(
+            f"{category}: only {len(images)} trusted good image(s)."
+        )
 
-    top_k_references=cfg.get("top_k_references", 5),
-    reference_weight=cfg.get("reference_weight", 0.7),
-    global_weight=cfg.get("global_weight", 0.3),
-    accept_margin=cfg.get("accept_margin", 0.95),
+    if len(images) < RECOMMENDED_IMAGES:
+        print(
+            f"WARNING: '{category}' has {len(images)} good images; "
+            f"{RECOMMENDED_IMAGES}+ is recommended."
+        )
 
-    update_threshold=cfg.get("update_threshold", None),
+    cfg = load_json(paths["threshold"])
+    detector = build_detector(paths, cfg)
+    scores, records = calculate_scores(detector, images)
 
-    online_lr=cfg.get("online_lr", 1e-4),
-    max_memory_bank=cfg.get("max_memory_bank", 4000)
-)
+    if len(scores) < MINIMUM_IMAGES:
+        raise ValueError(f"{category}: not enough readable good images.")
+
+    q_anomaly = float(np.quantile(scores, ANOMALY_QUANTILE))
+    q_update = float(np.quantile(scores, UPDATE_QUANTILE))
+    safety_margin = float(SAFETY_MARGIN_STD_FACTOR * np.std(scores))
+
+    anomaly_threshold = q_anomaly + safety_margin
+    update_threshold = min(q_update, anomaly_threshold)
+
+    print("\n" + "=" * 72)
+    print(f"CATEGORY: {category}")
+    print(f"Trusted image folder: {paths['images']}")
+    print("Only good_* files are used.")
+    print("-" * 72)
+
+    for name, score in records:
+        print(f"{name:<32} {score:.8f}")
+
+    print("-" * 72)
+    print(f"Readable good images : {len(scores)}")
+    print(f"Minimum score        : {scores.min():.8f}")
+    print(f"Mean score           : {scores.mean():.8f}")
+    print(f"Standard deviation   : {scores.std():.8f}")
+    print(f"Maximum score        : {scores.max():.8f}")
+    print(f"Anomaly quantile     : {ANOMALY_QUANTILE}")
+    print(f"Update quantile      : {UPDATE_QUANTILE}")
+    print(f"Safety margin        : {safety_margin:.8f}")
+
+    old_threshold = cfg.get("threshold")
+    old_update = cfg.get("update_threshold")
+
+    cfg.update(
+        {
+            "threshold_original": cfg.get(
+                "threshold_original", old_threshold
+            ),
+            "threshold_before_last_calibration": old_threshold,
+            "update_threshold_before_last_calibration": old_update,
+            "threshold": float(anomaly_threshold),
+            "update_threshold": float(update_threshold),
+            "threshold_method": "rev18_trusted_normal_dual_threshold",
+            "score_method": "patch_nearest_normal",
+            "calibration_category": category,
+            "calibration_source_folder": str(paths["images"]),
+            "calibration_filename_rule": "good_* only",
+            "calibrated_at": datetime.now().isoformat(timespec="seconds"),
+            "anomaly_quantile": ANOMALY_QUANTILE,
+            "update_quantile": UPDATE_QUANTILE,
+            "safety_margin_std_factor": SAFETY_MARGIN_STD_FACTOR,
+            "safety_margin": safety_margin,
+            "normal_score_count": int(len(scores)),
+            "normal_score_min": float(scores.min()),
+            "normal_score_mean": float(scores.mean()),
+            "normal_score_std": float(scores.std()),
+            "normal_score_max": float(scores.max()),
+            "calibration_images": [name for name, _ in records],
+        }
+    )
+
+    if dry_run:
+        print("\n" + "=" * 72)
+        print("DRY-RUN NOTICE")
+        print("threshold.json has not been changed.")
+        print(f"Current anomaly threshold : {old_threshold!r}")
+        print(f"Proposed anomaly threshold: {anomaly_threshold:.8f}")
+        print(f"Current update threshold  : {old_update!r}")
+        print(f"Proposed update threshold : {update_threshold:.8f}")
+
+        if isinstance(old_threshold, (int, float)) and old_threshold != 0:
+            pct = (
+                (anomaly_threshold - float(old_threshold))
+                / abs(float(old_threshold))
+                * 100.0
+            )
+            direction = "increase" if pct > 0 else "decrease"
+            print(f"Anomaly-threshold change  : {pct:+.2f}% ({direction})")
+
+        print("\nNext command to update threshold.json:")
+        print(
+            f"python auto_calibrate_threshold.py --category {category}"
+        )
+        backup = None
+    else:
+        backup = backup_threshold(paths["threshold"])
+        temp = paths["threshold"].with_suffix(".json.tmp")
+
+        with temp.open("w", encoding="utf-8") as f:
+            json.dump(cfg, f, indent=4)
+            f.write("\n")
+
+        os.replace(temp, paths["threshold"])
+        print(f"Updated: {paths['threshold']}")
+        print(f"Backup : {backup}")
+
+    return {
+        "category": category,
+        "image_count": len(scores),
+        "threshold": anomaly_threshold,
+        "update_threshold": update_threshold,
+        "dry_run": dry_run,
+    }
 
 
-# ============================================================
-# Collect scores from trusted normal images
-# ============================================================
+def discover_categories():
+    if not CALIBRATION_ROOT.exists():
+        return []
 
-normal_scores, records = calculate_scores(detector, NORMAL_DIR)
+    categories = []
 
-if len(normal_scores) < 3:
-    raise ValueError("Too few normal calibration images. Please add more normal images.")
+    for folder in sorted(CALIBRATION_ROOT.iterdir()):
+        if not folder.is_dir():
+            continue
 
+        category = safe_category_name(folder.name)
+        paths = required_category_files(category)
 
-# ============================================================
-# Calculate calibrated thresholds
-# ============================================================
+        required = [
+            paths["threshold"],
+            paths["patch_memory_bank"],
+        ]
 
-# Anomaly threshold:
-# high percentile of normal deployment scores.
-# Images with scores above this threshold are treated as anomalies.
-ANOMALY_QUANTILE = 0.995
+        if all(p.exists() for p in required) and find_good_images(folder):
+            categories.append(category)
 
-# Update threshold:
-# lower percentile used as a stricter boundary for online memory-bank updates.
-# Only very normal-like samples should be allowed to update the memory bank.
-UPDATE_QUANTILE = 0.95
-
-anomaly_threshold = float(np.quantile(normal_scores, ANOMALY_QUANTILE))
-update_threshold = float(np.quantile(normal_scores, UPDATE_QUANTILE))
-
-# Add a small safety margin to reduce false alarms caused by normal score variation.
-safety_margin = float(0.1 * np.std(normal_scores))
-anomaly_threshold_with_margin = anomaly_threshold + safety_margin
+    return categories
 
 
-# ============================================================
-# Print calibration result for checking
-# ============================================================
+def run_calibration(args):
+    if args.category:
+        categories = [safe_category_name(args.category)]
+    else:
+        categories = discover_categories()
 
-print("\n===== Normal calibration scores =====")
-for name, score in records:
-    print(f"{name}: {score:.6f}")
+    if not categories:
+        raise RuntimeError("No rev1.8 calibratable categories found.")
 
-print("\n===== Calibration summary =====")
-print("Count:", len(normal_scores))
-print("Min:", float(normal_scores.min()))
-print("Mean:", float(normal_scores.mean()))
-print("Std:", float(normal_scores.std()))
-print("Max:", float(normal_scores.max()))
-print("Anomaly threshold before margin:", anomaly_threshold)
-print("Safety margin:", safety_margin)
-print("Final anomaly threshold:", anomaly_threshold_with_margin)
-print("Update threshold:", update_threshold)
+    print("Categories selected:", ", ".join(categories))
+    failures = []
+    completed = 0
+
+    for category in categories:
+        try:
+            calibrate_category(category, dry_run=args.dry_run)
+            completed += 1
+        except Exception as exc:
+            failures.append((category, str(exc)))
+            print(f"\nERROR [{category}]: {exc}")
+
+    print("\n" + "=" * 72)
+    print(f"Completed: {completed} category/categories")
+    print(f"Failed   : {len(failures)} category/categories")
+
+    for category, message in failures:
+        print(f"  - {category}: {message}")
+
+    return 1 if failures else 0
 
 
-# ============================================================
-# Save updated threshold.json
-# ============================================================
+def main():
+    args = parse_args()
 
-# Keep the original threshold for traceability and save the calibrated values.
-cfg["threshold_original"] = cfg.get("threshold")
-cfg["threshold"] = anomaly_threshold_with_margin
-cfg["update_threshold"] = update_threshold
+    if not args.dry_run:
+        return run_calibration(args)
 
-# Store calibration method and statistics for deployment record.
-cfg["threshold_method"] = "deployment_auto_calibrated_dual_threshold"
-cfg["anomaly_quantile"] = ANOMALY_QUANTILE
-cfg["update_quantile"] = UPDATE_QUANTILE
-cfg["safety_margin"] = safety_margin
+    CALIBRATION_ROOT.mkdir(parents=True, exist_ok=True)
+    report_path = dry_run_report_path()
 
-cfg["normal_score_count"] = int(len(normal_scores))
-cfg["normal_score_min"] = float(normal_scores.min())
-cfg["normal_score_mean"] = float(normal_scores.mean())
-cfg["normal_score_std"] = float(normal_scores.std())
-cfg["normal_score_max"] = float(normal_scores.max())
+    with report_path.open("w", encoding="utf-8") as report_file:
+        tee_out = Tee(sys.stdout, report_file)
+        tee_err = Tee(sys.stderr, report_file)
 
-with open(os.path.join(MODEL_DIR, "threshold.json"), "w") as f:
-    json.dump(cfg, f, indent=4)
+        with redirect_stdout(tee_out), redirect_stderr(tee_err):
+            print(f"Dry-run report: {report_path}")
+            code = run_calibration(args)
+            print(f"\nSaved dry-run report: {report_path}")
 
-print("\nUpdated threshold.json saved.")
+    return code
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,447 +1,386 @@
-# ============================================================
-# Code Flow Summary: app_ctta.py
-# ===============================================================================================================================================================
-# | Part | Main Function            | Description                                                                                                               |
-# |------|--------------------------|---------------------------------------------------------------------------------------------------------------------------|
-# | 1    | Library Import           | Import Flask, OpenCV, PyTorch, JSON, CSV and system utilities used by the deployment API.                                 |
-# | 2    | Configuration            | Define model folder, YOLO26 path, log folder, checkpoint folder and memory checkpoint interval.                           |
-# | 3    | Model Import             | Add the model folder to Python path and import TTLAnomalyDetector from cira_ttl_anomaly.py.                               |
-# | 4    | Flask Setup and Cache    | Create the Flask app and cache loaded category detectors to avoid reloading models for every image.                       |
-# | 5    | Utility Functions        | Handle folder creation, path normalization, safe category naming, JSON reading, image path extraction and mode selection. |
-# | 6    | Category-Aware Loading   | Load category-specific memory_bank.pt, ttl_adapter.pt and threshold.json based on the requested category.                 |
-# | 7    | Logging and Checkpoint   | Save prediction records to CSV and optionally save memory-bank checkpoints after online updates.                          |
-# | 8    | Prediction Mode Control  | Use evaluate/calibrate mode for score-only prediction and monitor mode for online test-time updating.                     |
-# | 9    | API Routes               | Provide home, categories, config and predict endpoints for CiRA CORE and manual testing.                                  |
-# | 10   | Main Runner              | Start the Flask service on 127.0.0.1:5000 for local CiRA CORE connection.                                                 |
-# ===============================================================================================================================================================
+"""Flask API aligned with rev1.8 patch-memory CTTA.
 
-from flask import Flask, jsonify, request
-import os
+This revision keeps the /predict response schema fixed during monitor mode.
+Checkpoint file paths are logged server-side only and are not returned to CiRA.
+"""
+
+from __future__ import annotations
+
+import csv
 import json
-import cv2
+import os
 import sys
 import traceback
-import csv
-import torch
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
-# ============================================================
-# Flask API for CiRA CORE + CTTA Anomaly Detection
-# Category-aware version
-#
-# Model folder structure expected:
-#
-# C:\cira_ttl_model
-#   ├── yolo26n-cls.pt
-#   ├── cira_ttl_anomaly.py
-#   ├── bottle
-#   │   ├── memory_bank.pt
-#   │   ├── threshold.json
-#   │   └── ttl_adapter.pt
-#   ├── cable
-#   │   ├── memory_bank.pt
-#   │   ├── threshold.json
-#   │   └── ttl_adapter.pt
-#   └── ...
-#
-# CiRA should send:
-# {
-#   "image_path": "C:/cira_batch_test/bottle/001.png",
-#   "category": "bottle",
-#   "mode": "evaluate"
-# }
-#
-# mode:
-# - evaluate  = score only, no online memory update
-# - monitor   = normal deployment, allows online update
-# - calibrate = score only, same as evaluate but named for calibration
-# ============================================================
+import cv2
+from flask import Flask, jsonify, request
+
+MODEL_ROOT = Path(r"C:\cira_ttl_model")
+YOLO_PATH = MODEL_ROOT / "yolo26n-cls.pt"
+
+LOG_DIR = Path(r"C:\cira_ttl_logs")
+LOG_FILE = LOG_DIR / "prediction_log.csv"
+SERVER_EVENT_LOG = LOG_DIR / "server_event_log.txt"
+
+CHECKPOINT_ROOT = Path(r"C:\cira_ttl_checkpoints")
+SAVE_STATE_EVERY_N_UPDATES = 10
+
+# Rev1.11 ablation selector:
+# "baseline", "calibration", "memory_ctta", "adapter_ctta", "full_ctta"
+EXPERIMENT = "full_ctta"
+
+VALID_EXPERIMENTS = {
+    "baseline",
+    "calibration",
+    "memory_ctta",
+    "adapter_ctta",
+    "full_ctta",
+}
 
 
-# ============================================================
-# Configuration
-# ============================================================
-
-MODEL_ROOT = r"C:\cira_ttl_model"
-YOLO_PATH = os.path.join(MODEL_ROOT, "yolo26n-cls.pt")
-
-LOG_DIR = r"C:\cira_ttl_logs"
-LOG_FILE = os.path.join(LOG_DIR, "prediction_log.csv")
-
-CHECKPOINT_ROOT = r"C:\cira_ttl_checkpoints"
-SAVE_MEMORY_EVERY_N_UPDATES = 10
-
-# Add model root so Python can import cira_ttl_anomaly.py.
-# The main anomaly detection logic is kept in cira_ttl_anomaly.py.
-sys.path.append(MODEL_ROOT)
-
-from cira_ttl_anomaly import TTLAnomalyDetector
-
+sys.path.insert(0, str(MODEL_ROOT))
+from cira_ttl_anomaly import TTLAnomalyDetector  # noqa: E402
 
 app = Flask(__name__)
 
-# Cache loaded detectors so the same category model is not reloaded for every image.
-# This improves deployment speed during batch image testing.
-DETECTORS = {}
-MODEL_CONFIGS = {}
-MEMORY_UPDATE_COUNTERS = {}
+DETECTORS: dict[str, TTLAnomalyDetector] = {}
+MODEL_CONFIGS: dict[str, dict[str, Any]] = {}
+THRESHOLD_FILE_MTIMES: dict[str, int] = {}
+UPDATE_COUNTERS: dict[str, int] = {}
 
 
-# ============================================================
-# Utility functions
-# ============================================================
+
+def get_experiment_settings():
+    experiment = str(EXPERIMENT).strip().lower()
+
+    if experiment not in VALID_EXPERIMENTS:
+        raise ValueError(f"Unsupported EXPERIMENT: {EXPERIMENT}")
+
+    return {
+        "experiment": experiment,
+        "mode": "evaluate" if experiment in {"baseline", "calibration"} else "monitor",
+        "adapter_update_enabled": experiment in {"adapter_ctta", "full_ctta"},
+        "memory_update_enabled": experiment in {"memory_ctta", "full_ctta"},
+    }
+
+
+def get_threshold_for_experiment(cfg, fallback):
+    """Baseline uses stored pre-calibration rev1.8 threshold when available."""
+    if get_experiment_settings()["experiment"] == "baseline":
+        return float(
+            cfg.get(
+                "threshold_original",
+                cfg.get("threshold_before_last_calibration", fallback),
+            )
+        )
+
+    return float(cfg.get("threshold", fallback))
+
 
 def ensure_folders():
-    """Create log and checkpoint folders if not exist."""
-    os.makedirs(LOG_DIR, exist_ok=True)
-    os.makedirs(CHECKPOINT_ROOT, exist_ok=True)
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    CHECKPOINT_ROOT.mkdir(parents=True, exist_ok=True)
+
+
+def event_log(message: str):
+    """Write server-side diagnostics without changing the API payload."""
+    ensure_folders()
+    stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+    line = f"[{stamp}] {message}"
+    print(line)
+    with SERVER_EVENT_LOG.open("a", encoding="utf-8") as f:
+        f.write(line + "\n")
 
 
 def normalize_path(path):
-    """Normalize Windows path for OpenCV and Flask."""
     if path is None:
         return ""
-    return str(path).strip().replace("\\", "/")
+    return str(path).strip().strip('"').replace("\\", "/")
 
 
 def safe_category_name(category):
-    """
-    Clean category name from request.
-    This prevents path injection and keeps category folder name safe.
-    """
-    category = str(category).strip().lower()
-    category = category.replace("\\", "").replace("/", "")
-    category = category.replace("..", "")
-    return category
+    value = str(category or "").strip().lower()
+    return value.replace("\\", "").replace("/", "").replace("..", "")
 
 
 def get_json_data():
-    """
-    Read JSON body from POST / PUT request.
-    If request is GET, return empty dict.
-    """
-    if request.method in ["POST", "PUT"]:
+    if request.method in {"POST", "PUT"}:
         data = request.get_json(silent=True) or {}
-        return data
+        return data if isinstance(data, dict) else {}
     return {}
 
 
 def get_image_path_from_request():
-    """
-    Supports:
-    1. GET  /predict?image_path=C:/...
-    2. POST/PUT JSON {"image_path": "C:/..."}
-    3. CiRA strange URL style: /predict;image_path=C:/...
-    """
     data = get_json_data()
+    image_path = request.args.get("image_path", "") or data.get("image_path", "")
 
-    image_path = request.args.get("image_path", "")
-    if not image_path:
-        image_path = data.get("image_path", "")
-
-    # Some CiRA versions may convert ? into ;
     if not image_path:
         raw_url = request.full_path
         if ";image_path=" in raw_url:
             image_path = raw_url.split(";image_path=", 1)[1]
-            image_path = image_path.split("&", 1)[0]
-            image_path = image_path.split("?", 1)[0]
+            image_path = image_path.split("&", 1)[0].split("?", 1)[0]
 
     return normalize_path(image_path)
 
 
 def get_category_from_request(image_path=""):
-    """
-    Get category from JSON/query first.
-    If missing, try to infer from parent folder name.
-
-    Example:
-    C:/cira_batch_test/bottle/001.png
-    → category = bottle
-    """
     data = get_json_data()
-
-    category = request.args.get("category", "")
-    if not category:
-        category = data.get("category", "")
+    category = request.args.get("category", "") or data.get("category", "")
 
     if not category and image_path:
-        try:
-            parent_folder = os.path.basename(os.path.dirname(image_path))
-            category = parent_folder
-        except:
-            category = ""
+        category = os.path.basename(os.path.dirname(image_path))
 
     return safe_category_name(category)
 
 
 def get_mode_from_request():
-    """
-    mode:
-    - evaluate: no memory update, useful for debug checking
-    - monitor: allows online update, useful for real deployment
-    - calibrate: score only, useful for threshold calibration
-    """
-    data = get_json_data()
+    # Step 4 uses EXPERIMENT as the source of truth.
+    return get_experiment_settings()["mode"]
 
-    mode = request.args.get("mode", "")
-    if not mode:
-        mode = data.get("mode", "evaluate")
 
-    mode = str(mode).lower().strip()
-
-    if mode not in ["evaluate", "monitor", "calibrate"]:
-        mode = "evaluate"
-
-    return mode
+def category_paths(category):
+    category_dir = MODEL_ROOT / category
+    return {
+        "category_dir": category_dir,
+        "threshold": category_dir / "threshold.json",
+        "patch_memory_bank": category_dir / "patch_memory_bank.pt",
+        "patch_adapter": category_dir / "patch_adapter.pt",
+        "yolo": YOLO_PATH,
+    }
 
 
 def get_available_categories():
-    """Return category folders that contain required model files."""
     categories = []
-
-    if not os.path.exists(MODEL_ROOT):
+    if not MODEL_ROOT.exists():
         return categories
 
-    for name in sorted(os.listdir(MODEL_ROOT)):
-        category_dir = os.path.join(MODEL_ROOT, name)
-
-        if not os.path.isdir(category_dir):
+    for folder in sorted(MODEL_ROOT.iterdir()):
+        if not folder.is_dir():
             continue
 
-        required = [
-            os.path.join(category_dir, "threshold.json"),
-            os.path.join(category_dir, "ttl_adapter.pt"),
-            os.path.join(category_dir, "memory_bank.pt")
-        ]
-
-        if all(os.path.exists(p) for p in required):
-            categories.append(name)
+        paths = category_paths(folder.name)
+        if paths["threshold"].exists() and paths["patch_memory_bank"].exists():
+            categories.append(folder.name)
 
     return categories
 
 
-# ============================================================
-# Category-aware model loading
-# ============================================================
+def read_threshold_config(path):
+    with path.open("r", encoding="utf-8") as f:
+        cfg = json.load(f)
+
+    if not isinstance(cfg, dict):
+        raise ValueError(f"Expected JSON object: {path}")
+
+    return cfg
+
+
+def apply_threshold_config(category, detector, cfg, mtime_ns):
+    detector.threshold = get_threshold_for_experiment(
+        cfg,
+        detector.threshold,
+    )
+
+    update_threshold = cfg.get("update_threshold")
+    if update_threshold is None:
+        accept_margin = float(
+            cfg.get("accept_margin", getattr(detector, "accept_margin", 0.95))
+        )
+        update_threshold = detector.threshold * accept_margin
+
+    detector.update_threshold = float(update_threshold)
+    MODEL_CONFIGS[category] = cfg
+    THRESHOLD_FILE_MTIMES[category] = mtime_ns
+
+
+def refresh_threshold_if_changed(category, detector, force=False):
+    path = category_paths(category)["threshold"]
+    current_mtime = path.stat().st_mtime_ns
+    previous_mtime = THRESHOLD_FILE_MTIMES.get(category)
+
+    if not force and previous_mtime == current_mtime:
+        return False
+
+    cfg = read_threshold_config(path)
+    apply_threshold_config(category, detector, cfg, current_mtime)
+    event_log(f"threshold_reload category={category}")
+    return True
+
 
 def load_detector_for_category(category):
-    """
-    Load detector for a specific category.
-    Example:
-    category = bottle
-    load:
-    C:\cira_ttl_model\bottle\threshold.json
-    C:\cira_ttl_model\bottle\ttl_adapter.pt
-    C:\cira_ttl_model\bottle\memory_bank.pt
-    """
     category = safe_category_name(category)
 
     if not category:
         raise ValueError("Empty category received.")
 
     if category in DETECTORS:
-        return DETECTORS[category]
+        detector = DETECTORS[category]
+        refresh_threshold_if_changed(category, detector)
+        return detector
 
-    category_dir = os.path.join(MODEL_ROOT, category)
+    paths = category_paths(category)
 
-    threshold_path = os.path.join(category_dir, "threshold.json")
-    adapter_path = os.path.join(category_dir, "ttl_adapter.pt")
-    memory_bank_path = os.path.join(category_dir, "memory_bank.pt")
-    yolo_path = YOLO_PATH
+    for key in ("threshold", "patch_memory_bank", "yolo"):
+        if not paths[key].exists():
+            raise FileNotFoundError(f"Required file not found: {paths[key]}")
 
-    required_files = [
-        threshold_path,
-        adapter_path,
-        memory_bank_path,
-        yolo_path
-    ]
+    cfg = read_threshold_config(paths["threshold"])
 
-    for file_path in required_files:
-        if not os.path.exists(file_path):
-            raise FileNotFoundError("Required file not found: {}".format(file_path))
+    adapter_path = str(paths["patch_adapter"]) if paths["patch_adapter"].exists() else None
 
-    with open(threshold_path, "r") as f:
-        cfg = json.load(f)
+    settings = get_experiment_settings()
 
     detector = TTLAnomalyDetector(
-        adapter_path=adapter_path,
-        memory_bank_path=memory_bank_path,
-        threshold=cfg.get("threshold", 999.0),
-        model_name=yolo_path,
-        img_size=cfg.get("img_size", 224),
-
-        top_k_references=cfg.get("top_k_references", 5),
-        reference_weight=cfg.get("reference_weight", 0.7),
-        global_weight=cfg.get("global_weight", 0.3),
+        patch_memory_bank_path=str(paths["patch_memory_bank"]),
+        patch_adapter_path=adapter_path,
+        threshold=get_threshold_for_experiment(cfg, 999.0),
+        model_name=str(paths["yolo"]),
+        img_size=cfg.get("img_size", 384),
+        feature_choice=cfg.get("feature_choice", "last2"),
+        patch_grid=cfg.get("patch_grid", 14),
+        patch_top_fraction=cfg.get("patch_top_fraction", 0.05),
+        update_threshold=cfg.get("update_threshold"),
         accept_margin=cfg.get("accept_margin", 0.95),
-        update_threshold=cfg.get("update_threshold", None),
-
         online_lr=cfg.get("online_lr", 1e-4),
-        max_memory_bank=cfg.get("max_memory_bank", 4000),
         online_steps=cfg.get("online_steps", 1),
+        max_patch_memory=cfg.get("max_patch_memory", 16000),
         consistency_weight=cfg.get("consistency_weight", 1.0),
-        anchor_weight=cfg.get("anchor_weight", 0.1)
+        anchor_weight=cfg.get("anchor_weight", 0.1),
+        consistency_threshold=cfg.get("consistency_threshold", 0.002),
+        adapter_update_enabled=settings["adapter_update_enabled"],
+        memory_update_enabled=settings["memory_update_enabled"],
     )
 
     DETECTORS[category] = detector
-    MODEL_CONFIGS[category] = cfg
-    MEMORY_UPDATE_COUNTERS[category] = 0
+    UPDATE_COUNTERS[category] = 0
 
-    print("=" * 60)
-    print("Loaded detector for category:", category)
-    print("Category folder:", category_dir)
-    print("Threshold:", cfg.get("threshold", "not found"))
-    print("Update threshold:", cfg.get("update_threshold", "not found"))
-    print("Image size:", cfg.get("img_size", 224))
-    print("=" * 60)
+    apply_threshold_config(
+        category,
+        detector,
+        cfg,
+        paths["threshold"].stat().st_mtime_ns,
+    )
+
+    event_log(
+        "detector_loaded "
+        f"experiment={settings['experiment']} "
+        f"category={category} "
+        f"threshold={detector.threshold} "
+        f"update_threshold={detector.update_threshold} "
+        f"memory_size={detector.patch_memory_bank.shape[0]}"
+    )
 
     return detector
 
 
-# ============================================================
-# Logging and checkpoint
-# ============================================================
-
 def log_prediction(record):
-    """Save prediction record to CSV for debugging and thesis evidence."""
     ensure_folders()
-
-    file_exists = os.path.exists(LOG_FILE)
+    file_exists = LOG_FILE.exists()
 
     fieldnames = [
-        "timestamp",
-        "category",
-        "mode",
-        "image_path",
-        "file_name",
-        "label",
-        "is_anomaly",
-        "score_before",
-        "anomaly_score",
-        "threshold",
-        "anomaly_threshold",
-        "update_threshold",
-        "updated_memory",
-        "memory_size",
-        "update_loss",
-        "device"
+        "timestamp", "experiment", "category", "mode", "image_path", "file_name",
+        "label", "is_anomaly", "score_before", "anomaly_score",
+        "threshold", "anomaly_threshold", "update_threshold",
+        "threshold_reloaded", "updated_memory", "memory_size",
+        "update_allowed", "update_loss", "adapter_updated",
+        "adapter_delta_norm", "device", "score_method", "feature_choice",
+        "patch_grid", "patch_top_fraction", "checkpoint_saved",
+        "checkpoint_memory_path", "checkpoint_adapter_path",
+        "consistency_error", "consistency_threshold", "score_gate_pass",
+        "consistency_gate_pass", "adapter_update_enabled",
+        "memory_update_enabled",
     ]
 
-    with open(LOG_FILE, "a", newline="") as f:
+    with LOG_FILE.open("a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
-
         if not file_exists:
             writer.writeheader()
-
-        row = {}
-        for key in fieldnames:
-            row[key] = record.get(key, "")
-
-        writer.writerow(row)
+        writer.writerow({key: record.get(key, "") for key in fieldnames})
 
 
-def save_memory_checkpoint_if_needed(category, detector, result):
-    """
-    Save memory bank checkpoint after every N memory updates.
-    This is optional but useful for deployment traceability.
-    """
-    if not result.get("updated_memory", False):
-        return None
+def save_state_if_needed(category, detector, result):
+    """Save CTTA state and return paths for server-side logging only."""
+    if not (
+        result.get("updated_memory", False)
+        or result.get("adapter_updated", False)
+    ):
+        return False, "", ""
 
-    if category not in MEMORY_UPDATE_COUNTERS:
-        MEMORY_UPDATE_COUNTERS[category] = 0
+    UPDATE_COUNTERS[category] = UPDATE_COUNTERS.get(category, 0) + 1
+    counter = UPDATE_COUNTERS[category]
 
-    MEMORY_UPDATE_COUNTERS[category] += 1
-    counter = MEMORY_UPDATE_COUNTERS[category]
+    if counter % SAVE_STATE_EVERY_N_UPDATES != 0:
+        return False, "", ""
 
-    if counter % SAVE_MEMORY_EVERY_N_UPDATES != 0:
-        return None
+    checkpoint_dir = CHECKPOINT_ROOT / category
+    checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
-    ensure_folders()
+    memory_path = checkpoint_dir / f"patch_memory_bank_update_{counter}.pt"
+    adapter_path = checkpoint_dir / f"patch_adapter_update_{counter}.pt"
 
-    category_checkpoint_dir = os.path.join(CHECKPOINT_ROOT, category)
-    os.makedirs(category_checkpoint_dir, exist_ok=True)
-
-    checkpoint_path = os.path.join(
-        category_checkpoint_dir,
-        "memory_bank_update_{}.pt".format(counter)
+    event_log(
+        f"checkpoint_begin category={category} counter={counter} "
+        f"memory={memory_path.name} adapter={adapter_path.name}"
     )
 
-    # If cira_ttl_anomaly.py has save_memory_bank(), use it.
-    # If not, save memory_bank directly.
-    if hasattr(detector, "save_memory_bank"):
-        detector.save_memory_bank(checkpoint_path)
-    else:
-        torch.save(detector.memory_bank.cpu(), checkpoint_path)
+    detector.save_patch_memory_bank(str(memory_path))
+    detector.save_patch_adapter(str(adapter_path))
 
-    return checkpoint_path
+    event_log(
+        f"checkpoint_done category={category} counter={counter} "
+        f"memory_exists={memory_path.exists()} adapter_exists={adapter_path.exists()}"
+    )
+
+    return True, str(memory_path), str(adapter_path)
 
 
-# ============================================================
-# Prediction helper
-# ============================================================
+def run_prediction(detector, image, mode):
+    if mode in {"evaluate", "calibrate"}:
+        score = float(detector.score_only(image))
+        is_anomaly = score >= detector.threshold
 
-def run_prediction(detector, img, mode):
-    """
-    Run prediction according to mode.
-
-    evaluate:
-        no online update. Uses score_only().
-    calibrate:
-        same as evaluate. Useful for collecting normal scores.
-    monitor:
-        uses detector.predict(), which may update adapter and memory bank
-        if the image is normal-like.
-    """
-    if mode in ["evaluate", "calibrate"]:
-        score = float(detector.score_only(img))
-        is_anomaly = score >= float(detector.threshold)
-
-        result = {
+        return {
             "label": "anomaly" if is_anomaly else "normal",
             "is_anomaly": bool(is_anomaly),
-
             "anomaly_score": score,
             "score_before": score,
-
-            "threshold": float(detector.threshold),
-            "anomaly_threshold": float(detector.threshold),
-            "update_threshold": float(getattr(detector, "update_threshold", -1)),
-
+            "threshold": detector.threshold,
+            "anomaly_threshold": detector.threshold,
+            "update_threshold": detector.update_threshold,
+            "update_allowed": False,
             "updated_memory": False,
-            "memory_size": int(detector.memory_bank.shape[0]),
+            "memory_size": int(detector.patch_memory_bank.shape[0]),
             "update_loss": None,
-
-            "device": str(getattr(detector, "device", "unknown")),
-            "top_k_references": int(getattr(detector, "top_k_references", -1)),
-            "reference_weight": float(getattr(detector, "reference_weight", -1)),
-            "global_weight": float(getattr(detector, "global_weight", -1)),
-            "accept_margin": float(getattr(detector, "accept_margin", -1))
+            "adapter_updated": False,
+            "adapter_delta_norm": 0.0,
+            "consistency_error": 0.0,
+            "consistency_threshold": float(detector.consistency_threshold),
+            "score_gate_pass": False,
+            "consistency_gate_pass": False,
+            "adapter_update_enabled": bool(detector.adapter_update_enabled),
+            "memory_update_enabled": bool(detector.memory_update_enabled),
+            "device": detector.device,
+            "score_method": "patch_nearest_normal",
+            "feature_choice": detector.feature_choice,
+            "patch_grid": detector.patch_grid,
+            "patch_top_fraction": detector.patch_top_fraction,
         }
 
-        return result
+    return detector.predict(image, allow_update=True)
 
-    # monitor mode: allow online test-time update
-    # This uses your detector's existing predict() function.
-    result = detector.predict(img)
-
-    return result
-
-
-# ============================================================
-# Routes
-# ============================================================
 
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({
         "status": "OK",
-        "message": "Category-aware CTTA Flask service is running",
-        "model_root": MODEL_ROOT,
-        "yolo_path": YOLO_PATH,
+        "message": "rev1.8 patch CTTA service is running",
+        "experiment": get_experiment_settings()["experiment"],
         "available_categories": get_available_categories(),
-        "loaded_categories": sorted(list(DETECTORS.keys()))
+        "loaded_categories": sorted(DETECTORS),
+        "threshold_hot_reload": True,
     })
 
 
@@ -450,40 +389,40 @@ def categories():
     return jsonify({
         "status": "OK",
         "available_categories": get_available_categories(),
-        "loaded_categories": sorted(list(DETECTORS.keys()))
+        "loaded_categories": sorted(DETECTORS),
     })
 
 
 @app.route("/config", methods=["GET"])
 def config():
-    category = request.args.get("category", "")
+    try:
+        category = safe_category_name(request.args.get("category", ""))
 
-    if category:
-        category = safe_category_name(category)
+        if not category:
+            return jsonify({
+                "status": "OK",
+                "available_categories": get_available_categories(),
+                "loaded_categories": sorted(DETECTORS),
+            })
 
-        if category not in DETECTORS:
-            detector = load_detector_for_category(category)
-        else:
-            detector = DETECTORS[category]
-
-        cfg = MODEL_CONFIGS.get(category, {})
+        detector = load_detector_for_category(category)
+        refreshed = refresh_threshold_if_changed(category, detector)
 
         return jsonify({
             "status": "OK",
+            "experiment": get_experiment_settings()["experiment"],
             "category": category,
-            "threshold": float(getattr(detector, "threshold", -1)),
-            "update_threshold": float(getattr(detector, "update_threshold", -1)),
-            "img_size": int(getattr(detector, "img_size", -1)),
-            "memory_size": int(detector.memory_bank.shape[0]),
-            "raw_threshold_json": cfg
+            "threshold": detector.threshold,
+            "update_threshold": detector.update_threshold,
+            "img_size": detector.img_size,
+            "memory_size": int(detector.patch_memory_bank.shape[0]),
+            "feature_choice": detector.feature_choice,
+            "patch_grid": detector.patch_grid,
+            "patch_top_fraction": detector.patch_top_fraction,
+            "threshold_reloaded": refreshed,
         })
-
-    return jsonify({
-        "status": "OK",
-        "message": "No category specified. Showing service summary.",
-        "available_categories": get_available_categories(),
-        "loaded_categories": sorted(list(DETECTORS.keys()))
-    })
+    except Exception as exc:
+        return jsonify({"status": "ERROR", "message": str(exc)}), 500
 
 
 @app.route("/predict", methods=["GET", "POST", "PUT"])
@@ -494,115 +433,119 @@ def predict():
         mode = get_mode_from_request()
 
         if not image_path:
-            return jsonify({
-                "status": "ERROR",
-                "message": "No image_path received",
-                "full_path": request.full_path
-            }), 400
+            return jsonify({"status": "ERROR", "message": "No image_path received"}), 400
 
         if not category:
-            return jsonify({
-                "status": "ERROR",
-                "message": "No category received and cannot infer from image_path",
-                "image_path": image_path
-            }), 400
+            return jsonify({"status": "ERROR", "message": "No category received"}), 400
 
         if not os.path.exists(image_path):
             return jsonify({
                 "status": "ERROR",
                 "message": "Image path does not exist",
-                "image_path": image_path
+                "image_path": image_path,
             }), 404
 
-        img = cv2.imread(image_path)
+        image = cv2.imread(image_path)
+        if image is None:
+            return jsonify({"status": "ERROR", "message": "OpenCV cannot read image"}), 400
 
-        if img is None:
-            return jsonify({
-                "status": "ERROR",
-                "message": "OpenCV cannot read image",
-                "image_path": image_path
-            }), 400
-
-        # Load the correct category detector based on the folder/category name.
-        # This loads the matching memory bank, adapter and threshold files.
         detector = load_detector_for_category(category)
+        threshold_reloaded = refresh_threshold_if_changed(category, detector)
 
-        # Run anomaly detection according to the selected mode.
-        # evaluate/calibrate = score only; monitor = allow online update.
-        result = run_prediction(detector, img, mode)
+        event_log(
+            f"predict_begin category={category} file={os.path.basename(image_path)} mode={mode}"
+        )
 
-        file_name = os.path.basename(image_path)
+        result = run_prediction(detector, image, mode)
 
+        checkpoint_saved, checkpoint_memory_path, checkpoint_adapter_path = (
+            save_state_if_needed(category, detector, result)
+        )
+
+        # Stable CiRA-facing schema.
+        # No checkpoint filesystem paths are returned to RestPutJson.
         response = {
             "status": "OK",
-            "message": "CTTA prediction completed",
+            "message": "rev1.8 prediction completed",
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-
+            "experiment": get_experiment_settings()["experiment"],
             "category": category,
             "mode": mode,
-
             "image_path": image_path,
-            "file_name": file_name,
-            "image_width": int(img.shape[1]),
-            "image_height": int(img.shape[0]),
-
+            "file_name": os.path.basename(image_path),
             "label": result.get("label", "unknown"),
             "prediction": result.get("label", "unknown"),
             "is_anomaly": bool(result.get("is_anomaly", False)),
-
             "score_before": float(result.get("score_before", -1)),
             "anomaly_score": float(result.get("anomaly_score", -1)),
-
-            "threshold": float(result.get("threshold", -1)),
-            "anomaly_threshold": float(result.get("anomaly_threshold", result.get("threshold", -1))),
-            "update_threshold": float(result.get("update_threshold", -1)),
-
+            "threshold": float(result.get("threshold", detector.threshold)),
+            "anomaly_threshold": float(
+                result.get("anomaly_threshold", detector.threshold)
+            ),
+            "update_threshold": float(
+                result.get("update_threshold", detector.update_threshold)
+            ),
+            "threshold_reloaded": bool(threshold_reloaded),
+            "update_allowed": bool(result.get("update_allowed", False)),
             "updated_memory": bool(result.get("updated_memory", False)),
             "memory_size": int(result.get("memory_size", -1)),
-            "update_loss": result.get("update_loss", None),
-
-            "device": result.get("device", "unknown"),
-
-            "top_k_references": result.get("top_k_references", None),
-            "reference_weight": result.get("reference_weight", None),
-            "global_weight": result.get("global_weight", None),
-            "accept_margin": result.get("accept_margin", None)
+            "update_loss": result.get("update_loss"),
+            "adapter_updated": bool(result.get("adapter_updated", False)),
+            "adapter_delta_norm": float(result.get("adapter_delta_norm", 0.0)),
+            "device": str(result.get("device", "unknown")),
+            "score_method": str(result.get("score_method", "")),
+            "feature_choice": str(result.get("feature_choice", "")),
+            "patch_grid": int(result.get("patch_grid", 0)),
+            "patch_top_fraction": float(result.get("patch_top_fraction", 0.0)),
+            "checkpoint_saved": bool(checkpoint_saved),
+            "consistency_error": float(result.get("consistency_error", 0.0)),
+            "consistency_threshold": float(result.get("consistency_threshold", 0.0)),
+            "score_gate_pass": bool(result.get("score_gate_pass", False)),
+            "consistency_gate_pass": bool(result.get("consistency_gate_pass", False)),
+            "adapter_update_enabled": bool(
+                result.get("adapter_update_enabled", detector.adapter_update_enabled)
+            ),
+            "memory_update_enabled": bool(
+                result.get("memory_update_enabled", detector.memory_update_enabled)
+            ),
         }
 
-        checkpoint_path = save_memory_checkpoint_if_needed(category, detector, response)
-        response["checkpoint_saved"] = checkpoint_path is not None
-        response["checkpoint_path"] = checkpoint_path
+        # Server log keeps checkpoint paths for traceability.
+        log_record = dict(response)
+        log_record["checkpoint_memory_path"] = checkpoint_memory_path
+        log_record["checkpoint_adapter_path"] = checkpoint_adapter_path
+        log_prediction(log_record)
 
-        log_prediction(response)
+        event_log(
+            f"predict_response_ready category={category} "
+            f"file={response['file_name']} "
+            f"checkpoint_saved={checkpoint_saved} "
+            f"updated_memory={response['updated_memory']} "
+            f"adapter_updated={response['adapter_updated']} "
+            f"adapter_delta_norm={response['adapter_delta_norm']:.8f} "
+            f"update_loss={response['update_loss']}"
+        )
 
         return jsonify(response)
 
-    except Exception as e:
-        error_traceback = traceback.format_exc()
-
-        print("ERROR during prediction:")
-        print(error_traceback)
-
+    except Exception as exc:
+        tb = traceback.format_exc()
+        event_log("predict_error\n" + tb)
         return jsonify({
             "status": "ERROR",
-            "message": str(e),
-            "traceback": error_traceback,
-            "full_path": request.full_path
+            "message": str(exc),
+            "traceback": tb,
         }), 500
 
 
-# ============================================================
-# Main
-# ============================================================
-
 if __name__ == "__main__":
     ensure_folders()
-
+    event_log("service_start")
     print("=" * 60)
-    print("Starting category-aware CTTA Flask service")
+    print("Starting rev1.8 patch CTTA Flask service")
+    print("EXPERIMENT:", get_experiment_settings()["experiment"])
     print("MODEL_ROOT:", MODEL_ROOT)
-    print("YOLO_PATH:", YOLO_PATH)
     print("Available categories:", get_available_categories())
+    print("Server diagnostic log:", SERVER_EVENT_LOG)
     print("=" * 60)
-
     app.run(host="127.0.0.1", port=5000, debug=False)
