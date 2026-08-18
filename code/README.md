@@ -9,6 +9,38 @@
 | 'test_flow_rev1.3.flow' | The flow shown in CiRA CORE platform. Consist of Run flow, Stop flow and Reset flow. A workable flow but need to open from CiRA CORE platfrom and with the direct setup correctly as [2.6.3.1 Deployment Folder Structure](../README.md#2631-deployment-folder-structure) |
 
 
+## Code files Overview
+
+| File | Purpose | Usage | Main Flow / Key Point |
+|---|---|---|---|
+| `offline_train.py` | Build the offline anomaly-detection model before deployment. | Run during model preparation and final offline validation. | Prepare MVTec data → extract frozen YOLO26 local features → test patch settings → build normal patch memory → calculate offline threshold → validate 15 categories → export `patch_memory_bank.pt` and `threshold.json`. |
+| `cira_ttl_anomaly.py` | Core anomaly detector and CTTA logic. | Imported by the Flask service for every prediction. | Preprocess image → extract local patches → calculate nearest-normal anomaly score → apply safe update gate → optionally update PatchAdapter and/or memory → return prediction and CTTA diagnostics. |
+| `app_ctta.py` | Flask API between CiRA CORE and the detector. | Start this service before running CiRA batch testing. | Receive image/category → load category model → select experiment mode → call detector → log result → save checkpoints when required → return stable JSON response to CiRA. |
+| `auto_calibrate_threshold.py` | Calibrate deployment anomaly and update thresholds using trusted normal images. | Run before final deployment or after collecting new trusted-normal samples. | Read `good_*` images → calculate anomaly scores → use `q0.995` for anomaly threshold → use `q0.90` for update threshold → update each category `threshold.json` with backup. |
+| `calibrate_consistency.py` | Calculate the consistency-gate threshold for each category. | Run after trusted-normal images have been logged with `consistency_error`. | Read prediction log → keep `good_*` samples → group by category → take 95th percentile consistency error → save `consistency_threshold` into `threshold.json`. |
+| `python1.py` | CiRA batch image loader and test-sequence controller. | Used as the first Python block in the CiRA batch loop. | Check stop flag → collect valid category images → shuffle with fixed seed → read batch index → return current image/category → advance index until all images finish. |
+| `python2.py` | Convert Flask prediction results into CiRA display outputs. | Used after the REST/API call in CiRA CORE. | Read Flask JSON → validate required fields → parse score/result → choose LED status → prepare display text → load current image → return clean CiRA output. |
+
+
+The project is split into offline model preparation, deployment calibration, online CTTA inference, and CiRA CORE integration. Each script has one main responsibility so the training, adaptation, API, and UI workflow can be tested separately.
+
+### Overall Code Flow
+
+```text
+offline_train.py
+      ↓
+patch_memory_bank.pt + threshold.json
+      ↓
+auto_calibrate_threshold.py
+calibrate_consistency.py
+      ↓
+cira_ttl_anomaly.py
+      ↓
+app_ctta.py
+      ↓
+python1.py → CiRA REST call → python2.py
+
+
 rev1.0
 -----
 - basic test-time phase flow
