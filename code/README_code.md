@@ -1,14 +1,14 @@
 # Code, Method and Experiment Notes
 
-This file records how the final CTTA system is implemented and how the design changed across the experiments.
+Here noted down how the final CTTA system is implemented and how the design changed across the experiments.
 
-The root [`README.md`](../README.md) gives the project-level summary and final deployment result. This file stays closer to the code: what each file does, how data moves through the system, and what each revision proved.
+The root [`README.md`](../README.md) gives the project-level summary and final deployment result. Over here stays closer to the code: what each file does, how data moves through the system, and what each revision proved.
 
 ---
 
 ## Table of Contents
 
-- [1. Code Map](#1-code-map)
+- [1. Code Files Background](#1-code-files-background)
 - [2. Execution Flow](#2-execution-flow)
 - [3. Core Method](#3-core-method)
   - [3.1 Local Patch Representation](#31-local-patch-representation)
@@ -36,7 +36,7 @@ The root [`README.md`](../README.md) gives the project-level summary and final d
 
 ---
 
-# 1. Code Map
+# 1. Code Files Background
 
 | File | Purpose | When to use | Main flow |
 |---|---|---|---|
