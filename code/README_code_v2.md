@@ -1,14 +1,14 @@
 # Code, Method and Experiment Notes
 
-This file records how the final CTTA system is implemented and how the design changed across the experiments.
+Here recorded how the final CTTA system is implemented and how the design changed across the experiments.
 
-The root [`README.md`](../README.md) gives the project-level summary and final deployment result. This file stays closer to the code: what each file does, how data moves through the system, and what each revision proved.
+The root [`README.md`](../README.md) gives the project-level summary and final deployment result. This file stays closer to the code: what each file does, how data moves through the system and what each revision proved.
 
 ---
 
 ## Table of Contents
 
-- [1. Code Map](#1-code-map)
+- [1. Code File Info](#1-code-file-info)
 - [2. Execution Flow](#2-execution-flow)
 - [3. Core Method](#3-core-method)
   - [3.1 Local Patch Representation](#31-local-patch-representation)
@@ -36,7 +36,7 @@ The root [`README.md`](../README.md) gives the project-level summary and final d
 
 ---
 
-# 1. Code Map
+# 1. Code File Info
 
 | File | Purpose | When to use | Main flow |
 |---|---|---|---|
@@ -168,7 +168,7 @@ A `14 × 14` grid gives **196 local positions** per representation.
 
 Each test patch is compared with the most similar normal patch stored in the category memory bank.
 
-### Step 1 — nearest-normal cosine distance
+### Step 1 - nearest-normal cosine distance
 
 ```math
 d_i =
@@ -194,7 +194,7 @@ dᵢ ≈ 0   → patch is close to normal memory
 large dᵢ → patch is less similar to known normal patches
 ```
 
-### Step 2 — keep the most abnormal patches
+### Step 2 - keep the most abnormal patches
 
 ```math
 K =
@@ -219,7 +219,7 @@ Final value:
 r = 0.05
 ```
 
-### Step 3 — image anomaly score
+### Step 3 - image anomaly score
 
 ```math
 S(x) =
@@ -981,13 +981,13 @@ safer update selection
 
 For the final ablation:
 
-1. use the same 600-image evaluation set;
-2. use seeds `42`, `130`, and `2030`;
-3. restart Flask before each CTTA run;
-4. start from the same clean patch memory;
-5. start from the same identity-initialized PatchAdapter;
-6. reset `batch_index.txt`;
-7. clear the active prediction log;
+1. use the same 600-image evaluation set
+2. use seeds `42`, `130`, and `2030`
+3. restart Flask before each CTTA run
+4. start from the same clean patch memory
+5. start from the same identity-initialized PatchAdapter
+6. reset `batch_index.txt`
+7. clear the active prediction log
 8. save every run as a separate CSV.
 
 Experiment selection in `app_ctta.py`:
