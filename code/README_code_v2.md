@@ -2,7 +2,7 @@
 
 Here recorded how the final CTTA system is implemented and how the design changed across the experiments.
 
-The root [`README.md`](../README.md) gives the project-level summary and final deployment result. This file stays closer to the code: what each file does, how data moves through the system and what each revision proved.
+The root [`README.md`](../README.md) gives the project-level summary and final deployment result. Here stays closer to the code which what each file does, how data moves through the system and what each revision proved.
 
 ---
 
