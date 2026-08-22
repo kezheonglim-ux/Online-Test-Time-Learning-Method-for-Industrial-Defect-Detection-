@@ -123,30 +123,34 @@ CiRA result display
 
 ## 3.1 Local Patch Representation
 
-YOLO26 is used as a **frozen feature extractor**. Its weights are not updated during CTTA.
+YOLO26 is used as a **frozen feature extractor**. Its weights stay fixed during CTTA.
 
-For an input image \(x\):
+For an input image:
 
 ```math
 F = f_{\theta}(x)
 ```
 
-where:
-
 | Symbol | Meaning |
 |---|---|
-| \(x\) | input image |
-| \(f_{\theta}\) | YOLO26 feature extractor |
-| \(\theta\) | frozen YOLO parameters |
-| \(F\) | intermediate spatial feature maps |
+| `x` | input image |
+| `fθ` | YOLO26 feature extractor |
+| `θ` | frozen YOLO parameters |
+| `F` | intermediate spatial feature maps |
 
-Selected feature maps are resized to the same grid and converted into local patch descriptors:
+Selected feature maps are resized to one grid and converted into local patch descriptors:
 
 ```math
 P = \{p_1, p_2, \ldots, p_N\}
 ```
 
-The final offline setting uses:
+| Symbol | Meaning |
+|---|---|
+| `P` | patch representation of one image |
+| `pᵢ` | one local patch feature |
+| `N` | number of local patch positions |
+
+Final offline setting:
 
 ```text
 img_size       = 384
@@ -154,9 +158,9 @@ feature_choice = last2
 patch_grid     = 14
 ```
 
-A `14 × 14` grid gives **196 local positions per selected representation** before flattening for memory comparison.
+A `14 × 14` grid gives **196 local positions** per representation.
 
-**Why this design:** the global-feature baseline was weaker for small defects. Local patches improved mean AUROC from about **84.84% to 93.02%**.
+**Why this was kept:** local patches improved mean AUROC from about **84.84% to 93.02%**, showing that local defects were better preserved than with one global image embedding.
 
 ---
 
@@ -176,20 +180,18 @@ d_i =
 \right)
 ```
 
-where:
-
 | Symbol | Meaning |
 |---|---|
-| \(z_i\) | current test patch embedding |
-| \(m\) | one normal patch in memory |
-| \(M\) | category normal patch memory |
-| \(d_i\) | distance from the nearest normal patch |
+| `zᵢ` | current test patch embedding |
+| `m` | one normal patch in memory |
+| `M` | category normal patch memory |
+| `dᵢ` | distance from the nearest normal patch |
 
 Interpretation:
 
 ```text
-d_i close to 0  → patch looks normal
-larger d_i      → patch is less similar to normal memory
+dᵢ ≈ 0   → patch is close to normal memory
+large dᵢ → patch is less similar to known normal patches
 ```
 
 ### Step 2 — keep the most abnormal patches
@@ -200,16 +202,22 @@ K =
 \left(
 1,
 \left\lceil
-N \cdot r
+N r
 \right\rceil
 \right)
 ```
 
-where:
+| Symbol | Meaning |
+|---|---|
+| `N` | total number of patch distances |
+| `r` | `patch_top_fraction` |
+| `K` | number of highest-distance patches used |
 
-- \(N\) = number of patch distances;
-- \(r\) = `patch_top_fraction`;
-- final \(r = 0.05\).
+Final value:
+
+```text
+r = 0.05
+```
 
 ### Step 3 — image anomaly score
 
@@ -220,34 +228,34 @@ S(x) =
 d_i
 ```
 
-Only the highest 5% patch distances contribute to the image score.
+`S(x)` is the final image anomaly score.
 
-### Small example
+### Example
 
-If an image produces 196 patch distances:
+For a `14 × 14` grid:
 
 ```text
 N = 196
 r = 0.05
-K = ceil(196 × 0.05) = 10
+
+K = ceil(196 × 0.05)
+  = 10
 ```
 
-The detector averages the **10 most abnormal local distances**, not all 196 patches.
+The detector averages the **10 largest local distances**, not all 196 patches.
 
-This avoids a small defect being hidden by many normal regions.
+This keeps a small defect from being diluted by many normal regions.
 
-### Tuning performed
+### Offline tuning
 
-The offline ablation tested:
-
-| Parameter | Values tested | Final |
+| Parameter | Tested | Final |
 |---|---|---:|
 | Image size | 224, 384, 512 | **384** |
 | Feature choice | last1, last2, last3 | **last2** |
 | Patch grid | 8, 14, 20 | **14** |
 | Top fraction | 0.01, 0.03, 0.05, 0.10 | **0.05** |
 
-The selected shared setting reached:
+Selected configuration:
 
 ```text
 Mean AUROC      = 94.49%
@@ -261,7 +269,7 @@ Macro F1        = 78.42%
 
 ## 3.3 Deployment Thresholds
 
-Thresholds are recalculated from trusted-normal deployment images so the detector is not tied only to the offline score distribution.
+Trusted-normal deployment images are used to move the decision boundary from the offline score distribution to the deployment score distribution.
 
 ### Anomaly threshold
 
@@ -270,17 +278,16 @@ T_{anom}
 =
 Q_{0.995}(S_{normal})
 +
-0.10\,\sigma
+0.10\sigma
 ```
-
-where:
 
 | Term | Meaning |
 |---|---|
-| \(S_{normal}\) | anomaly scores from trusted normal images |
-| \(Q_{0.995}\) | 99.5th percentile |
-| \(\sigma\) | standard deviation of trusted-normal scores |
-| \(0.10\sigma\) | small safety margin |
+| `S_normal` | anomaly scores from trusted normal images |
+| `Q0.995` | 99.5th percentile of those scores |
+| `σ` | standard deviation of trusted-normal scores |
+| `0.10σ` | safety margin added to the anomaly boundary |
+| `T_anom` | final normal/anomaly threshold |
 
 This threshold answers:
 
@@ -300,9 +307,14 @@ with:
 T_{update} \le T_{anom}
 ```
 
-This threshold answers a stricter question:
+| Term | Meaning |
+|---|---|
+| `Q0.90` | 90th percentile of trusted-normal scores |
+| `T_update` | stricter boundary used before online learning |
 
-> **Is this sample safe enough to learn from?**
+This answers:
+
+> **Is this normal-looking sample safe enough to learn from?**
 
 ### Example
 
@@ -313,15 +325,13 @@ T_anom   = 0.060
 T_update = 0.045
 ```
 
-Then:
-
-| Score | Prediction | Online learning |
+| Score | Prediction | Update candidate |
 |---:|---|---|
-| `0.030` | Normal | Candidate for update |
-| `0.052` | Normal | Rejected from update |
-| `0.071` | Anomaly | Rejected from update |
+| `0.030` | Normal | Yes |
+| `0.052` | Normal | No |
+| `0.071` | Anomaly | No |
 
-So a normal prediction does **not** automatically enter CTTA.
+A sample can therefore be classified as normal without being accepted for CTTA.
 
 ### Why q0.90 was kept
 
@@ -335,22 +345,18 @@ So a normal prediction does **not** automatically enter CTTA.
 Bad-update reduction:
 
 ```math
-\frac{12-8}{12}\times100
-=
-33.3\%
+\frac{12-8}{12}\times100 = 33.3\%
 ```
 
-**Decision:** keep q0.90. The small accuracy reduction was accepted because defective updates fell by about one third while anomaly recall stayed unchanged.
+**Decision:** q0.90 was kept because it reduced unsafe updates by about one third while anomaly recall stayed unchanged.
 
 ---
 
 ## 3.4 Safe Update Gate
 
-The score gate is combined with a consistency check.
+Online state changes only when **both** the score gate and consistency gate pass.
 
 ### Consistency error
-
-Two noisy views of the same image are extracted:
 
 ```math
 E_{cons}
@@ -364,7 +370,7 @@ z_i^{strong}
 \right\|_2^2
 ```
 
-The category-specific consistency threshold is calibrated from trusted normal samples:
+Category-specific consistency threshold:
 
 ```math
 T_{cons}
@@ -375,41 +381,67 @@ E_{cons}^{normal}
 \right)
 ```
 
-Final gate:
+Final update rule:
 
 ```math
 G_{update}
 =
-\big[S(x) < T_{update}\big]
+G_{score}
 \land
-\big[E_{cons} < T_{cons}\big]
+G_{cons}
 ```
+
+with:
+
+```math
+G_{score} = [S(x) < T_{update}]
+```
+
+```math
+G_{cons} = [E_{cons} < T_{cons}]
+```
+
+### Parameters
+
+| Parameter | Meaning |
+|---|---|
+| `S(x)` | current image anomaly score before adaptation |
+| `T_update` | maximum score allowed for an update candidate |
+| `zᵢ^weak` | patch feature from the weakly perturbed image |
+| `zᵢ^strong` | patch feature from the more strongly perturbed image |
+| `N` | number of patch positions compared |
+| `E_cons` | average weak/strong feature difference |
+| `T_cons` | category-specific maximum consistency error |
+| `G_score` | score gate result: pass / fail |
+| `G_cons` | consistency gate result: pass / fail |
+| `G_update` | final permission to change adapter or memory |
 
 ### Example
 
 ```text
-score_before        = 0.031
-update_threshold    = 0.045     → PASS
+score_before          = 0.031
+T_update              = 0.045    → score gate PASS
 
-consistency_error   = 0.00011
-consistency_threshold = 0.00019 → PASS
+E_cons                = 0.00011
+T_cons                = 0.00019  → consistency gate PASS
 
-update_allowed = True
+G_update              = True
 ```
 
-If either gate fails, no online state is changed.
+If either gate fails:
 
-### Finding
+```text
+adapter update = OFF
+memory update  = OFF
+```
 
-The consistency error alone did not separate good and bad samples strongly. It is therefore used as a **secondary safety gate**, not as the main detector.
+**Finding:** consistency error was not strong enough to detect defects by itself, so it is kept as a **secondary safety check**.
 
 ---
 
 ## 3.5 PatchAdapter Update
 
-The PatchAdapter is a small learnable scale-and-bias layer applied after YOLO patch extraction.
-
-YOLO26 stays frozen.
+The PatchAdapter is a lightweight scale-and-bias layer applied after YOLO patch extraction. YOLO26 itself stays frozen.
 
 ### Consistency loss
 
@@ -421,18 +453,16 @@ L_{cons}
 \left\|
 z_i^{strong}
 -
-\operatorname{stopgrad}
+\mathrm{sg}
 \left(
 z_i^{weak}
 \right)
 \right\|_2^2
 ```
 
-`stopgrad()` keeps the weak view as a fixed target for that optimizer step.
+`sg()` means **stop-gradient**: the weak-view feature is used as the target and is not differentiated through in this loss term.
 
 ### Normal-anchor loss
-
-Each adapted patch is also pulled toward its nearest normal-memory anchor \(a_i\):
 
 ```math
 L_{anchor}
@@ -446,6 +476,12 @@ a_i
 \right\|_2^2
 ```
 
+| Symbol | Meaning |
+|---|---|
+| `aᵢ` | nearest normal-memory anchor for patch `i` |
+| `L_cons` | keeps weak/strong views consistent |
+| `L_anchor` | keeps adapted patches close to normal memory |
+
 ### Total online loss
 
 ```math
@@ -454,15 +490,6 @@ L_{online}
 \alpha L_{cons}
 +
 \beta L_{anchor}
-```
-
-Final values:
-
-```text
-alpha / consistency_weight = 1.0
-beta  / anchor_weight      = 0.1
-online_lr                  = 1e-4
-online_steps               = 1
 ```
 
 Parameter update:
@@ -477,18 +504,70 @@ Parameter update:
 L_{online}
 ```
 
-where \(\phi\) contains the PatchAdapter parameters.
+| Symbol | Meaning |
+|---|---|
+| `φ_t` | PatchAdapter parameters before the update |
+| `φ_t+1` | parameters after the update |
+| `η` | learning rate |
+| `∇φ L_online` | gradient of the online loss with respect to the adapter |
 
-### Verification result
+### How the formula maps to the final settings
+
+| Setting | Formula role | Final value | Effect |
+|---|---|---:|---|
+| `consistency_weight` | `α` | `1.0` | uses the full consistency loss |
+| `anchor_weight` | `β` | `0.1` | keeps the anchor term weaker than consistency |
+| `online_lr` | `η` | `1e-4` | controls the size of each parameter step |
+| `online_steps` | optimizer steps | `1` | one adapter update per accepted image |
+
+So the implemented loss is effectively:
+
+```math
+L_{online}
+=
+1.0\,L_{cons}
++
+0.1\,L_{anchor}
+```
+
+followed by one small gradient step with:
+
+```text
+η = 1e-4
+```
+
+### How the verification result relates to the formula
+
+The implementation records two checks:
+
+```math
+\Delta_{\phi}
+=
+\left\|
+\phi_{t+1}
+-
+\phi_t
+\right\|_2
+```
+
+and the calculated `L_online`.
+
+Observed result:
 
 ```text
 Accepted samples         = 234
 Adapter updated          = 234 / 234
-Mean update loss         ≈ 0.000137
-Mean adapter delta norm  ≈ 0.00259
+Mean online loss         ≈ 0.000137
+Mean parameter change    ≈ 0.00259
 ```
 
-**Important:** this proved that parameter learning was active. It did **not** prove that adapter learning improves accuracy. That was tested later in the ablation study.
+Interpretation:
+
+- `Mean online loss ≈ 0.000137` shows the consistency + anchor objective was calculated.
+- `Mean parameter change ≈ 0.00259` shows `φ_t+1` was different from `φ_t`.
+- `234 / 234` confirms every accepted sample produced a real optimizer update.
+
+This verifies that the adapter learning path works. Whether it improves detection is a separate question answered by the final ablation.
 
 ---
 
@@ -506,8 +585,8 @@ Z_t
 
 where:
 
-- \(M_t\) = current normal memory;
-- \(Z_t\) = accepted patches from the current image.
+- `M_t` = current normal memory;
+- `Z_t` = accepted patches from the current image.
 
 Memory size is capped:
 
@@ -521,9 +600,9 @@ with:
 max_patch_memory = 16000
 ```
 
-When the limit is exceeded, the implementation keeps the newest accepted patches.
+When the limit is exceeded, the newest accepted patches are kept.
 
-**Purpose:** let the normal reference follow deployment variation without changing YOLO26.
+**Purpose:** allow the normal reference to follow deployment variation without changing YOLO26.
 
 ---
 
