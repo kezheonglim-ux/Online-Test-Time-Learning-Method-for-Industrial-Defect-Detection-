@@ -54,7 +54,7 @@ Main project reference: [2.2.1 Key Implementation Ideas and Supporting Reference
 | Few-shot packaging defect detection | Few-shot class-incremental model | Class feature interaction | Packaging inspection | Useful when only a few labelled defect examples exist | Still requires labels and training | Zhu et al. (2024), IEEE |
 | Real-world industrial anomaly detection | ReinADNet | Normal-reference contrastive comparison | Real-world anomaly benchmark | Relevant to subtle defects, unaligned images and normal-reference comparison | Focuses on model/benchmark rather than online memory and low-code deployment | Wang et al. (2025), [OpenReview](https://openreview.net/forum?id=wEH5YGPSTx) |
 
-### Verdict — 1.1
+### Verdict - 1.1
 
 The review shows two broad directions:
 
@@ -76,7 +76,7 @@ The review shows two broad directions:
 | Test-time learning / adaptation | Uses test-time data to adjust the detector during inference. | **Core project direction.** |
 | Low-code implementation | Connects the model to a visual workflow for operation. | **Core deployment requirement.** Existing literature is still limited compared with algorithm-only research. |
 
-### Verdict — 1.2
+### Verdict - 1.2
 
 The project should not be treated as only a model-selection problem. It needs to combine:
 
@@ -104,13 +104,13 @@ This is why the implementation combines ideas from PatchCore-style memory, test-
 | CLIP / DINOv2 | Foundation feature extractor | Strong transferable features; useful for zero-/few-shot settings | Larger and more complex for local deployment | Strong future comparison, especially if YOLO features become the bottleneck | Radford et al. (2021), [CLIP](https://arxiv.org/abs/2103.00020); Oquab et al. (2023), [DINOv2](https://arxiv.org/abs/2304.07193) |
 | YOLO26 | Fast visual feature extractor | Lightweight and easy to integrate with Flask/CiRA | Not designed specifically for anomaly patches | **Selected backbone** for deployment practicality | Ultralytics documentation + YOLO-family literature |
 
-### Verdict — 1.3
+### Verdict - 1.3
 
 **YOLO26 remains selected as the practical backbone**, not because it is proven to be the best anomaly feature extractor, but because it fits the project constraints:
 
-- fast local inference;
-- already integrated with Flask and CiRA CORE;
-- can remain frozen;
+- fast local inference,
+- already integrated with Flask and CiRA CORE,
+- can remain frozen,
 - no bounding-box retraining is required.
 
 The review also identifies **DINOv2 / CLIP as the strongest future backbone comparison** if later work focuses on feature quality rather than deployment simplicity.
@@ -131,7 +131,7 @@ The review also identifies **DINOv2 / CLIP as the strongest future backbone comp
 | Rule-based inspection | Fixed vision rules | Simple and explainable | Weak under complex variation | Low | Only suitable as supplementary checks |
 | Online test-time learning with memory | Update trusted normal reference during inference | No full retraining; adapts to deployment | Memory contamination risk | Medium | **Selected CTTA direction** |
 
-### Verdict — 1.4
+### Verdict - 1.4
 
 The selected route is:
 
@@ -161,7 +161,7 @@ The main unresolved problem from this section is **update reliability**, which m
 
 References: [Node-RED](https://nodered.org/), [KNIME](https://www.knime.com/), [Orange](https://orangedatamining.com/), [Microsoft Power Platform](https://www.microsoft.com/en-us/power-platform), [Streamlit](https://streamlit.io/), [Gradio](https://www.gradio.app/).
 
-### Verdict — 1.5
+### Verdict - 1.5
 
 **CiRA CORE remains selected** because the project already requires:
 
@@ -202,16 +202,16 @@ Local patch mean AUROC   ≈ 93.02%
 Final tuned patch AUROC  ≈ 94.49%
 ```
 
-### Verdict — 1.6
+### Verdict - 1.6
 
 **Keep the current PatchCore-style local memory as the main design.**
 
 Most useful next comparisons:
 
-1. **SoftPatch-style memory filtering** — directly addresses the project's remaining bad-update contamination.
-2. **Adaptive / coreset memory management** — useful for longer streams and memory limits.
-3. **High-resolution tiled features** — only if tiny defects remain a known failure mode.
-4. **DINOv2 / RareCLIP** — higher-cost backbone alternatives if feature quality becomes more important than deployment simplicity.
+1. **SoftPatch-style memory filtering** - directly addresses the project's remaining bad-update contamination.
+2. **Adaptive / coreset memory management** - useful for longer streams and memory limits.
+3. **High-resolution tiled features** - only if tiny defects remain a known failure mode.
+4. **DINOv2 / RareCLIP** - higher-cost backbone alternatives if feature quality becomes more important than deployment simplicity.
 
 ---
 
@@ -242,7 +242,7 @@ Anomaly recall:    91.00% → 91.00%
 
 The consistency gate was retained, but its error distribution alone did not strongly separate good from bad samples.
 
-### Verdict — 1.7
+### Verdict - 1.7
 
 The current **score gate + consistency gate** is a reasonable low-complexity choice.
 
@@ -279,7 +279,7 @@ Relevant work:
 - On-device continual PatchCore with incremental coreset update: [Ren et al. (2025)](https://arxiv.org/abs/2512.13497)
 - Streaming covariance-aware PatchCore: [Ferrari et al. (2026)](https://arxiv.org/abs/2605.27748)
 
-### Verdict — 1.8
+### Verdict - 1.8
 
 The current bounded FIFO-style memory is suitable for proving the CTTA idea, but it is **not yet the strongest long-term memory strategy**.
 
@@ -321,7 +321,7 @@ CiRA CORE already provides Run / Stop / Reset and result display, so the platfor
 
 Recent work on direct memory-bank correction shows that operator-confirmed updates can improve a PatchCore-style detector without retraining, especially when the initial normal bank is small. It also warns that evaluation must keep corrected images separate from held-out testing to avoid memorisation bias. See Abbas et al. (2026), [Training-Free Human-in-the-Loop Anomaly Detection via Memory Bank Correction](https://arxiv.org/abs/2608.17775).
 
-### Verdict — 1.9
+### Verdict - 1.9
 
 Human feedback is **not required for the current thesis result**, but it is one of the most practical future extensions because CiRA CORE already provides an operator-facing workflow.
 
