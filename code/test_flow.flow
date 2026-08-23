@@ -1,0 +1,1028 @@
+{
+    "connections": [
+        {
+            "in_id": "{8a55fb9e-8de1-4338-9446-829034bc891f}",
+            "in_index": 0,
+            "out_id": "{62fb3483-eb9a-4aba-a675-6dfbcbad7a3b}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{98e357ff-9f09-41fa-9a7c-e32e96d26ecb}",
+            "in_index": 0,
+            "out_id": "{db47a546-949f-4390-8bbc-ebaec3485cfa}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{36131c10-45a6-4581-a22b-b6ef8cf90d61}",
+            "in_index": 0,
+            "out_id": "{97775f46-8c39-40eb-8848-e3d220110092}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{62fb3483-eb9a-4aba-a675-6dfbcbad7a3b}",
+            "in_index": 0,
+            "out_id": "{3d67871f-34cf-4844-bfed-fce727bc92ad}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{7836bc59-78e8-4318-9dd7-4c6789bb1e32}",
+            "in_index": 0,
+            "out_id": "{62fb3483-eb9a-4aba-a675-6dfbcbad7a3b}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{db3da9bd-465d-4469-a0c9-01058bdbb742}",
+            "in_index": 0,
+            "out_id": "{eeae1fc2-36dc-492e-9233-8f209c9c818a}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{db47a546-949f-4390-8bbc-ebaec3485cfa}",
+            "in_index": 0,
+            "out_id": "{cad4f41d-fdf6-45dd-aac6-8d789984e5c7}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{9093882d-af37-4ad0-b4d6-44642c324517}",
+            "in_index": 0,
+            "out_id": "{36131c10-45a6-4581-a22b-b6ef8cf90d61}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{45c4fd06-b607-4186-aad3-aba8023605d0}",
+            "in_index": 0,
+            "out_id": "{eeae1fc2-36dc-492e-9233-8f209c9c818a}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{50db1ff5-1528-490a-befc-b1167439d262}",
+            "in_index": 0,
+            "out_id": "{9093882d-af37-4ad0-b4d6-44642c324517}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{91d98b5b-7dd5-464c-8417-8a178f98de9e}",
+            "in_index": 0,
+            "out_id": "{db3da9bd-465d-4469-a0c9-01058bdbb742}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{97775f46-8c39-40eb-8848-e3d220110092}",
+            "in_index": 0,
+            "out_id": "{62fb3483-eb9a-4aba-a675-6dfbcbad7a3b}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{374eb301-8621-4631-b0d3-62e0473f35fc}",
+            "in_index": 0,
+            "out_id": "{62fb3483-eb9a-4aba-a675-6dfbcbad7a3b}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{c9cf2886-435e-44c5-81c1-ac93b5b2e5a4}",
+            "in_index": 0,
+            "out_id": "{36131c10-45a6-4581-a22b-b6ef8cf90d61}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{0359a71e-8fdf-4d8a-a119-0a87f4bb44b7}",
+            "in_index": 0,
+            "out_id": "{cad4f41d-fdf6-45dd-aac6-8d789984e5c7}",
+            "out_index": 0
+        },
+        {
+            "in_id": "{3d67871f-34cf-4844-bfed-fce727bc92ad}",
+            "in_index": 0,
+            "out_id": "{50db1ff5-1528-490a-befc-b1167439d262}",
+            "out_index": 0
+        }
+    ],
+    "nodes": [
+        {
+            "id": "{36131c10-45a6-4581-a22b-b6ef8cf90d61}",
+            "model": {
+                "name": "ButtonRun"
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": true
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -209,
+                "y": -342
+            }
+        },
+        {
+            "id": "{c9cf2886-435e-44c5-81c1-ac93b5b2e5a4}",
+            "model": {
+                "height": 453,
+                "label": {
+                    "bold": true,
+                    "console": "",
+                    "font": "Ubuntu",
+                    "key": "label = \"------------------------------\\n\" +\n\t\t\"RUN FLOW\\n\" +\n\t\t\"------------------------------\\n\" +\n\t\t\"Automatically tests batch images.\\n\\n\" +\n\t\t\"1. Python1 checks stop.txt and loads the next image.\\n\" +\n\t\t\"2. IfElse checks have_img.\\n\" +\n\t\t\"   True  = continue prediction.\\n\" +\n\t\t\"   False = stop / completed / error.\\n\" +\n\t\t\"3. RestPutJson sends image to CTTA Flask API.\\n\" +\n\t\t\"4. Python2 parses result and updates UI.\\n\" +\n\t\t\"5. LED turns red for anomaly, green for normal.\\n\" +\n\t\t\"6. Delay loops back to load the next image.\\n\\n\" +\n\t\t\"Folder: C:\\\\cira_batch_test\";",
+                    "size": 16,
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "name": "Label",
+                "node_enable": true,
+                "width": 551
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -836,
+                "y": -361
+            }
+        },
+        {
+            "id": "{dc683da6-73ed-4bb0-9005-2bdca92c5698}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "flow_data": "led_status",
+                    "font": "Ubuntu",
+                    "js_code": "led = \"gray\";\n\nif (payload && payload.led_color) {\n\tled = payload.led_color;\n}",
+                    "led": "gray",
+                    "size": 18,
+                    "tab_index": 0,
+                    "text": "led",
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "height": 85,
+                "name": "LED",
+                "width": 69
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 475,
+                "y": -76
+            }
+        },
+        {
+            "id": "{97775f46-8c39-40eb-8848-e3d220110092}",
+            "model": {
+                "delay_time": 500,
+                "name": "Delay",
+                "node_enable": true
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 1083,
+                "y": -342
+            }
+        },
+        {
+            "id": "{6afbf4c5-1221-43b6-8a37-3b4e968581f8}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "flow_data": "image_status",
+                    "font": "Ubuntu",
+                    "keep_aspect_ratio": false,
+                    "size": 18,
+                    "text": "image"
+                },
+                "height": 317,
+                "name": "Image",
+                "width": 354
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 57,
+                "y": -76
+            }
+        },
+        {
+            "id": "{7836bc59-78e8-4318-9dd7-4c6789bb1e32}",
+            "model": {
+                "flow_data_name": "led_status",
+                "name": "FlowDataSet"
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 893,
+                "y": -418
+            }
+        },
+        {
+            "id": "{0359a71e-8fdf-4d8a-a119-0a87f4bb44b7}",
+            "model": {
+                "height": 421,
+                "label": {
+                    "bold": true,
+                    "console": "",
+                    "font": "Ubuntu",
+                    "key": "label = \"------------------------------\\n\" +\n\t\t\"STOP FLOW\\n\" +\n\t\t\"------------------------------\\n\" +\n\t\t\"Purpose:\\n\" +\n\t\t\"Stop the running batch process safely.\\n\\n\" +\n\t\t\"Action:\\n\" +\n\t\t\"1. Create stop.txt in the batch folder.\\n\" +\n\t\t\"2. Python1 will detect stop.txt before loading the next image.\\n\" +\n\t\t\"3. The Run Flow will stop after the current image is completed.\\n\\n\" +\n\t\t\"Stop file:\\n\" +\n\t\t\"C:\\\\cira_batch_test\\\\stop.txt\";",
+                    "size": 16,
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "name": "Label",
+                "node_enable": true,
+                "width": 641
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 703,
+                "y": -1064
+            }
+        },
+        {
+            "id": "{62fb3483-eb9a-4aba-a675-6dfbcbad7a3b}",
+            "model": {
+                "data": {
+                    "comment": "python2",
+                    "py_ver": "1. Python2",
+                    "script": "# Python2 - Parse rev1.8 CTTA result for CiRA CORE\n# Checkpoint details stay in Flask/CSV logs and are not forwarded to UI output.\n\nimport cv2\nimport os\nimport traceback\n\nERROR_LOG = r\"C:\\cira_ttl_logs\\python2_error.txt\"\n\ntry:\n\troot = payload\n\n\tif not isinstance(root, dict):\n\t\traise TypeError(\n\t\t\t\"Expected payload dict, got {}\".format(type(root).__name__)\n\t\t)\n\n\t# CiRA may wrap the Python1 + RestPutJson result inside \"payload\".\n\tif \"payload\" in root and isinstance(root[\"payload\"], dict):\n\t\troot = root[\"payload\"]\n\n\timage_index = root.get(\"index\", \"-\")\n\timage_total = root.get(\"total\", \"-\")\n\n\tif \"RestPutJson\" not in root:\n\t\traise KeyError(\"RestPutJson field is missing.\")\n\n\tres = root[\"RestPutJson\"]\n\n\tif not isinstance(res, dict):\n\t\traise TypeError(\n\t\t\t\"RestPutJson must be dict, got {}\".format(type(res).__name__)\n\t\t)\n\n\trequired = [\n\t\t\"status\",\n\t\t\"category\",\n\t\t\"file_name\",\n\t\t\"image_path\",\n\t\t\"anomaly_score\",\n\t\t\"threshold\",\n\t]\n\n\tmissing = [key for key in required if key not in res]\n\tif missing:\n\t\traise KeyError(\n\t\t\t\"Missing Flask field(s): {}\".format(\", \".join(missing))\n\t\t)\n\n\tstatus = str(res[\"status\"])\n\tfile_name = str(res[\"file_name\"])\n\tcategory = str(res[\"category\"])\n\timage_path = str(res[\"image_path\"])\n\tlabel = str(res.get(\"label\", res.get(\"prediction\", \"unknown\")))\n\n\tscore = float(res[\"anomaly_score\"])\n\tthreshold = float(\n\t\tres.get(\"threshold\", res.get(\"anomaly_threshold\", 0.0))\n\t)\n\n\tis_anomaly = res.get(\"is_anomaly\", None)\n\tif is_anomaly is None:\n\t\tis_anomaly = str(label).lower() == \"anomaly\"\n\telse:\n\t\tis_anomaly = bool(is_anomaly)\n\n\t# Keep checkpoint state visible as a simple boolean only.\n\t# Full paths remain available in prediction_log.csv and RestPutJson Debug.\n\tcheckpoint_saved = bool(res.get(\"checkpoint_saved\", False))\n\tupdated_memory = bool(res.get(\"updated_memory\", False))\n\tmemory_size = int(res.get(\"memory_size\", 0))\n\n\tif status != \"OK\":\n\t\tled_color = \"gray\"\n\t\tled_status_text = \"GRAY - ERROR\"\n\telif is_anomaly:\n\t\tled_color = \"red\"\n\t\tled_status_text = \"RED - ANOMALY\"\n\telse:\n\t\tled_color = \"green\"\n\t\tled_status_text = \"GREEN - NORMAL\"\n\n\tdisplay_text = (\n\t\t\"CTTA ANOMALY DETECTION RESULT\\n\"\n\t\t\"------------------------------\\n\"\n\t\t\"Progress   : {} / {}\\n\"\n\t\t\"Category   : {}\\n\"\n\t\t\"Result     : {}\\n\"\n\t\t\"Is Anomaly: {}\\n\"\n\t\t\"File       : {}\\n\"\n\t\t\"Score      : {:.4f}\\n\"\n\t\t\"Threshold  : {:.4f}\\n\"\n\t).format(\n\t\timage_index,\n\t\timage_total,\n\t\tcategory,\n\t\tlabel,\n\t\tis_anomaly,\n\t\tfile_name,\n\t\tscore,\n\t\tthreshold,\n\t)\n\n\timg = None\n\n\tif image_path:\n\t\twin_path = image_path.replace(\"/\", \"\\\\\")\n\n\t\tif os.path.exists(win_path):\n\t\t\timg = cv2.imread(win_path)\n\t\telif os.path.exists(image_path):\n\t\t\timg = cv2.imread(image_path)\n\n\t# Keep CiRA output schema fixed and simple.\n\tout = {\n\t\t\"display_text\": display_text,\n\t\t\"led_color\": led_color,\n\t\t\"led_status_text\": led_status_text,\n\t\t\"image_index\": image_index,\n\t\t\"image_total\": image_total,\n\t\t\"file_name\": file_name,\n\t\t\"category\": category,\n\t\t\"label\": label,\n\t\t\"is_anomaly\": is_anomaly,\n\t\t\"score\": score,\n\t\t\"threshold\": threshold,\n\t\t\"image_path\": image_path,\n\t\t\"image_loaded\": img is not None,\n\t\t\"updated_memory\": updated_memory,\n\t\t\"memory_size\": memory_size,\n\t\t\"checkpoint_saved\": checkpoint_saved,\n\t}\n\n\t# Marker proves Python code completed before CiRA output serialization.\n\twith open(ERROR_LOG, \"w\") as f:\n\t\tf.write(\n\t\t\t\"OK\\n\"\n\t\t\t\"index={}\\n\"\n\t\t\t\"file={}\\n\"\n\t\t\t\"checkpoint_saved={}\\n\"\n\t\t\t\"updated_memory={}\\n\".format(\n\t\t\t\timage_index,\n\t\t\t\tfile_name,\n\t\t\t\tcheckpoint_saved,\n\t\t\t\tupdated_memory,\n\t\t\t)\n\t\t)\n\n\tpayload = out\n\toutput = out\n\tresult = out\n\timage = img\n\nexcept Exception:\n\terror_text = traceback.format_exc()\n\n\ttry:\n\t\twith open(ERROR_LOG, \"w\") as f:\n\t\t\tf.write(error_text)\n\texcept:\n\t\tpass\n\n\t# Do not mask the error.\n\traise\n",
+                    "tmp_path": "C:/Users/USER",
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        },
+                        "splt0": 15,
+                        "splt1": 10
+                    }
+                },
+                "height": 47,
+                "name": "PythonScript",
+                "node_enable": true,
+                "python_code": "# Python2 - Parse rev1.8 CTTA result for CiRA CORE\n# Checkpoint details stay in Flask/CSV logs and are not forwarded to UI output.\n\nimport cv2\nimport os\nimport traceback\n\nERROR_LOG = r\"C:\\cira_ttl_logs\\python2_error.txt\"\n\ntry:\n\troot = payload\n\n\tif not isinstance(root, dict):\n\t\traise TypeError(\n\t\t\t\"Expected payload dict, got {}\".format(type(root).__name__)\n\t\t)\n\n\t# CiRA may wrap the Python1 + RestPutJson result inside \"payload\".\n\tif \"payload\" in root and isinstance(root[\"payload\"], dict):\n\t\troot = root[\"payload\"]\n\n\timage_index = root.get(\"index\", \"-\")\n\timage_total = root.get(\"total\", \"-\")\n\n\tif \"RestPutJson\" not in root:\n\t\traise KeyError(\"RestPutJson field is missing.\")\n\n\tres = root[\"RestPutJson\"]\n\n\tif not isinstance(res, dict):\n\t\traise TypeError(\n\t\t\t\"RestPutJson must be dict, got {}\".format(type(res).__name__)\n\t\t)\n\n\trequired = [\n\t\t\"status\",\n\t\t\"category\",\n\t\t\"file_name\",\n\t\t\"image_path\",\n\t\t\"anomaly_score\",\n\t\t\"threshold\",\n\t]\n\n\tmissing = [key for key in required if key not in res]\n\tif missing:\n\t\traise KeyError(\n\t\t\t\"Missing Flask field(s): {}\".format(\", \".join(missing))\n\t\t)\n\n\tstatus = str(res[\"status\"])\n\tfile_name = str(res[\"file_name\"])\n\tcategory = str(res[\"category\"])\n\timage_path = str(res[\"image_path\"])\n\tlabel = str(res.get(\"label\", res.get(\"prediction\", \"unknown\")))\n\n\tscore = float(res[\"anomaly_score\"])\n\tthreshold = float(\n\t\tres.get(\"threshold\", res.get(\"anomaly_threshold\", 0.0))\n\t)\n\n\tis_anomaly = res.get(\"is_anomaly\", None)\n\tif is_anomaly is None:\n\t\tis_anomaly = str(label).lower() == \"anomaly\"\n\telse:\n\t\tis_anomaly = bool(is_anomaly)\n\n\t# Keep checkpoint state visible as a simple boolean only.\n\t# Full paths remain available in prediction_log.csv and RestPutJson Debug.\n\tcheckpoint_saved = bool(res.get(\"checkpoint_saved\", False))\n\tupdated_memory = bool(res.get(\"updated_memory\", False))\n\tmemory_size = int(res.get(\"memory_size\", 0))\n\n\tif status != \"OK\":\n\t\tled_color = \"gray\"\n\t\tled_status_text = \"GRAY - ERROR\"\n\telif is_anomaly:\n\t\tled_color = \"red\"\n\t\tled_status_text = \"RED - ANOMALY\"\n\telse:\n\t\tled_color = \"green\"\n\t\tled_status_text = \"GREEN - NORMAL\"\n\n\tdisplay_text = (\n\t\t\"CTTA ANOMALY DETECTION RESULT\\n\"\n\t\t\"------------------------------\\n\"\n\t\t\"Progress   : {} / {}\\n\"\n\t\t\"Category   : {}\\n\"\n\t\t\"Result     : {}\\n\"\n\t\t\"Is Anomaly: {}\\n\"\n\t\t\"File       : {}\\n\"\n\t\t\"Score      : {:.4f}\\n\"\n\t\t\"Threshold  : {:.4f}\\n\"\n\t).format(\n\t\timage_index,\n\t\timage_total,\n\t\tcategory,\n\t\tlabel,\n\t\tis_anomaly,\n\t\tfile_name,\n\t\tscore,\n\t\tthreshold,\n\t)\n\n\timg = None\n\n\tif image_path:\n\t\twin_path = image_path.replace(\"/\", \"\\\\\")\n\n\t\tif os.path.exists(win_path):\n\t\t\timg = cv2.imread(win_path)\n\t\telif os.path.exists(image_path):\n\t\t\timg = cv2.imread(image_path)\n\n\t# Keep CiRA output schema fixed and simple.\n\tout = {\n\t\t\"display_text\": display_text,\n\t\t\"led_color\": led_color,\n\t\t\"led_status_text\": led_status_text,\n\t\t\"image_index\": image_index,\n\t\t\"image_total\": image_total,\n\t\t\"file_name\": file_name,\n\t\t\"category\": category,\n\t\t\"label\": label,\n\t\t\"is_anomaly\": is_anomaly,\n\t\t\"score\": score,\n\t\t\"threshold\": threshold,\n\t\t\"image_path\": image_path,\n\t\t\"image_loaded\": img is not None,\n\t\t\"updated_memory\": updated_memory,\n\t\t\"memory_size\": memory_size,\n\t\t\"checkpoint_saved\": checkpoint_saved,\n\t}\n\n\t# Marker proves Python code completed before CiRA output serialization.\n\twith open(ERROR_LOG, \"w\") as f:\n\t\tf.write(\n\t\t\t\"OK\\n\"\n\t\t\t\"index={}\\n\"\n\t\t\t\"file={}\\n\"\n\t\t\t\"checkpoint_saved={}\\n\"\n\t\t\t\"updated_memory={}\\n\".format(\n\t\t\t\timage_index,\n\t\t\t\tfile_name,\n\t\t\t\tcheckpoint_saved,\n\t\t\t\tupdated_memory,\n\t\t\t)\n\t\t)\n\n\tpayload = out\n\toutput = out\n\tresult = out\n\timage = img\n\nexcept Exception:\n\terror_text = traceback.format_exc()\n\n\ttry:\n\t\twith open(ERROR_LOG, \"w\") as f:\n\t\t\tf.write(error_text)\n\texcept:\n\t\tpass\n\n\t# Do not mask the error.\n\traise\n",
+                "width": 75
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 608,
+                "y": -342
+            }
+        },
+        {
+            "id": "{50db1ff5-1528-490a-befc-b1167439d262}",
+            "model": {
+                "data": {
+                    "console": "",
+                    "js_code": "ifelse = false;\n\nif (payload && payload.have_img == true) {\n\tifelse = true;\n}\n\nif (payload && payload.payload && payload.payload.have_img == true) {\n\tifelse = true;\n}",
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "name": "IfElse",
+                "node_enable": true
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 190,
+                "y": -342
+            }
+        },
+        {
+            "id": "{9093882d-af37-4ad0-b4d6-44642c324517}",
+            "model": {
+                "data": {
+                    "comment": "python1",
+                    "py_ver": "1. Python2",
+                    "script": "import os\nimport random\n\nBATCH_ROOT = r\"C:\\cira_batch_test\"\nINDEX_FILE = r\"C:\\cira_batch_test\\batch_index.txt\"\nSTOP_FILE = r\"C:\\cira_batch_test\\stop.txt\"\nMODE = \"monitor\"\nSHUFFLE_SEED = 2030\n\nVALID_CATEGORIES = [\n\t\"bottle\", \"cable\", \"capsule\", \"carpet\", \"grid\",\n\t\"hazelnut\", \"leather\", \"metal_nut\", \"pill\", \"screw\",\n\t\"tile\", \"toothbrush\", \"transistor\", \"wood\", \"zipper\"\n]\n\nVALID_IMAGE_EXTENSIONS = (\".jpg\", \".jpeg\", \".png\", \".bmp\", \".webp\")\n\n# ============================================================\n# 1. Stop check\n# If stop.txt exists, stop the loop and delete stop.txt automatically.\n# ============================================================\n\nif_stop = os.path.exists(STOP_FILE)\n\nif if_stop:\n\ttry:\n\t\tos.remove(STOP_FILE)\n\t\tstop_deleted = True\n\texcept Exception as e:\n\t\tstop_deleted = False\n\n\tout = {\n\t\t\"status\": \"STOPPED\",\n\t\t\"have_img\": False,\n\t\t\"message\": \"Batch stopped by user. stop.txt detected and deleted.\",\n\t\t\"stop_file_deleted\": stop_deleted,\n\t\t\"result_text\": \"Batch stopped by user.\",\n\t\t\"led_status\": 0,\n\t\t\"image_path\": \"\",\n\t\t\"category\": \"\",\n\t\t\"mode\": \"stopped\",\n\t\t\"index\": 0,\n\t\t\"total\": 0\n\t}\n\nelse:\n\timage_list = []\n\n\t# ========================================================\n\t# 2. Check batch folder\n\t# ========================================================\n\n\tif not os.path.exists(BATCH_ROOT):\n\t\tout = {\n\t\t\t\"status\": \"ERROR\",\n\t\t\t\"have_img\": False,\n\t\t\t\"message\": \"Batch root folder does not exist.\",\n\t\t\t\"batch_root\": BATCH_ROOT,\n\t\t\t\"result_text\": \"Batch root folder does not exist.\",\n\t\t\t\"led_status\": 0,\n\t\t\t\"image_path\": \"\"\n\t\t}\n\n\telse:\n\t\t# ====================================================\n\t\t# 3. Collect images from valid category folders\n\t\t# Example:\n\t\t# C:\\cira_batch_test\\bottle\\good_1.png\n\t\t# C:\\cira_batch_test\\bottle\\bad_1.png\n\t\t# ====================================================\n\n\t\tfor category_name in sorted(os.listdir(BATCH_ROOT)):\n\t\t\tcategory_folder = os.path.join(BATCH_ROOT, category_name)\n\n\t\t\tif not os.path.isdir(category_folder):\n\t\t\t\tcontinue\n\n\t\t\tif category_name not in VALID_CATEGORIES:\n\t\t\t\tcontinue\n\n\t\t\tcategory_images = []\n\n\t\t\tfor file_name in sorted(os.listdir(category_folder)):\n\t\t\t\tfile_path = os.path.join(category_folder, file_name)\n\n\t\t\t\tif not os.path.isfile(file_path):\n\t\t\t\t\tcontinue\n\n\t\t\t\tif not file_name.lower().endswith(VALID_IMAGE_EXTENSIONS):\n\t\t\t\t\tcontinue\n\n\t\t\t\tcategory_images.append((file_path, category_name))\n\n\t\t\t# Fixed-seed shuffle within each category.\n\t\t\t# Same seed = same image order every run.\n\t\t\trng = random.Random(SHUFFLE_SEED)\n\t\t\trng.shuffle(category_images)\n\n\t\t\timage_list.extend(category_images)\n\n\t\t# ====================================================\n\t\t# 4. Read current index\n\t\t# ====================================================\n\n\t\tif not os.path.exists(INDEX_FILE):\n\t\t\tcurrent_index = 0\n\t\telse:\n\t\t\ttry:\n\t\t\t\twith open(INDEX_FILE, \"r\") as f:\n\t\t\t\t\ttext = f.read().strip()\n\t\t\t\t\tcurrent_index = int(text) if text != \"\" else 0\n\t\t\texcept:\n\t\t\t\tcurrent_index = 0\n\n\t\t# ====================================================\n\t\t# 5. No image found\n\t\t# ====================================================\n\n\t\tif len(image_list) == 0:\n\t\t\ttry:\n\t\t\t\tfolders_found = os.listdir(BATCH_ROOT)\n\t\t\texcept:\n\t\t\t\tfolders_found = []\n\n\t\t\tout = {\n\t\t\t\t\"status\": \"ERROR\",\n\t\t\t\t\"have_img\": False,\n\t\t\t\t\"message\": \"No valid image found in category folders.\",\n\t\t\t\t\"batch_root\": BATCH_ROOT,\n\t\t\t\t\"folders_found\": folders_found,\n\t\t\t\t\"valid_categories\": VALID_CATEGORIES,\n\t\t\t\t\"image_count\": 0,\n\t\t\t\t\"result_text\": \"No valid image found in category folders.\",\n\t\t\t\t\"led_status\": 0,\n\t\t\t\t\"image_path\": \"\"\n\t\t\t}\n\n\t\t# ====================================================\n\t\t# 6. Finished all images\n\t\t# Stop automatically when all images are finished.\n\t\t# ====================================================\n\n\t\telif current_index >= len(image_list):\n\t\t\tout = {\n\t\t\t\t\"status\": \"COMPLETED\",\n\t\t\t\t\"have_img\": False,\n\t\t\t\t\"message\": \"Batch testing completed. All images processed.\",\n\t\t\t\t\"result_text\": \"Batch testing completed. All images processed.\",\n\t\t\t\t\"led_status\": 1,\n\t\t\t\t\"image_path\": \"\",\n\t\t\t\t\"category\": \"\",\n\t\t\t\t\"mode\": \"completed\",\n\t\t\t\t\"index\": current_index,\n\t\t\t\t\"total\": len(image_list),\n\t\t\t\t\"image_count\": len(image_list)\n\t\t\t}\n\n\t\t# ====================================================\n\t\t# 7. Load current image and prepare payload for Flask\n\t\t# ====================================================\n\n\t\telse:\n\t\t\tcurrent_image_path, category = image_list[current_index]\n\t\t\tcurrent_image_path = current_image_path.replace(\"\\\\\", \"/\")\n\n\t\t\tout = {\n\t\t\t\t\"status\": \"OK\",\n\t\t\t\t\"have_img\": True,\n\t\t\t\t\"message\": \"Image found.\",\n\t\t\t\t\"image_path\": current_image_path,\n\t\t\t\t\"category\": category,\n\t\t\t\t\"mode\": MODE,\n\t\t\t\t\"index\": current_index + 1,\n\t\t\t\t\"total\": len(image_list),\n\t\t\t\t\"image_count\": len(image_list)\n\t\t\t}\n\n\t\t\t# Save next index\n\t\t\ttry:\n\t\t\t\twith open(INDEX_FILE, \"w\") as f:\n\t\t\t\t\tf.write(str(current_index + 1))\n\t\t\texcept Exception as e:\n\t\t\t\tout = {\n\t\t\t\t\t\"status\": \"ERROR\",\n\t\t\t\t\t\"have_img\": False,\n\t\t\t\t\t\"message\": \"Failed to write batch_index.txt.\",\n\t\t\t\t\t\"error\": str(e),\n\t\t\t\t\t\"result_text\": \"Failed to write batch_index.txt.\",\n\t\t\t\t\t\"led_status\": 0,\n\t\t\t\t\t\"image_path\": \"\"\n\t\t\t\t}\n\npayload = out\noutput = out\nresult = out",
+                    "tmp_path": "C:/Users/USER",
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        },
+                        "splt0": 761,
+                        "splt1": 191
+                    }
+                },
+                "height": 47,
+                "name": "PythonScript",
+                "node_enable": true,
+                "python_code": "import os\nimport random\n\nBATCH_ROOT = r\"C:\\cira_batch_test\"\nINDEX_FILE = r\"C:\\cira_batch_test\\batch_index.txt\"\nSTOP_FILE = r\"C:\\cira_batch_test\\stop.txt\"\nMODE = \"monitor\"\nSHUFFLE_SEED = 2030\n\nVALID_CATEGORIES = [\n\t\"bottle\", \"cable\", \"capsule\", \"carpet\", \"grid\",\n\t\"hazelnut\", \"leather\", \"metal_nut\", \"pill\", \"screw\",\n\t\"tile\", \"toothbrush\", \"transistor\", \"wood\", \"zipper\"\n]\n\nVALID_IMAGE_EXTENSIONS = (\".jpg\", \".jpeg\", \".png\", \".bmp\", \".webp\")\n\n# ============================================================\n# 1. Stop check\n# If stop.txt exists, stop the loop and delete stop.txt automatically.\n# ============================================================\n\nif_stop = os.path.exists(STOP_FILE)\n\nif if_stop:\n\ttry:\n\t\tos.remove(STOP_FILE)\n\t\tstop_deleted = True\n\texcept Exception as e:\n\t\tstop_deleted = False\n\n\tout = {\n\t\t\"status\": \"STOPPED\",\n\t\t\"have_img\": False,\n\t\t\"message\": \"Batch stopped by user. stop.txt detected and deleted.\",\n\t\t\"stop_file_deleted\": stop_deleted,\n\t\t\"result_text\": \"Batch stopped by user.\",\n\t\t\"led_status\": 0,\n\t\t\"image_path\": \"\",\n\t\t\"category\": \"\",\n\t\t\"mode\": \"stopped\",\n\t\t\"index\": 0,\n\t\t\"total\": 0\n\t}\n\nelse:\n\timage_list = []\n\n\t# ========================================================\n\t# 2. Check batch folder\n\t# ========================================================\n\n\tif not os.path.exists(BATCH_ROOT):\n\t\tout = {\n\t\t\t\"status\": \"ERROR\",\n\t\t\t\"have_img\": False,\n\t\t\t\"message\": \"Batch root folder does not exist.\",\n\t\t\t\"batch_root\": BATCH_ROOT,\n\t\t\t\"result_text\": \"Batch root folder does not exist.\",\n\t\t\t\"led_status\": 0,\n\t\t\t\"image_path\": \"\"\n\t\t}\n\n\telse:\n\t\t# ====================================================\n\t\t# 3. Collect images from valid category folders\n\t\t# Example:\n\t\t# C:\\cira_batch_test\\bottle\\good_1.png\n\t\t# C:\\cira_batch_test\\bottle\\bad_1.png\n\t\t# ====================================================\n\n\t\tfor category_name in sorted(os.listdir(BATCH_ROOT)):\n\t\t\tcategory_folder = os.path.join(BATCH_ROOT, category_name)\n\n\t\t\tif not os.path.isdir(category_folder):\n\t\t\t\tcontinue\n\n\t\t\tif category_name not in VALID_CATEGORIES:\n\t\t\t\tcontinue\n\n\t\t\tcategory_images = []\n\n\t\t\tfor file_name in sorted(os.listdir(category_folder)):\n\t\t\t\tfile_path = os.path.join(category_folder, file_name)\n\n\t\t\t\tif not os.path.isfile(file_path):\n\t\t\t\t\tcontinue\n\n\t\t\t\tif not file_name.lower().endswith(VALID_IMAGE_EXTENSIONS):\n\t\t\t\t\tcontinue\n\n\t\t\t\tcategory_images.append((file_path, category_name))\n\n\t\t\t# Fixed-seed shuffle within each category.\n\t\t\t# Same seed = same image order every run.\n\t\t\trng = random.Random(SHUFFLE_SEED)\n\t\t\trng.shuffle(category_images)\n\n\t\t\timage_list.extend(category_images)\n\n\t\t# ====================================================\n\t\t# 4. Read current index\n\t\t# ====================================================\n\n\t\tif not os.path.exists(INDEX_FILE):\n\t\t\tcurrent_index = 0\n\t\telse:\n\t\t\ttry:\n\t\t\t\twith open(INDEX_FILE, \"r\") as f:\n\t\t\t\t\ttext = f.read().strip()\n\t\t\t\t\tcurrent_index = int(text) if text != \"\" else 0\n\t\t\texcept:\n\t\t\t\tcurrent_index = 0\n\n\t\t# ====================================================\n\t\t# 5. No image found\n\t\t# ====================================================\n\n\t\tif len(image_list) == 0:\n\t\t\ttry:\n\t\t\t\tfolders_found = os.listdir(BATCH_ROOT)\n\t\t\texcept:\n\t\t\t\tfolders_found = []\n\n\t\t\tout = {\n\t\t\t\t\"status\": \"ERROR\",\n\t\t\t\t\"have_img\": False,\n\t\t\t\t\"message\": \"No valid image found in category folders.\",\n\t\t\t\t\"batch_root\": BATCH_ROOT,\n\t\t\t\t\"folders_found\": folders_found,\n\t\t\t\t\"valid_categories\": VALID_CATEGORIES,\n\t\t\t\t\"image_count\": 0,\n\t\t\t\t\"result_text\": \"No valid image found in category folders.\",\n\t\t\t\t\"led_status\": 0,\n\t\t\t\t\"image_path\": \"\"\n\t\t\t}\n\n\t\t# ====================================================\n\t\t# 6. Finished all images\n\t\t# Stop automatically when all images are finished.\n\t\t# ====================================================\n\n\t\telif current_index >= len(image_list):\n\t\t\tout = {\n\t\t\t\t\"status\": \"COMPLETED\",\n\t\t\t\t\"have_img\": False,\n\t\t\t\t\"message\": \"Batch testing completed. All images processed.\",\n\t\t\t\t\"result_text\": \"Batch testing completed. All images processed.\",\n\t\t\t\t\"led_status\": 1,\n\t\t\t\t\"image_path\": \"\",\n\t\t\t\t\"category\": \"\",\n\t\t\t\t\"mode\": \"completed\",\n\t\t\t\t\"index\": current_index,\n\t\t\t\t\"total\": len(image_list),\n\t\t\t\t\"image_count\": len(image_list)\n\t\t\t}\n\n\t\t# ====================================================\n\t\t# 7. Load current image and prepare payload for Flask\n\t\t# ====================================================\n\n\t\telse:\n\t\t\tcurrent_image_path, category = image_list[current_index]\n\t\t\tcurrent_image_path = current_image_path.replace(\"\\\\\", \"/\")\n\n\t\t\tout = {\n\t\t\t\t\"status\": \"OK\",\n\t\t\t\t\"have_img\": True,\n\t\t\t\t\"message\": \"Image found.\",\n\t\t\t\t\"image_path\": current_image_path,\n\t\t\t\t\"category\": category,\n\t\t\t\t\"mode\": MODE,\n\t\t\t\t\"index\": current_index + 1,\n\t\t\t\t\"total\": len(image_list),\n\t\t\t\t\"image_count\": len(image_list)\n\t\t\t}\n\n\t\t\t# Save next index\n\t\t\ttry:\n\t\t\t\twith open(INDEX_FILE, \"w\") as f:\n\t\t\t\t\tf.write(str(current_index + 1))\n\t\t\texcept Exception as e:\n\t\t\t\tout = {\n\t\t\t\t\t\"status\": \"ERROR\",\n\t\t\t\t\t\"have_img\": False,\n\t\t\t\t\t\"message\": \"Failed to write batch_index.txt.\",\n\t\t\t\t\t\"error\": str(e),\n\t\t\t\t\t\"result_text\": \"Failed to write batch_index.txt.\",\n\t\t\t\t\t\"led_status\": 0,\n\t\t\t\t\t\"image_path\": \"\"\n\t\t\t\t}\n\npayload = out\noutput = out\nresult = out",
+                "width": 75
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -38,
+                "y": -342
+            }
+        },
+        {
+            "id": "{db47a546-949f-4390-8bbc-ebaec3485cfa}",
+            "model": {
+                "data": {
+                    "comment": "Stop",
+                    "py_ver": "1. Python2",
+                    "script": "import os\n\nSTOP_FILE = r\"C:\\cira_batch_test\\stop.txt\"\n\nfolder = os.path.dirname(STOP_FILE)\nif not os.path.exists(folder):\n\tos.makedirs(folder)\n\nwith open(STOP_FILE, \"w\") as f:\n\tf.write(\"stop\")\n\nout = {\n\t\"status\": \"STOP_REQUESTED\",\n\t\"message\": \"stop.txt created\",\n\t\"stop_file\": STOP_FILE,\n\t\"stop_file_created\": os.path.exists(STOP_FILE)\n}\n\npayload = out\noutput = out\nresult = out",
+                    "tmp_path": "C:/Users/USER",
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        },
+                        "splt0": 15,
+                        "splt1": 10
+                    }
+                },
+                "height": 47,
+                "name": "PythonScript",
+                "node_enable": true,
+                "python_code": "import os\n\nSTOP_FILE = r\"C:\\cira_batch_test\\stop.txt\"\n\nfolder = os.path.dirname(STOP_FILE)\nif not os.path.exists(folder):\n\tos.makedirs(folder)\n\nwith open(STOP_FILE, \"w\") as f:\n\tf.write(\"stop\")\n\nout = {\n\t\"status\": \"STOP_REQUESTED\",\n\t\"message\": \"stop.txt created\",\n\t\"stop_file\": STOP_FILE,\n\t\"stop_file_created\": os.path.exists(STOP_FILE)\n}\n\npayload = out\noutput = out\nresult = out",
+                "width": 75
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 703,
+                "y": -1159
+            }
+        },
+        {
+            "id": "{98e357ff-9f09-41fa-9a7c-e32e96d26ecb}",
+            "model": {
+                "height": 50,
+                "name": "Debug",
+                "output_h": 0,
+                "output_v": 0,
+                "page_index": 0,
+                "payload_h": 0,
+                "payload_v": 0,
+                "width": 55
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 855,
+                "y": -1159
+            }
+        },
+        {
+            "id": "{db3da9bd-465d-4469-a0c9-01058bdbb742}",
+            "model": {
+                "data": {
+                    "comment": "StartReset",
+                    "py_ver": "1. Python2",
+                    "script": "import os\n\nINDEX_FILE = r\"C:\\cira_batch_test\\batch_index.txt\"\n\n# Reset index to first image\nfolder = os.path.dirname(INDEX_FILE)\nif not os.path.exists(folder):\n\tos.makedirs(folder)\n\nwith open(INDEX_FILE, \"w\") as f:\n\tf.write(\"0\")\n\nout = {\n\t\"status\": \"RESET_DONE\",\n\t\"message\": \"Reset completed. stop.txt deleted and image index reset to 0.\",\n\t\"load_complete\": True,\n\t\"result_text\": \"Reset completed. Next run will start from first image.\",\n}\n\npayload = out\noutput = out\nresult = out",
+                    "tmp_path": "C:/Users/USER",
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        },
+                        "splt0": 15,
+                        "splt1": 10
+                    }
+                },
+                "height": 47,
+                "name": "PythonScript",
+                "node_enable": true,
+                "python_code": "import os\n\nINDEX_FILE = r\"C:\\cira_batch_test\\batch_index.txt\"\n\n# Reset index to first image\nfolder = os.path.dirname(INDEX_FILE)\nif not os.path.exists(folder):\n\tos.makedirs(folder)\n\nwith open(INDEX_FILE, \"w\") as f:\n\tf.write(\"0\")\n\nout = {\n\t\"status\": \"RESET_DONE\",\n\t\"message\": \"Reset completed. stop.txt deleted and image index reset to 0.\",\n\t\"load_complete\": True,\n\t\"result_text\": \"Reset completed. Next run will start from first image.\",\n}\n\npayload = out\noutput = out\nresult = out",
+                "width": 75
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -38,
+                "y": -1159
+            }
+        },
+        {
+            "id": "{91d98b5b-7dd5-464c-8417-8a178f98de9e}",
+            "model": {
+                "height": 51,
+                "name": "Debug",
+                "output_h": 0,
+                "output_v": 0,
+                "page_index": 0,
+                "payload_h": 0,
+                "payload_v": 0,
+                "width": 48
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 171,
+                "y": -1159
+            }
+        },
+        {
+            "id": "{0939c3c4-74da-43b8-8513-91147acac0ce}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "console": "",
+                    "flow_data": "text_status",
+                    "font": "Ubuntu",
+                    "js_code": "text = \"Waiting for result...\";\n\nif (payload && payload.display_text) {\n\ttext = payload.display_text;\n}\n\nif (payload && payload.payload && payload.payload.display_text) {\n\ttext = payload.payload.display_text;\n}",
+                    "size": 16,
+                    "tab_index": 0,
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "height": 293,
+                "name": "Text",
+                "width": 395
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 608,
+                "y": -76
+            }
+        },
+        {
+            "id": "{374eb301-8621-4631-b0d3-62e0473f35fc}",
+            "model": {
+                "flow_data_name": "text_status",
+                "name": "FlowDataSet"
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 988,
+                "y": -380
+            }
+        },
+        {
+            "id": "{8a55fb9e-8de1-4338-9446-829034bc891f}",
+            "model": {
+                "flow_data_name": "image_status",
+                "name": "FlowDataSet"
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 988,
+                "y": -285
+            }
+        },
+        {
+            "id": "{eeae1fc2-36dc-492e-9233-8f209c9c818a}",
+            "model": {
+                "flow_data_name": "reset_data",
+                "name": "FlowDataGet"
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -247,
+                "y": -1159
+            }
+        },
+        {
+            "id": "{c93427c7-cfad-4989-a8de-63dda3a3d703}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "console": "",
+                    "flow_data": "",
+                    "font": "Ubuntu",
+                    "js_code": "text = \"Hello\"",
+                    "size": 16,
+                    "tab_index": 0,
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "height": 52,
+                "name": "Text",
+                "width": 224
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -95,
+                "y": -418
+            }
+        },
+        {
+            "id": "{6de4d521-4f4b-40bd-b133-e12639b34a00}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "flow_data": "stop_data",
+                    "font": "Ubuntu",
+                    "size": 18,
+                    "text": "STOP"
+                },
+                "height": 118,
+                "name": "Button",
+                "width": 180
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -209,
+                "y": -76
+            }
+        },
+        {
+            "id": "{938c1286-7c39-45a7-a55a-403f4507fbbd}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "flow_data": "reset_data",
+                    "font": "Ubuntu",
+                    "size": 18,
+                    "text": "RESET"
+                },
+                "height": 117,
+                "name": "Button",
+                "width": 185
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -209,
+                "y": 95
+            }
+        },
+        {
+            "id": "{45c4fd06-b607-4186-aad3-aba8023605d0}",
+            "model": {
+                "height": 386,
+                "label": {
+                    "bold": true,
+                    "console": "",
+                    "font": "Ubuntu",
+                    "key": "label = \"------------------------------\\n\" +\n\t\t\"RESET FLOW\\n\" +\n\t\t\"------------------------------\\n\" +\n\t\t\"Purpose:\\n\" +\n\t\t\"Reset the batch image sequence.\\n\\n\" +\n\t\t\"Action:\\n\" +\n\t\t\"1. Set batch_index.txt to 0.\\n\" +\n\t\t\"2. Next Run starts from the first image.\\n\\n\" +\n\t\t\"Folder:\\n\" +\n\t\t\"C:\\\\cira_batch_test\";",
+                    "size": 16,
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "name": "Label",
+                "node_enable": true,
+                "width": 400
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -38,
+                "y": -1064
+            }
+        },
+        {
+            "id": "{3d67871f-34cf-4844-bfed-fce727bc92ad}",
+            "model": {
+                "data": {
+                    "timeout": 30000,
+                    "url": "url = \"http://127.0.0.1:5000/predict\";\nmethod = \"POST\";\nheader = {\n\t\"Content-Type\": \"application/json\"\n};",
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        },
+                        "splt0": 15,
+                        "splt1": 10
+                    }
+                },
+                "name": "RestPutJson",
+                "node_enable": true
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 380,
+                "y": -342
+            }
+        },
+        {
+            "id": "{cad4f41d-fdf6-45dd-aac6-8d789984e5c7}",
+            "model": {
+                "flow_data_name": "stop_data",
+                "name": "FlowDataGet"
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 570,
+                "y": -1159
+            }
+        },
+        {
+            "id": "{36aa95ac-d8ce-4c6e-85f6-daf9d1ad688f}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "console": "",
+                    "flow_data": "",
+                    "font": "Ubuntu",
+                    "js_code": "text = \"Hello\"",
+                    "size": 16,
+                    "tab_index": 0,
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "height": 54,
+                "name": "Text",
+                "width": 255
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 532,
+                "y": -418
+            }
+        },
+        {
+            "id": "{443051b6-bd5f-485f-b8b3-713fe7909114}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "console": "",
+                    "flow_data": "",
+                    "font": "Ubuntu",
+                    "js_code": "text = \"Hello\"",
+                    "size": 16,
+                    "tab_index": 0,
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "height": 57,
+                "name": "Text",
+                "width": 200
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": -95,
+                "y": -1235
+            }
+        },
+        {
+            "id": "{bae48eae-6687-4d54-961e-b477493762e4}",
+            "model": {
+                "data": {
+                    "bold": true,
+                    "console": "",
+                    "flow_data": "",
+                    "font": "Ubuntu",
+                    "js_code": "text = \"Hello\"",
+                    "size": 16,
+                    "tab_index": 0,
+                    "widget_state": {
+                        "editor_setting": {
+                            "autoComplete": {
+                                "caseSensitivity": true,
+                                "enable": true,
+                                "threshold": 3
+                            },
+                            "indent": {
+                                "enable": true
+                            },
+                            "theme": "Material Dark",
+                            "whitespace": {
+                                "enable": false,
+                                "size": 2
+                            }
+                        }
+                    }
+                },
+                "height": 54,
+                "name": "Text",
+                "width": 145
+            },
+            "ngo": {
+                "comment": {
+                    "data": "",
+                    "show": false
+                }
+            },
+            "position": {
+                "fix": false,
+                "x": 646,
+                "y": -1235
+            }
+        }
+    ],
+    "scene_data": {
+        "flow_view_fix": false,
+        "flow_view_pos_x": -266.80669537273576,
+        "flow_view_pos_y": -307.88008324999544,
+        "flow_view_zoom_factor": 0.7513148009015785
+    }
+}
