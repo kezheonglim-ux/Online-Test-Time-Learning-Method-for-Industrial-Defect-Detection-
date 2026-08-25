@@ -773,41 +773,6 @@ Tune the patch configuration and freeze one shared setting.
 
 ## 4.9 rev1.8
 
-> **Main point:** offline representation was finalized.
-
-**Purpose**  
-Choose one configuration that performs well across categories.
-
-**Selected setting**
-
-```text
-img_size           = 384
-feature_choice     = last2
-patch_grid         = 14
-patch_top_fraction = 0.05
-max_patch_memory   = 16000
-```
-
-**Result**
-
-| Metric | Result |
-|---|---:|
-| Mean AUROC | **94.49%** |
-| Accuracy | **82.36%** |
-| Normal Recall | **84.59%** |
-| Anomaly Recall | **80.86%** |
-| Macro F1 | **78.42%** |
-
-**Discussion**  
-The representation was strong enough to freeze. Later work focused on deployment adaptation rather than changing YOLO features.
-
-**Next**  
-Verify that the online PatchAdapter really changes its parameters.
-
----
-
-## 4.9 rev1.8
-
 > **Main point:** offline patch representation was finalized through parameter ablation.
 
 ### Purpose
@@ -823,6 +788,12 @@ Choose one shared patch configuration that performs well across all 15 MVTec AD 
 | Patch grid | 8 × 8, **14 × 14**, 20 × 20 | **14 × 14** |
 | Top patch fraction | 1%, 3%, **5%**, 10% | **5%** |
 | Max patch memory | bounded memory setting | **16,000** |
+
+**Insight:**
+1%  → very few patches; more sensitive to isolated noisy responses
+3%  → more stable but still highly selective
+5%  → selected balance between local sensitivity and robustness
+10% → includes more normal patches and may dilute small-defect evidence
 
 ### Why these parameters were tested
 
@@ -842,9 +813,23 @@ feature_choice      = "last2"
 patch_grid          = 14
 patch_top_fraction  = 0.05
 max_patch_memory    = 16000
+```
 
+**Result**
 
+| Metric | Result |
+|---|---:|
+| Mean AUROC | **94.49%** |
+| Accuracy | **82.36%** |
+| Normal Recall | **84.59%** |
+| Anomaly Recall | **80.86%** |
+| Macro F1 | **78.42%** |
 
+**Discussion**  
+The representation was strong enough to freeze. Later work focused on deployment adaptation rather than changing YOLO features.
+
+**Next**  
+Verify that the online PatchAdapter really changes its parameters.
 
 ---
 
