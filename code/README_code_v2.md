@@ -790,10 +790,12 @@ Choose one shared patch configuration that performs well across all 15 MVTec AD 
 | Max patch memory | bounded memory setting | **16,000** |
 
 **Insight:**
+```text
 1%  → very few patches; more sensitive to isolated noisy responses
 3%  → more stable but still highly selective
 5%  → selected balance between local sensitivity and robustness
 10% → includes more normal patches and may dilute small-defect evidence
+```
 
 ### Why these parameters were tested
 
