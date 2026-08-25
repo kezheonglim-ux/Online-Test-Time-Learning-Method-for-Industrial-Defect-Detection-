@@ -806,6 +806,48 @@ Verify that the online PatchAdapter really changes its parameters.
 
 ---
 
+## 4.9 rev1.8
+
+> **Main point:** offline patch representation was finalized through parameter ablation.
+
+### Purpose
+
+Choose one shared patch configuration that performs well across all 15 MVTec AD categories.
+
+### Parameters explored
+
+| Parameter | Tested options | Selected |
+|---|---|---|
+| Image size | 224, **384**, 512 | **384** |
+| Feature choice | last1, **last2**, last3 | **last2** |
+| Patch grid | 8 × 8, **14 × 14**, 20 × 20 | **14 × 14** |
+| Top patch fraction | 1%, 3%, **5%**, 10% | **5%** |
+| Max patch memory | bounded memory setting | **16,000** |
+
+### Why these parameters were tested
+
+| Parameter | What it controls | Trade-off |
+|---|---|---|
+| Image size | Amount of visual detail retained | Larger input may preserve defects but increases compute |
+| Feature depth | Type of representation used | Earlier layers preserve local texture; deeper layers are more semantic |
+| Patch grid | Spatial resolution of local features | Finer grid preserves small defects but increases patch count |
+| Top fraction | Number of abnormal patches contributing to image score | Too small may be noise-sensitive; too large may dilute the defect signal |
+| Patch memory size | Amount of normal reference retained | Larger memory improves coverage but increases search cost |
+
+### Selected recipe
+
+```python
+img_size            = 384
+feature_choice      = "last2"
+patch_grid          = 14
+patch_top_fraction  = 0.05
+max_patch_memory    = 16000
+
+
+
+
+---
+
 ## 4.10 rev1.9
 
 > **Main point:** online adapter learning was proven to be active.
