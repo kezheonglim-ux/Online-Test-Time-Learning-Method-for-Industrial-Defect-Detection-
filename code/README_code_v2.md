@@ -775,11 +775,11 @@ Tune the patch configuration and freeze one shared setting.
 
 > **Main point:** offline patch representation was finalized through parameter ablation.
 
-### Purpose
+**Purpose**
 
 Choose one shared patch configuration that performs well across all 15 MVTec AD categories.
 
-### Parameters explored
+**Parameters explored**
 
 | Parameter | Tested options | Selected |
 |---|---|---|
@@ -797,7 +797,7 @@ Choose one shared patch configuration that performs well across all 15 MVTec AD 
 10% → includes more normal patches and may dilute small-defect evidence
 ```
 
-### Why these parameters were tested
+**Why this parameters being tested**
 
 | Parameter | What it controls | Trade-off |
 |---|---|---|
@@ -807,7 +807,21 @@ Choose one shared patch configuration that performs well across all 15 MVTec AD 
 | Top fraction | Number of abnormal patches contributing to image score | Too small may be noise-sensitive; too large may dilute the defect signal |
 | Patch memory size | Amount of normal reference retained | Larger memory improves coverage but increases search cost |
 
-### Selected recipe
+**Script auto select and why**
+
+| Stage | Metric | Purpose |
+|---|---|---|
+| Primary selection | Mean AUROC | Best average anomaly-score separation |
+| Robustness check in ranking | Minimum AUROC | Avoid one category performing very badly |
+| Diagnostic metric | Mean Macro F1 | Check threshold-based class balance |
+| Final validation | Accuracy | Overall prediction correctness |
+| Final validation | Normal Recall | Ability to retain normal samples |
+| Final validation | Anomaly Recall | Ability to detect defects |
+| Final validation | Macro F1 | Balanced classification performance |
+| Final validation | AUROC | Final score-separation quality |
+
+
+**Selected recipe**
 
 ```python
 img_size            = 384
