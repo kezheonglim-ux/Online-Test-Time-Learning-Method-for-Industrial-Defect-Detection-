@@ -14,7 +14,6 @@ The selection logic follows the implementation ideas used in the main project:
 - safe online test-time adaptation;
 - lightweight deployment through Flask and CiRA CORE.
 
-Main project reference: [2.2.1 Key Implementation Ideas and Supporting References](../README.md#221-key-implementation-ideas-and-supporting-references)
 
 ---
 
