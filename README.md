@@ -315,22 +315,21 @@ Calibration only calculates the operating thresholds.
 
 **Optional run**
 
-```text
-Single-category calibration run:
+
+**Single-category calibration run:**
 
 ```bat
 python code/auto_calibrate_threshold.py --category bottle
 ```
 
-OR dry run(no update)
+**OR dry run(no update)**
 
 ```bat
 python auto_calibrate_threshold.py --category bottle --dry-run
 ```
-```text
-Run all:
-```
-**OR**
+
+**Run all with dry run(no update):**
+
 ```bat
 python auto_calibrate_threshold.py --dry-run
 ```
