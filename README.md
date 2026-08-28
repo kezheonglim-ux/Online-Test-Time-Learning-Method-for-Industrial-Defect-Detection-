@@ -382,7 +382,7 @@ Consistency gate:
 ```math
 G_{cons}
 =
-[E_{cons}<T_{cons}]
+[E_{cons} < T_{cons}]
 ```
 
 The q0.90 update boundary was selected after comparison with q0.95.
