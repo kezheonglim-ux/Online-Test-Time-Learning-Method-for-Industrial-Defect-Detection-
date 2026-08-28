@@ -2,8 +2,6 @@
 
 This README is the technical entry point for the implementation under `code/`.
 
-It combines the **project-level summary**, **code responsibilities**, the **experiment path from rev1.0 to rev1.12**, and the **final deployment result**. The root [`README.md`](../README.md) can stay concise and project-facing, while this file keeps the implementation and experiment evidence close to the source code.
-
 ---
 
 ## Project Summary
