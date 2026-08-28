@@ -411,8 +411,7 @@ Original incoming image
         │     Gaussian noise scale = 0.01
         │
         └── Strong view
-              Gaussian noise scale = 0.03
-              + 50% probability of horizontal flip
+              Gaussian noise scale = 0.03              
 ```
 
 The weak view introduces only a small perturbation, while the strong view introduces a larger perturbation. The purpose is to check whether the extracted feature representation remains stable even when the appearance of the same image is slightly changed.
