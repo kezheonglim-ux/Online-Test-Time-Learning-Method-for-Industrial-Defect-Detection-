@@ -16,7 +16,7 @@ The project did not begin directly with the final local-patch method. The resear
 - [2. Research Objectives](#2-research-objectives)
 - [3. Dataset](#3-dataset)
 - [4. Complete Project Development Flow](#4-complete-project-development-flow)
-  - [4.1 Stage 1 - Offline Normal-Reference Preparation](#41-stage-1-offline-normal-reference-preparation)
+  - [4.1 Stage 1 - Offline Normal-Reference Preparation](#41-stage-1--offline-normal-reference-preparation)
   - [4.2 Stage 2 - Deployment Calibration](#42-stage-2-deployment-calibration)
   - [4.3 Stage 3 - Global-to-Local Representation Development](#43-stage-3-global-to-local-representation-development)
   - [4.4 Stage 4 - Safe Continual Test-Time Adaptation](#44-stage-4-safe-continual-test-time-adaptation)
