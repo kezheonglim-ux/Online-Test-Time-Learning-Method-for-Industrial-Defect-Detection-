@@ -257,6 +257,73 @@ Calibration Accuracy  = 84.17%
 Gain = +4.67 percentage points
 ```
 
+### Step to Run Calibration
+
+Deployment calibration uses trusted-normal images to recalculate the category-specific anomaly and update thresholds.
+
+#### Step 1 — Prepare trusted-normal images
+
+Prepare approximately 20 trusted-normal images for each category.
+
+Example:
+
+```text
+calibration/
+└── bottle/
+    ├── good_1.png
+    ├── good_2.png
+    ├── good_3.png
+    └── ...
+```
+
+#### Step 2 — Check calibration settings
+
+In `auto_calibrate_threshold.py`, confirm the model path, category path and calibration-image path are correct.
+
+The final threshold settings are:
+
+```python
+ANOMALY_QUANTILE = 0.995
+UPDATE_QUANTILE  = 0.90
+SAFETY_MARGIN_STD_FACTOR = 0.10
+```
+
+#### Step 3 — Run calibration
+
+From the project environment:
+
+```bat
+python code/auto_calibrate_threshold.py
+```
+
+The calibration process is:
+
+```text
+Trusted-normal images
+        ↓
+Calculate anomaly score S(x)
+        ↓
+Build S_normal distribution
+        ↓
+Calculate T_anom and T_update
+        ↓
+Save calibrated threshold.json
+```
+
+Calibration only calculates the operating thresholds.  
+**The memory and PatchAdapter are not updated during this stage.**
+
+#### Step 4 — Check the output
+
+The generated `threshold.json` is then used during deployment for:
+
+```text
+T_anom   → normal / anomaly decision
+T_update → safe-update candidate decision
+```
+
+
+
 ---
 
 ## 4.3 Stage 3 - Global-to-Local Representation Development
