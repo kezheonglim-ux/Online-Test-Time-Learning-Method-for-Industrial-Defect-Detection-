@@ -369,7 +369,22 @@ G_{score}
 G_{cons}
 ```
 
-Score gate:
+#### Parameter roles
+
+| Parameter | Meaning | Role |
+|---|---|---|
+| $G_{update}$ | Final update decision | Allows online memory and/or adapter update only when both gates pass |
+| $G_{score}$ | Score gate result | Checks whether the incoming image is confidently normal |
+| $G_{cons}$ | Consistency gate result | Checks whether the sample remains stable under weak and strong perturbations |
+| $S(x)$ | Anomaly score of the incoming image | Compared with the update threshold |
+| $T_{update}$ | Update threshold | Stricter boundary used to decide whether a sample can be considered for online learning |
+| $E_{cons}$ | Consistency error | Measures the feature difference between weak and strong views |
+| $T_{cons}$ | Consistency threshold | Maximum consistency error allowed for an online update |
+| $z_i^{weak}$ | Patch feature from the weakly augmented image | Used as one side of the consistency comparison |
+| $z_i^{strong}$ | Patch feature from the strongly augmented image | Used as the other side of the consistency comparison |
+| $N$ | Number of compared patch positions | Used when averaging the consistency error |
+
+#### Score gate
 
 ```math
 G_{score}
@@ -377,7 +392,64 @@ G_{score}
 [S(x) < T_{update}]
 ```
 
-Consistency gate:
+The score gate passes only when the anomaly score of the incoming image is lower than the stricter update threshold.
+
+```text
+S(x) < T_update
+→ confidently normal
+→ eligible for consistency checking
+```
+
+#### Weak and strong augmentation
+
+For the consistency check, two perturbed versions of the same incoming image are generated.
+
+```text
+Original incoming image
+        │
+        ├── Weak view
+        │     Gaussian noise scale = 0.01
+        │
+        └── Strong view
+              Gaussian noise scale = 0.03
+              + 50% probability of horizontal flip
+```
+
+The weak view introduces only a small perturbation, while the strong view introduces a larger perturbation. The purpose is to check whether the extracted feature representation remains stable even when the appearance of the same image is slightly changed.
+
+#### Consistency error
+
+The weak and strong views are passed through the feature extractor and their patch features are compared using mean squared error:
+
+```math
+E_{cons}
+=
+\frac{1}{N}
+\sum_{i=1}^{N}
+\left\|
+z_i^{weak}
+-
+z_i^{strong}
+\right\|_2^2
+```
+
+A small consistency error means that the feature representation remains stable under perturbation.
+
+```text
+Small E_cons
+→ weak and strong features are similar
+→ stable sample
+```
+
+A large consistency error means that the feature representation changes significantly:
+
+```text
+Large E_cons
+→ weak and strong features are different
+→ unstable sample
+```
+
+The consistency gate is:
 
 ```math
 G_{cons}
@@ -385,16 +457,45 @@ G_{cons}
 [E_{cons} < T_{cons}]
 ```
 
+Therefore, the final safe-update rule is:
+
+```math
+G_{update}
+=
+[S(x) < T_{update}]
+\land
+[E_{cons} < T_{cons}]
+```
+
+An online update is allowed only when both conditions pass:
+
+```text
+Score Gate PASS
+        +
+Consistency Gate PASS
+        ↓
+Safe online update
+        ↓
+Memory and/or adapter update
+```
+
+If either condition fails:
+
+```text
+No online update
+→ prediction only
+```
+
 The q0.90 update boundary was selected after comparison with q0.95.
 
 | Metric | q0.95 | q0.90 |
 |---|---:|---:|
 | Accuracy | 88.33% | 88.00% |
-| Anomaly Recall | 91.00% | **91.00%** |
+| Anomaly Recall | 91.00% | 91.00% |
 | Bad Updates | 12 | **8** |
 | Update Precision | 94.78% | **96.10%** |
 
-The stricter q0.90 gate reduced bad updates by approximately 33.3% without reducing anomaly recall.
+The stricter q0.90 gate reduced bad updates by approximately **33.3%** without reducing anomaly recall.
 
 ---
 
