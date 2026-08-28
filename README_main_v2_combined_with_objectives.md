@@ -16,11 +16,11 @@ The project did not begin directly with the final local-patch method. The resear
 - [2. Research Objectives](#2-research-objectives)
 - [3. Dataset](#3-dataset)
 - [4. Complete Project Development Flow](#4-complete-project-development-flow)
-  - [4.1 Stage 1 — Offline Normal-Reference Preparation](#41-stage-1--offline-normal-reference-preparation)
-  - [4.2 Stage 2 — Deployment Calibration](#42-stage-2--deployment-calibration)
-  - [4.3 Stage 3 — Global-to-Local Representation Development](#43-stage-3--global-to-local-representation-development)
-  - [4.4 Stage 4 — Safe Continual Test-Time Adaptation](#44-stage-4--safe-continual-test-time-adaptation)
-  - [4.5 Stage 5 — Flask and CiRA CORE Deployment](#45-stage-5--flask-and-cira-core-deployment)
+  - [4.1 Stage 1 - Offline Normal-Reference Preparation](#41-stage-1--offline-normal-reference-preparation)
+  - [4.2 Stage 2 - Deployment Calibration](#42-stage-2--deployment-calibration)
+  - [4.3 Stage 3 - Global-to-Local Representation Development](#43-stage-3--global-to-local-representation-development)
+  - [4.4 Stage 4 - Safe Continual Test-Time Adaptation](#44-stage-4--safe-continual-test-time-adaptation)
+  - [4.5 Stage 5 - Flask and CiRA CORE Deployment](#45-stage-5--flask-and-cira-core-deployment)
 - [5. Final Method](#5-final-method)
 - [6. Experimental Development](#6-experimental-development)
 - [7. Final Results](#7-final-results)
@@ -130,7 +130,7 @@ Defective samples are used for evaluation and are not required to construct the 
 
 # 4. Complete Project Development Flow
 
-## 4.1 Stage 1 — Offline Normal-Reference Preparation
+## 4.1 Stage 1 - Offline Normal-Reference Preparation
 
 The first stage of the project was to establish a complete normal-reference anomaly-detection workflow before introducing the later local-patch CTTA method.
 
@@ -184,7 +184,7 @@ The rev1.0–rev1.5 stages therefore remain part of the project rather than bein
 
 ---
 
-## 4.2 Stage 2 — Deployment Calibration
+## 4.2 Stage 2 - Deployment Calibration
 
 The offline threshold is calculated from the original dataset, but deployment images may have different lighting, camera position, background, image quality or other appearance changes.
 
@@ -255,11 +255,11 @@ Gain = +4.67 percentage points
 
 ---
 
-## 4.3 Stage 3 — Global-to-Local Representation Development
+## 4.3 Stage 3 - Global-to-Local Representation Development
 
 After the initial workflow was stable, the next question was whether one global image feature was sufficient for industrial anomaly detection.
 
-### Global representation — rev1.6
+### Global representation - rev1.6
 
 The rev1.6 system represented the complete image using a global YOLO feature.
 
@@ -269,7 +269,7 @@ Mean AUROC ≈ 84.84%
 
 This worked as a baseline, but small scratches, holes, texture changes or missing local regions could be diluted when the full image was compressed into one vector.
 
-### Local patch representation — rev1.7
+### Local patch representation - rev1.7
 
 The detector was then changed to use local intermediate YOLO features.
 
@@ -297,7 +297,7 @@ Improvement:
 
 The result showed that keeping local spatial information was much more effective for small industrial defects.
 
-### Patch configuration — rev1.8
+### Patch configuration - rev1.8
 
 The project then tested 108 candidate combinations:
 
@@ -332,7 +332,7 @@ After rev1.8, this representation was frozen and the later experiments focused o
 
 ---
 
-## 4.4 Stage 4 — Safe Continual Test-Time Adaptation
+## 4.4 Stage 4 - Safe Continual Test-Time Adaptation
 
 Continual test-time adaptation means that selected system state may change while test images arrive sequentially.
 
@@ -394,7 +394,7 @@ The stricter q0.90 gate reduced bad updates by approximately 33.3% without reduc
 
 ---
 
-## 4.5 Stage 5 — Flask and CiRA CORE Deployment
+## 4.5 Stage 5 - Flask and CiRA CORE Deployment
 
 The final detector is separated into two layers:
 
