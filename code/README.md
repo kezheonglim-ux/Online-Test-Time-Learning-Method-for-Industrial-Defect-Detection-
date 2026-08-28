@@ -75,7 +75,7 @@ because it achieved the best overall Accuracy and Macro F1 in the final deployme
 | [`python2.py`](python2.py) | CiRA CORE response/result parser. | Runs after Flask REST response. | Validate JSON → parse prediction → update display state → return image/text/LED values. |
 | [`Stop.py`](Stop.py) | Controlled batch stop. | Used by CiRA CORE Stop flow. | Set stop condition → running flow checks before next image. |
 | [`Reset.py`](Reset.py) | Reset batch-control state. | Used by CiRA CORE Reset flow. | Clear stop/index state → prepare clean batch restart. |
-| `cira_test_flow.flow` / current CiRA flow file | Low-code workflow. | Import into CiRA CORE. | Run → Python1 → REST → Python2 → display → delay/next image; separate Stop and Reset paths. |
+| [`cira_test_flow.flow`](cira_test_flow.flow) / current CiRA flow file | Low-code workflow. | Import into CiRA CORE. | Run → Python1 → REST → Python2 → display → delay/next image; separate Stop and Reset paths. |
 
 > File names should match the current repository copy. If the CiRA flow file is renamed, update the final row accordingly.
 
