@@ -662,7 +662,7 @@ The main findings of the complete project are:
 
 Detailed code responsibilities, equations, experiment settings, revision-by-revision findings, stored results and reproducibility notes are documented in:
 
-[`code/README_code_v2.md`](code/README_code_v2.md)
+[`code/README_code_v2.md`](code/README.md)
 
 Stored experimental outputs:
 
