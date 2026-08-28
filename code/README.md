@@ -73,9 +73,9 @@ because it achieved the best overall Accuracy and Macro F1 in the final deployme
 | [`calibrate_consistency.py`](calibrate_consistency.py) | Category consistency-threshold calibration. | Run after trusted-normal consistency logging. | Read trusted-normal consistency errors → q0.95 consistency threshold → save threshold. |
 | [`python1.py`](python1.py) | CiRA CORE input/batch controller. | First Python stage in the Run flow. | Check stop state → load next image → determine category → prepare request information. |
 | [`python2.py`](python2.py) | CiRA CORE response/result parser. | Runs after Flask REST response. | Validate JSON → parse prediction → update display state → return image/text/LED values. |
-| [`Stop.py`](Stop.py) | Controlled batch stop. | Used by CiRA CORE Stop flow. | Set stop condition → running flow checks before next image. |
-| [`Reset.py`](Reset.py) | Reset batch-control state. | Used by CiRA CORE Reset flow. | Clear stop/index state → prepare clean batch restart. |
-| [`cira_test_flow.flow`](cira_test_flow.flow) / current CiRA flow file | Low-code workflow. | Import into CiRA CORE. | Run → Python1 → REST → Python2 → display → delay/next image; separate Stop and Reset paths. |
+| [`Stop.py`](stop.py) | Controlled batch stop. | Used by CiRA CORE Stop flow. | Set stop condition → running flow checks before next image. |
+| [`Reset.py`](reset.py) | Reset batch-control state. | Used by CiRA CORE Reset flow. | Clear stop/index state → prepare clean batch restart. |
+| [`cira_test_flow.flow`](test_flow.flow) | Low-code workflow. | Import into CiRA CORE. | Run → Python1 → REST → Python2 → display → delay/next image; separate Stop and Reset paths. |
 
 > File names should match the current repository copy. If the CiRA flow file is renamed, update the final row accordingly.
 
