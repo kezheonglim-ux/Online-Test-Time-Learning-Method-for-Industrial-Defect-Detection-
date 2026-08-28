@@ -261,7 +261,7 @@ Gain = +4.67 percentage points
 
 Deployment calibration uses trusted-normal images to recalculate the category-specific anomaly and update thresholds.
 
-#### Step 1 — Prepare trusted-normal images
+#### Step 1 - Prepare trusted-normal images
 
 Prepare approximately 20 trusted-normal images for each category.
 
@@ -288,7 +288,7 @@ UPDATE_QUANTILE  = 0.90
 SAFETY_MARGIN_STD_FACTOR = 0.10
 ```
 
-#### Step 3 — Run calibration
+#### Step 3 - Run calibration
 
 From the project environment:
 
@@ -313,7 +313,30 @@ Save calibrated threshold.json
 Calibration only calculates the operating thresholds.  
 **The memory and PatchAdapter are not updated during this stage.**
 
-#### Step 4 — Check the output
+**Optional run**
+
+```text
+Single-category calibration run:
+
+```bat
+python code/auto_calibrate_threshold.py --category bottle
+```
+
+OR dry run(no update)
+
+```bat
+python auto_calibrate_threshold.py --category bottle --dry-run
+```
+```text
+Run all:
+```
+**OR**
+```bat
+python auto_calibrate_threshold.py --dry-run
+```
+
+
+#### Step 4 - Check the output
 
 The generated `threshold.json` is then used during deployment for:
 
