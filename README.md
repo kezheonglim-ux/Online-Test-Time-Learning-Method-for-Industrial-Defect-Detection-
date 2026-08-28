@@ -37,6 +37,10 @@ Industrial anomaly detection often has many normal samples but limited examples 
 
 This project therefore investigates a normal-reference detector that can operate without retraining the full backbone.
 
+More Literature Review at [`research/README.md`](code/README.md)
+
+Core related info at [`code/README.md`](code/README.md)
+
 The complete system contains:
 
 | Component | Project usage |
