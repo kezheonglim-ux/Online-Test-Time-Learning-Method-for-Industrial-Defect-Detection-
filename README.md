@@ -374,7 +374,7 @@ Score gate:
 ```math
 G_{score}
 =
-[S(x)T_{update}]
+[S(x)<T_{update}]
 ```
 
 Consistency gate:
