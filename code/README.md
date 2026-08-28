@@ -292,7 +292,7 @@ max_patch_memory = 16000
 
 The full project is treated as one continuous experiment path.
 
-## 4.1 rev1.0 — First test-time workflow
+## 4.1 rev1.0 - First test-time workflow
 
 **Purpose**  
 Build the first end-to-end inference path.
@@ -302,7 +302,7 @@ The basic image → feature → score → result flow worked.
 
 ---
 
-## 4.2 rev1.1 — Normal-reference anomaly direction
+## 4.2 rev1.1 - Normal-reference anomaly direction
 
 **Purpose**  
 Use normal appearance as the reference instead of requiring known defect classes.
@@ -322,7 +322,7 @@ Model/state export and loading were stabilized.
 
 ---
 
-## 4.4 rev1.3 — Automatic threshold calibration
+## 4.4 rev1.3 - Automatic threshold calibration
 
 **Purpose**  
 Estimate category thresholds from normal data instead of manually fixing one threshold.
@@ -332,7 +332,7 @@ The normal-only threshold process became repeatable.
 
 ---
 
-## 4.5 rev1.4 — All-category expansion
+## 4.5 rev1.4 - All-category expansion
 
 **Purpose**  
 Run the workflow across all 15 MVTec AD categories.
@@ -348,7 +348,7 @@ This stage mainly improved workflow consistency, category handling and threshold
 
 ---
 
-## 4.6 rev1.5 — Experiment cleanup
+## 4.6 rev1.5 - Experiment cleanup
 
 **Purpose**  
 Clean code, comments and experiment organization before representation comparison.
@@ -358,7 +358,7 @@ No new performance claim.
 
 ---
 
-## 4.7 rev1.6 — Global YOLO feature baseline
+## 4.7 rev1.6 - Global YOLO feature baseline
 
 **Purpose**  
 Measure the performance of one whole-image YOLO embedding.
@@ -374,7 +374,7 @@ Global features provide a useful baseline but can dilute small local defects.
 
 ---
 
-## 4.8 rev1.7 — Local patch representation
+## 4.8 rev1.7 - Local patch representation
 
 **Purpose**  
 Use local intermediate YOLO patches and compare them with normal patch memory.
@@ -391,7 +391,7 @@ Local representation produced the largest feature-level gain in the project.
 
 ---
 
-## 4.9 rev1.8 — Patch-representation ablation
+## 4.9 rev1.8 - Patch-representation ablation
 
 > **Stored result:** [`code/result/rev1.8/`](result/rev1.8/)
 
@@ -446,7 +446,7 @@ After this stage, the offline representation was frozen.
 
 ---
 
-## 4.10 rev1.9 — PatchAdapter verification
+## 4.10 rev1.9 - PatchAdapter verification
 
 > **Stored result:** [`code/result/rev1.9/`](result/rev1.9/)
 
@@ -467,7 +467,7 @@ The adapter genuinely changes its parameters. This verifies the mechanism, not i
 
 ---
 
-## 4.11 rev1.10 — Safer update selection
+## 4.11 rev1.10 - Safer update selection
 
 > **Stored result:** [`code/result/rev1.10/`](result/rev1.10/)
 
@@ -493,7 +493,7 @@ q0.90 was retained because it reduced defective updates while preserving anomaly
 
 ---
 
-## 4.12 rev1.11 — Shuffled-stream robustness
+## 4.12 rev1.11 - Shuffled-stream robustness
 
 > **Stored result:** [`code/result/rev1.11/`](result/rev1.11/)
 
@@ -515,7 +515,7 @@ Detection results are reasonably stable, but update behavior remains path-depend
 
 ---
 
-## 4.13 rev1.12 — Final component ablation
+## 4.13 rev1.12 - Final component ablation
 
 > **Stored result:** [`code/result/rev1.12/`](result/rev1.12/)
 
