@@ -312,7 +312,7 @@ The anomaly direction was standardized so larger distance from normal means stro
 
 ---
 
-## 4.3 rev1.2 — Export and deployment loading
+## 4.3 rev1.2 - Export and deployment loading
 
 **Purpose**  
 Allow the prepared category state to run outside the notebook.
