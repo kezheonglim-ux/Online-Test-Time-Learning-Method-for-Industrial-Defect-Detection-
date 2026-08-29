@@ -39,6 +39,7 @@ because it achieved the best overall Accuracy and Macro F1 in the final deployme
 | Baseline deployment accuracy | 79.50% |
 | Calibration-only accuracy | 84.17% |
 | **Memory CTTA accuracy** | **85.61% ± 0.75%** |
+| **Memory CTTA normal recall** | **81.33% ± 1.45%** |
 | **Memory CTTA Macro F1** | **85.58% ± 0.76%** |
 
 > **Important:** representation-stage AUROC and final deployment-ablation metrics come from different evaluation stages. They should not be interpreted as one continuous benchmark.
