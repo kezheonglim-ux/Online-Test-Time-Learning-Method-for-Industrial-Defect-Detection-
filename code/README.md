@@ -590,7 +590,7 @@ The final deployment ablation is the rev1.12 experiment. Its saved outputs are k
 
 | Method | Good updates | Bad updates | Total updates | Update precision |
 |---|---:|---:|---:|---:|
-| Memory CTTA | 183.0 | 10.0 | 193.0 | **94.82% ± 0.14%** |
+| Memory CTTA | 183.7 | 10.0 | 193.7 | **94.83% ± 0.16%** |
 | Adapter CTTA | 174.3 | 8.0 | 182.3 | **95.61% ± 0.01%** |
 | Full CTTA | 186.7 | 12.7 | 199.3 | **93.66% ± 0.55%** |
 
