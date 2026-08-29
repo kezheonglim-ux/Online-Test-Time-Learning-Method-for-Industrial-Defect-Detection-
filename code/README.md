@@ -38,8 +38,8 @@ because it achieved the best overall Accuracy and Macro F1 in the final deployme
 | Final tuned patch configuration | 94.49% mean AUROC |
 | Baseline deployment accuracy | 79.50% |
 | Calibration-only accuracy | 84.17% |
-| **Memory CTTA accuracy** | **85.22% ± 0.42%** |
-| **Memory CTTA Macro F1** | **85.19% ± 0.43%** |
+| **Memory CTTA accuracy** | **85.61% ± 0.75%** |
+| **Memory CTTA Macro F1** | **85.58% ± 0.76%** |
 
 > **Important:** representation-stage AUROC and final deployment-ablation metrics come from different evaluation stages. They should not be interpreted as one continuous benchmark.
 
@@ -533,9 +533,9 @@ Final result:
 |---|---:|---:|---:|---:|---:|
 | Baseline | 79.50% | 71.33% | 87.67% | 79.36% | 94.70% |
 | Calibration | 84.17% | 77.33% | **91.00%** | 84.09% | 94.70% |
-| **Memory CTTA** | **85.22% ± 0.42%** | 80.67% ± 1.20% | 89.78% ± 0.38% | **85.19% ± 0.43%** | 93.11% ± 0.05% |
+| **Memory CTTA** | **85.61% ± 0.75%** | **81.33% ± 1.45%** | 89.89% ± 0.51% | **85.58% ± 0.76%** | 93.14% ± 0.09% |
 | Adapter CTTA | 84.11% ± 0.10% | 77.22% ± 0.19% | **91.00% ± 0.00%** | 84.04% ± 0.10% | 94.70% ± 0.02% |
-| Full CTTA | 85.17% ± 0.44% | **81.00% ± 1.33%** | 89.33% ± 0.88% | 85.14% ± 0.45% | 93.14% ± 0.18% |
+| Full CTTA | 85.17% ± 0.44% | 81.00% ± 1.33% | 89.33% ± 0.88% | 85.14% ± 0.45% | 93.14% ± 0.18% |
 
 Contribution summary:
 
