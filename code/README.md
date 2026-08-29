@@ -1,7 +1,5 @@
 # Code, Method, Experiment and Final Deployment Notes
 
-This README is the technical entry point for the implementation under `code/`.
-
 ---
 
 ## Project Summary
