@@ -565,17 +565,7 @@ no additional overall gain
 
 The final deployment ablation is the rev1.12 experiment. Its saved outputs are kept under [`code/result/rev1.12/`](result/rev1.12/).
 
-## 5.1 Detection result
-
-| Method | Accuracy | Normal Recall | Anomaly Recall | Macro F1 | Category AUROC |
-|---|---:|---:|---:|---:|---:|
-| Baseline | 79.50% | 71.33% | 87.67% | 79.36% | 94.70% |
-| Calibration | 84.17% | 77.33% | **91.00%** | 84.09% | 94.70% |
-| **Memory CTTA** | **85.22% ± 0.42%** | 80.67% ± 1.20% | 89.78% ± 0.38% | **85.19% ± 0.43%** | 93.11% ± 0.05% |
-| Adapter CTTA | 84.11% ± 0.10% | 77.22% ± 0.19% | **91.00% ± 0.00%** | 84.04% ± 0.10% | 94.70% ± 0.02% |
-| Full CTTA | 85.17% ± 0.44% | **81.00% ± 1.33%** | 89.33% ± 0.88% | 85.14% ± 0.45% | 93.14% ± 0.18% |
-
-### Final deployment interpretation
+## 5.1 Final Deployment Interpretation
 
 **Calibration** gave the largest deployment improvement:
 
@@ -587,12 +577,13 @@ The final deployment ablation is the rev1.12 experiment. Its saved outputs are k
 
 ```text
 85.22% ± 0.42% accuracy
+81.33% ± 1.45% normal recall
 85.19% ± 0.43% Macro F1
 ```
 
 **Adapter CTTA** confirmed that the adapter can learn online, but adapter-only performance remained close to calibration-only.
 
-**Full CTTA** gave the best normal recall, but did not improve overall Accuracy or Macro F1 over Memory CTTA.
+**Full CTTA** overall result slightly behind compare to Memory CTTA.
 
 ## 5.2 Online update quality
 
