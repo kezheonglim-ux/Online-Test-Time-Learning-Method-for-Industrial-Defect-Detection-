@@ -564,7 +564,7 @@ no additional overall gain
 
 # 5. Final Deployment Result
 
-The final deployment ablation is the rev1.12 experiment. Its saved outputs are kept under [`code/result/rev1.12/`](result/rev1.12/).
+Base on the result of ablation in rev1.12 experiment will further analyze to determine which method the best to implement as default deployment.
 
 ## 5.1 Final Deployment Interpretation
 
